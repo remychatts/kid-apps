@@ -6,8 +6,8 @@ Use UK spelling in user-facing copy and documentation.
 
 The pipeline for this repo is the remychatts/kid-apps repo, which is public, and builds a GitHub Pages site with using GitHub actions. Unlike all other repos, this is the final destination, and does not require human approval for you to merge PRs: when you have a good release candidate, first run a series of checks, and if those pass, merge to main and publish an update. The checks are:
 
- - running CI checks (typechecking, tests, code formatting, etc)
- - validating that there are no API keys or other secrets embedded in the changes being published
+- running CI checks (typechecking, tests, code formatting, etc)
+- validating that there are no API keys or other secrets embedded in the changes being published
 
 If in doubt, stop and ask for guidance.
 
