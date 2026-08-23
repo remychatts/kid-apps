@@ -1,0 +1,991 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="theme-color" content="#6c5ce7" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <title>✨ Drawing Prompt Machine ✨</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      html,
+      body {
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        touch-action: manipulation;
+      }
+
+      body {
+        font-family: "Fredoka", sans-serif;
+        background: #f8f4f9;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 20px;
+        position: relative;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background:
+          radial-gradient(
+            ellipse at 20% 80%,
+            rgba(255, 182, 193, 0.4) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at 80% 90%,
+            rgba(221, 160, 221, 0.35) 0%,
+            transparent 45%
+          ),
+          radial-gradient(
+            ellipse at 50% 100%,
+            rgba(173, 216, 230, 0.4) 0%,
+            transparent 55%
+          ),
+          radial-gradient(
+            ellipse at 10% 60%,
+            rgba(255, 218, 185, 0.3) 0%,
+            transparent 40%
+          ),
+          radial-gradient(
+            ellipse at 90% 40%,
+            rgba(230, 230, 250, 0.4) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at 40% 20%,
+            rgba(255, 228, 225, 0.3) 0%,
+            transparent 45%
+          ),
+          linear-gradient(
+            180deg,
+            rgba(255, 250, 250, 0.9) 0%,
+            rgba(255, 240, 245, 0.7) 30%,
+            rgba(248, 235, 245, 0.8) 50%,
+            rgba(240, 230, 250, 0.7) 70%,
+            rgba(230, 240, 250, 0.8) 100%
+          );
+        z-index: -1;
+        animation: subtleShift 15s ease-in-out infinite alternate;
+      }
+
+      @keyframes subtleShift {
+        0% {
+          opacity: 1;
+          filter: hue-rotate(0deg);
+        }
+
+        100% {
+          opacity: 0.95;
+          filter: hue-rotate(10deg);
+        }
+      }
+
+      .stars {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 1;
+      }
+
+      .star {
+        position: absolute;
+        font-size: 20px;
+        animation: twinkle 2s ease-in-out infinite;
+        opacity: 0.7;
+      }
+
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.3;
+          transform: scale(0.8);
+        }
+
+        50% {
+          opacity: 1;
+          transform: scale(1.2);
+        }
+      }
+
+      .title {
+        font-family: "Bangers", cursive;
+        font-size: clamp(2rem, 8vw, 4rem);
+        color: #fff;
+        text-shadow:
+          3px 3px 0 #ff6b9d,
+          6px 6px 0 #c44569,
+          -2px -2px 0 #ffeaa7;
+        text-align: center;
+        margin-bottom: 20px;
+        z-index: 10;
+        letter-spacing: 4px;
+        animation: bounce 0.6s ease infinite alternate;
+      }
+
+      @keyframes bounce {
+        from {
+          transform: translateY(0);
+        }
+
+        to {
+          transform: translateY(-5px);
+        }
+      }
+
+      .machine-container {
+        display: flex;
+        align-items: stretch;
+        gap: 15px;
+        z-index: 10;
+      }
+
+      .machine {
+        background: linear-gradient(
+          180deg,
+          #6c5ce7 0%,
+          #a29bfe 50%,
+          #6c5ce7 100%
+        );
+        border-radius: 30px;
+        padding: 25px;
+        box-shadow:
+          0 20px 60px rgba(108, 92, 231, 0.5),
+          inset 0 2px 10px rgba(255, 255, 255, 0.3),
+          inset 0 -5px 20px rgba(0, 0, 0, 0.2);
+        border: 8px solid #fdcb6e;
+        position: relative;
+      }
+
+      .machine::before {
+        content: "";
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        height: 30px;
+        background: linear-gradient(90deg, #fdcb6e, #f9ca24, #fdcb6e);
+        border-radius: 15px 15px 0 0;
+        box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .lights {
+        position: absolute;
+        top: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 15px;
+      }
+
+      .light {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        animation: blink 0.5s ease infinite alternate;
+      }
+
+      .light:nth-child(1) {
+        background: #ff6b6b;
+        animation-delay: 0s;
+      }
+
+      .light:nth-child(2) {
+        background: #feca57;
+        animation-delay: 0.1s;
+      }
+
+      .light:nth-child(3) {
+        background: #48dbfb;
+        animation-delay: 0.2s;
+      }
+
+      .light:nth-child(4) {
+        background: #ff9ff3;
+        animation-delay: 0.3s;
+      }
+
+      .light:nth-child(5) {
+        background: #1dd1a1;
+        animation-delay: 0.4s;
+      }
+
+      @keyframes blink {
+        from {
+          opacity: 0.4;
+          transform: scale(0.9);
+        }
+
+        to {
+          opacity: 1;
+          transform: scale(1.1);
+        }
+      }
+
+      .reels-container {
+        display: flex;
+        gap: 10px;
+        background: linear-gradient(180deg, #2d3436 0%, #000 100%);
+        padding: 15px;
+        border-radius: 20px;
+        box-shadow: inset 0 5px 20px rgba(0, 0, 0, 0.8);
+      }
+
+      .reel-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .reel-label {
+        font-size: 0.7rem;
+        color: #fdcb6e;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      .reel {
+        width: clamp(90px, 20vw, 140px);
+        height: clamp(100px, 25vw, 160px);
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.1) 0%,
+          rgba(255, 255, 255, 0.9) 20%,
+          #fff 50%,
+          rgba(255, 255, 255, 0.9) 80%,
+          rgba(255, 255, 255, 0.1) 100%
+        );
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .reel::before,
+      .reel::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 30%;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      .reel::before {
+        top: 0;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), transparent);
+      }
+
+      .reel::after {
+        bottom: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent);
+      }
+
+      .reel-strip {
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.1s ease-out;
+      }
+
+      .reel-item {
+        height: clamp(100px, 25vw, 160px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        text-align: center;
+        font-size: clamp(0.7rem, 2.5vw, 1rem);
+        font-weight: 600;
+        color: #2d3436;
+        line-height: 1.2;
+      }
+
+      .reel-item span {
+        display: block;
+      }
+
+      .reel-item .emoji {
+        font-size: clamp(1.5rem, 5vw, 2.5rem);
+        margin-bottom: 5px;
+      }
+
+      .handle-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .handle {
+        width: 60px;
+        height: 200px;
+        background: linear-gradient(
+          90deg,
+          #b8860b 0%,
+          #ffd700 30%,
+          #daa520 70%,
+          #b8860b 100%
+        );
+        border-radius: 10px;
+        position: relative;
+        cursor: pointer;
+        box-shadow:
+          5px 5px 20px rgba(0, 0, 0, 0.4),
+          inset -3px 0 10px rgba(0, 0, 0, 0.3);
+        transition: transform 0.1s ease;
+      }
+
+      .handle::before {
+        content: "";
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 50px;
+        background: radial-gradient(
+          circle at 30% 30%,
+          #ff6b6b,
+          #ee5a5a,
+          #c0392b
+        );
+        border-radius: 50%;
+        box-shadow:
+          0 5px 15px rgba(0, 0, 0, 0.4),
+          inset 0 -5px 15px rgba(0, 0, 0, 0.3),
+          inset 0 5px 10px rgba(255, 255, 255, 0.3);
+        border: 4px solid #fdcb6e;
+      }
+
+      .handle.pulled {
+        transform: rotateX(30deg) translateY(40px);
+      }
+
+      .handle-track {
+        width: 30px;
+        height: 250px;
+        background: linear-gradient(90deg, #555 0%, #888 50%, #555 100%);
+        border-radius: 15px;
+        position: relative;
+        box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.5);
+      }
+
+      .pull-text {
+        font-family: "Bangers", cursive;
+        font-size: 1rem;
+        color: #fdcb6e;
+        text-shadow: 2px 2px 0 #000;
+        margin-top: 10px;
+        animation: pulse 1s ease infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+
+        50% {
+          opacity: 0.7;
+          transform: scale(0.95);
+        }
+      }
+
+      .result-display {
+        margin-top: 20px;
+        padding: 20px 30px;
+        background: linear-gradient(135deg, #fff 0%, #ffeaa7 100%);
+        border-radius: 20px;
+        border: 5px solid #fdcb6e;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        max-width: 90%;
+        z-index: 10;
+        min-height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .result-text {
+        font-size: clamp(1rem, 4vw, 1.5rem);
+        font-weight: 700;
+        color: #6c5ce7;
+        text-shadow: 1px 1px 0 #fff;
+      }
+
+      .result-text.spinning {
+        animation: shimmer 0.3s ease infinite;
+      }
+
+      @keyframes shimmer {
+        0%,
+        100% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .confetti {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 100;
+      }
+
+      .confetti-piece {
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        top: -20px;
+        animation: confettiFall 3s ease-out forwards;
+      }
+
+      @keyframes confettiFall {
+        0% {
+          transform: translateY(0) rotate(0deg) scale(1);
+          opacity: 1;
+        }
+
+        100% {
+          transform: translateY(100vh) rotate(720deg) scale(0.5);
+          opacity: 0;
+        }
+      }
+
+      .spin-btn {
+        display: none;
+        margin-top: 15px;
+        padding: 15px 40px;
+        font-family: "Bangers", cursive;
+        font-size: 1.5rem;
+        background: linear-gradient(180deg, #ff6b9d 0%, #c44569 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow:
+          0 8px 0 #a03050,
+          0 15px 30px rgba(0, 0, 0, 0.3);
+        transition: all 0.1s ease;
+        z-index: 10;
+        letter-spacing: 2px;
+      }
+
+      .spin-btn:active {
+        transform: translateY(5px);
+        box-shadow:
+          0 3px 0 #a03050,
+          0 8px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      @media (max-width: 600px) {
+        .machine-container {
+          flex-direction: column;
+        }
+
+        .handle-container {
+          flex-direction: row;
+          margin-top: 15px;
+        }
+
+        .handle {
+          width: 150px;
+          height: 50px;
+        }
+
+        .handle::before {
+          top: 50%;
+          left: -30px;
+          transform: translateY(-50%);
+        }
+
+        .handle-track {
+          width: 200px;
+          height: 25px;
+        }
+
+        .spin-btn {
+          display: block;
+        }
+
+        .pull-text {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="stars" id="stars"></div>
+    <div class="confetti" id="confetti"></div>
+
+    <h1 class="title">🎨 Draw This! 🎨</h1>
+
+    <div class="machine-container">
+      <div class="machine">
+        <div class="lights">
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+          <div class="light"></div>
+        </div>
+        <div class="reels-container">
+          <div class="reel-wrapper">
+            <div class="reel-label">Who?</div>
+            <div class="reel" id="reel1">
+              <div class="reel-strip" id="strip1"></div>
+            </div>
+          </div>
+          <div class="reel-wrapper">
+            <div class="reel-label">Where?</div>
+            <div class="reel" id="reel2">
+              <div class="reel-strip" id="strip2"></div>
+            </div>
+          </div>
+          <div class="reel-wrapper">
+            <div class="reel-label">Doing What?</div>
+            <div class="reel" id="reel3">
+              <div class="reel-strip" id="strip3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="handle-container">
+        <div class="handle-track">
+          <div class="handle" id="handle" onclick="spin()"></div>
+        </div>
+        <div class="pull-text">⬇️ PULL! ⬇️</div>
+      </div>
+    </div>
+
+    <button class="spin-btn" onclick="spin()">🎰 SPIN! 🎰</button>
+
+    <div class="result-display">
+      <div class="result-text" id="result">
+        Pull the handle to get your drawing prompt!
+      </div>
+    </div>
+
+    <script>
+      // Prevent default touch behaviours for iPad
+      document.addEventListener(
+        "touchmove",
+        function (e) {
+          if (e.scale !== 1) {
+            e.preventDefault();
+          }
+        },
+        { passive: false },
+      );
+
+      document.addEventListener("gesturestart", function (e) {
+        e.preventDefault();
+      });
+
+      // Slot machine data
+      const subjects = [
+        { text: "You", emoji: "🧑" },
+        { text: "A Dog", emoji: "🐕" },
+        { text: "A Cat", emoji: "🐱" },
+        { text: "A Camel", emoji: "🐪" },
+        { text: "A Dragon", emoji: "🐉" },
+        { text: "A Monster", emoji: "👹" },
+        { text: "A Unicorn", emoji: "🦄" },
+        { text: "A Princess", emoji: "👸" },
+        { text: "A Robot", emoji: "🤖" },
+        { text: "An Alien", emoji: "👽" },
+        { text: "A Mermaid", emoji: "🧜‍♀️" },
+        { text: "A Wizard", emoji: "🧙" },
+        { text: "A Dinosaur", emoji: "🦕" },
+        { text: "A Fairy", emoji: "🧚" },
+        { text: "A Superhero", emoji: "🦸" },
+        { text: "A Bunny", emoji: "🐰" },
+        { text: "A Penguin", emoji: "🐧" },
+        { text: "An Octopus", emoji: "🐙" },
+        { text: "A Butterfly", emoji: "🦋" },
+        { text: "A Llama", emoji: "🦙" },
+        { text: "A Ghost", emoji: "👻" },
+        { text: "A Pirate", emoji: "🏴‍☠️" },
+        { text: "A Ballerina", emoji: "🩰" },
+        { text: "A Panda", emoji: "🐼" },
+        { text: "A Fox", emoji: "🦊" },
+        { text: "An Owl", emoji: "🦉" },
+        { text: "A Sloth", emoji: "🦥" },
+        { text: "A Flamingo", emoji: "🦩" },
+        { text: "A Koala", emoji: "🐨" },
+        { text: "Your Best Friend", emoji: "👯" },
+      ];
+
+      const settings = [
+        { text: "at home", emoji: "🏠" },
+        { text: "in space", emoji: "🚀" },
+        { text: "on a picnic", emoji: "🧺" },
+        { text: "at the office", emoji: "🏢" },
+        { text: "at the circus", emoji: "🎪" },
+        { text: "underwater", emoji: "🌊" },
+        { text: "in a castle", emoji: "🏰" },
+        { text: "on a rainbow", emoji: "🌈" },
+        { text: "in a garden", emoji: "🌸" },
+        { text: "at the beach", emoji: "🏖️" },
+        { text: "in the clouds", emoji: "☁️" },
+        { text: "in a candy shop", emoji: "🍭" },
+        { text: "at a party", emoji: "🎉" },
+        { text: "in a forest", emoji: "🌲" },
+        { text: "on the moon", emoji: "🌙" },
+        { text: "in a library", emoji: "📚" },
+        { text: "at school", emoji: "🏫" },
+        { text: "on a mountain", emoji: "⛰️" },
+        { text: "in a bakery", emoji: "🧁" },
+        { text: "at a concert", emoji: "🎸" },
+        { text: "in the jungle", emoji: "🌴" },
+        { text: "at a spa", emoji: "🧖" },
+        { text: "in a treehouse", emoji: "🌳" },
+        { text: "at a fancy restaurant", emoji: "🍽️" },
+        { text: "on a boat", emoji: "⛵" },
+        { text: "in a museum", emoji: "🖼️" },
+        { text: "at the zoo", emoji: "🦁" },
+        { text: "in a volcano", emoji: "🌋" },
+        { text: "at an ice rink", emoji: "⛸️" },
+        { text: "in a hot air balloon", emoji: "🎈" },
+      ];
+
+      const qualifiers = [
+        { text: "with a baby", emoji: "👶" },
+        { text: "making music", emoji: "🎵" },
+        { text: "arranging flowers", emoji: "💐" },
+        { text: "facing a nemesis", emoji: "⚔️" },
+        { text: "walking a pet", emoji: "🦮" },
+        { text: "wearing a wig", emoji: "💇" },
+        { text: "in ridiculous sunglasses", emoji: "🕶️" },
+        { text: "in leather boots", emoji: "👢" },
+        { text: "eating cake", emoji: "🎂" },
+        { text: "doing karate", emoji: "🥋" },
+        { text: "riding a skateboard", emoji: "🛹" },
+        { text: "painting a masterpiece", emoji: "🎨" },
+        { text: "reading a spell book", emoji: "📖" },
+        { text: "baking cookies", emoji: "🍪" },
+        { text: "taking a selfie", emoji: "🤳" },
+        { text: "having a tea party", emoji: "🫖" },
+        { text: "doing gymnastics", emoji: "🤸" },
+        { text: "wearing a crown", emoji: "👑" },
+        { text: "blowing bubbles", emoji: "🫧" },
+        { text: "flying a kite", emoji: "🪁" },
+        { text: "juggling", emoji: "🤹" },
+        { text: "hula hooping", emoji: "⭕" },
+        { text: "holding balloons", emoji: "🎈" },
+        { text: "with sparklers", emoji: "✨" },
+        { text: "in a tutu", emoji: "💃" },
+        { text: "doing magic tricks", emoji: "🪄" },
+        { text: "playing video games", emoji: "🎮" },
+        { text: "covered in glitter", emoji: "💎" },
+        { text: "with tiny wings", emoji: "🪽" },
+        { text: "in a superhero cape", emoji: "🦸‍♀️" },
+        { text: "holding ice cream", emoji: "🍦" },
+        { text: "in pyjamas", emoji: "😴" },
+        { text: "surfing", emoji: "🏄" },
+        { text: "with a magic wand", emoji: "⭐" },
+      ];
+
+      // Audio context for sounds
+      let audioCtx;
+
+      function initAudio() {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      }
+
+      function playTick() {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = 800 + Math.random() * 400;
+        osc.type = "square";
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialDecayTo &&
+          gain.gain.exponentialDecayTo(0.001, audioCtx.currentTime + 0.05);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.05);
+      }
+
+      function playWin() {
+        if (!audioCtx) return;
+        const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+        notes.forEach((freq, i) => {
+          setTimeout(() => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = freq;
+            osc.type = "sine";
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(
+              0.001,
+              audioCtx.currentTime + 0.3,
+            );
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.3);
+          }, i * 100);
+        });
+      }
+
+      function playLeverSound() {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+        osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+        osc.type = "sawtooth";
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.2);
+      }
+
+      // Create stars background
+      function createStars() {
+        const container = document.getElementById("stars");
+        const emojis = ["⭐", "✨", "💫", "🌟", "💖", "💜", "💙", "🩷", "🩵"];
+        for (let i = 0; i < 30; i++) {
+          const star = document.createElement("div");
+          star.className = "star";
+          star.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+          star.style.left = Math.random() * 100 + "%";
+          star.style.top = Math.random() * 100 + "%";
+          star.style.animationDelay = Math.random() * 2 + "s";
+          star.style.fontSize = 15 + Math.random() * 15 + "px";
+          container.appendChild(star);
+        }
+      }
+
+      // Create confetti
+      function createConfetti() {
+        const container = document.getElementById("confetti");
+        container.innerHTML = "";
+        const colours = [
+          "#ff6b6b",
+          "#feca57",
+          "#48dbfb",
+          "#ff9ff3",
+          "#1dd1a1",
+          "#fdcb6e",
+          "#6c5ce7",
+          "#fd79a8",
+        ];
+        const shapes = ["❤️", "⭐", "🌟", "💖", "🎉", "✨", "🩷", "💜"];
+
+        for (let i = 0; i < 50; i++) {
+          const piece = document.createElement("div");
+          piece.className = "confetti-piece";
+          piece.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+          piece.style.left = Math.random() * 100 + "%";
+          piece.style.animationDelay = Math.random() * 0.5 + "s";
+          piece.style.fontSize = 15 + Math.random() * 20 + "px";
+          container.appendChild(piece);
+        }
+
+        setTimeout(() => {
+          container.innerHTML = "";
+        }, 3500);
+      }
+
+      // Initialize reels
+      let reelHeight;
+      let isSpinning = false;
+
+      function initReels() {
+        const reelElement = document.querySelector(".reel");
+        reelHeight = reelElement.offsetHeight;
+
+        populateReel("strip1", subjects);
+        populateReel("strip2", settings);
+        populateReel("strip3", qualifiers);
+      }
+
+      function populateReel(stripId, items) {
+        const strip = document.getElementById(stripId);
+        strip.innerHTML = "";
+
+        // Add items multiple times for smooth looping
+        for (let repeat = 0; repeat < 5; repeat++) {
+          items.forEach((item) => {
+            const div = document.createElement("div");
+            div.className = "reel-item";
+            div.innerHTML = `<span class="emoji">${item.emoji}</span><span>${item.text}</span>`;
+            strip.appendChild(div);
+          });
+        }
+      }
+
+      function getRandomIndex(max) {
+        return Math.floor(Math.random() * max);
+      }
+
+      let spinCount = 0;
+
+      async function spin() {
+        if (isSpinning) return;
+
+        initAudio();
+        isSpinning = true;
+        spinCount++;
+
+        const handle = document.getElementById("handle");
+        const result = document.getElementById("result");
+
+        // Animate handle
+        handle.classList.add("pulled");
+        playLeverSound();
+
+        setTimeout(() => {
+          handle.classList.remove("pulled");
+        }, 300);
+
+        result.textContent = "✨ Spinning... ✨";
+        result.classList.add("spinning");
+
+        // Get random results
+        const subjectIndex = getRandomIndex(subjects.length);
+        const settingIndex = getRandomIndex(settings.length);
+        const qualifierIndex = getRandomIndex(qualifiers.length);
+
+        // Spin reels with different durations
+        await Promise.all([
+          spinReel("strip1", subjects, subjectIndex, 2000),
+          spinReel("strip2", settings, settingIndex, 2500),
+          spinReel("strip3", qualifiers, qualifierIndex, 3000),
+        ]);
+
+        // Show result
+        result.classList.remove("spinning");
+        const subject = subjects[subjectIndex];
+        const setting = settings[settingIndex];
+        const qualifier = qualifiers[qualifierIndex];
+
+        result.innerHTML = `${subject.emoji} <strong>${subject.text}</strong> ${setting.text} ${setting.emoji} ${qualifier.text} ${qualifier.emoji}`;
+
+        playWin();
+        createConfetti();
+
+        isSpinning = false;
+      }
+
+      function spinReel(stripId, items, targetIndex, duration) {
+        return new Promise((resolve) => {
+          const strip = document.getElementById(stripId);
+          const itemHeight = reelHeight;
+          const totalItems = items.length;
+
+          // Calculate spins (at least 3 full rotations plus target)
+          const fullSpins = 3;
+          const targetPosition =
+            (fullSpins * totalItems + targetIndex) * itemHeight;
+
+          let currentPos = 0;
+          const startTime = Date.now();
+          let lastTickTime = 0;
+
+          function animate() {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Easing function for natural slowdown
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+
+            currentPos = targetPosition * easeOut;
+            strip.style.transform = `translateY(-${currentPos}px)`;
+
+            // Play tick sound periodically
+            const tickInterval = 50 + progress * 150; // Slow down ticks as it stops
+            if (elapsed - lastTickTime > tickInterval && progress < 0.95) {
+              playTick();
+              lastTickTime = elapsed;
+            }
+
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              // Snap to exact position
+              const finalPos = targetIndex * itemHeight;
+              strip.style.transform = `translateY(-${finalPos}px)`;
+              playTick();
+              resolve();
+            }
+          }
+
+          animate();
+        });
+      }
+
+      // Initialize
+      window.addEventListener("load", () => {
+        createStars();
+        initReels();
+      });
+
+      window.addEventListener("resize", () => {
+        const reelElement = document.querySelector(".reel");
+        reelHeight = reelElement.offsetHeight;
+      });
+    </script>
+  </body>
+</html>
