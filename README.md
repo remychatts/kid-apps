@@ -1,4 +1,6 @@
-# Alyx's Apps
+# Kid Apps
+
+Everything here is vibe-coded.
 
 A monorepo for six playful, family-friendly web apps and the catalogue that links them together. Every app is independently runnable and installable, while one root build assembles the complete static GitHub Pages site.
 

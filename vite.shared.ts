@@ -35,8 +35,8 @@ const registry = JSON.parse(
 ) as RegistryApp[];
 const catalogue: RegistryApp = {
   id: "catalog",
-  title: "Alyx's Apps",
-  shortName: "Alyx's Apps",
+  title: "Kid Apps",
+  shortName: "Kid Apps",
   description: "A collection of playful, family-friendly web apps.",
   themeColour: "#07182d",
   backgroundColour: "#f3fbff",

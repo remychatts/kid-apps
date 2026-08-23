@@ -5,7 +5,11 @@ import "./styles.css";
 const root = document.querySelector<HTMLDivElement>("#root");
 if (!root) throw new Error("Catalogue root element is missing");
 
-const cards = apps
+// Convert the registry's month-and-year labels into sortable timestamps.
+const appTimestamp = (date: string) => Date.parse(`1 ${date}`);
+
+const cards = [...apps]
+  .sort((left, right) => appTimestamp(right.date) - appTimestamp(left.date))
   .map(
     (app) => `
       <a class="app-card" href="./${app.id}/" style="--accent: ${app.themeColour}">
@@ -26,7 +30,7 @@ root.innerHTML = `
     <header class="hero">
       <div class="hero-mark" aria-hidden="true">✨</div>
       <p class="eyebrow">Pick something playful</p>
-      <h1>Alyx's Apps</h1>
+      <h1>Kid Apps</h1>
       <p class="intro">Games, creative prompts and curious visual experiments for the whole family.</p>
     </header>
     <section class="app-grid" aria-label="Apps">${cards}</section>
