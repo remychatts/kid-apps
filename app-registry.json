@@ -1,0 +1,123 @@
+[
+  {
+    "id": "drawing",
+    "title": "Drawing Prompt Machine",
+    "shortName": "Drawing",
+    "description": "Spin a colourful prompt machine for a fun new drawing challenge.",
+    "date": "January 2026",
+    "emoji": "🎨",
+    "themeColour": "#6c5ce7",
+    "backgroundColour": "#f8f4f9",
+    "orientation": "any",
+    "icons": [
+      {
+        "src": "icon.svg",
+        "sizes": "any",
+        "type": "image/svg+xml",
+        "purpose": "any maskable"
+      }
+    ]
+  },
+  {
+    "id": "imposter-game",
+    "title": "Imposter!",
+    "shortName": "Imposter",
+    "description": "A pass-the-phone secret-word game for three to eight players.",
+    "date": "July 2026",
+    "emoji": "🎭",
+    "themeColour": "#25104a",
+    "backgroundColour": "#25104a",
+    "orientation": "portrait",
+    "icons": [
+      {
+        "src": "icon.svg",
+        "sizes": "any",
+        "type": "image/svg+xml",
+        "purpose": "any maskable"
+      }
+    ]
+  },
+  {
+    "id": "jungle-snake",
+    "title": "Jungle Baby Snake Rescue",
+    "shortName": "Jungle Snake",
+    "description": "Guide a purple snake through the jungle to feed and protect the babies.",
+    "date": "April 2026",
+    "emoji": "🐍",
+    "themeColour": "#143018",
+    "backgroundColour": "#112c14",
+    "orientation": "any",
+    "icons": [
+      { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+      {
+        "src": "icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+      }
+    ]
+  },
+  {
+    "id": "pet-chooser",
+    "title": "Choose Your Perfect Pet",
+    "shortName": "Pet Chooser",
+    "description": "Meet a cast of pets and discover the companion whose personality suits you.",
+    "date": "December 2025",
+    "emoji": "🐾",
+    "themeColour": "#1a1a2e",
+    "backgroundColour": "#1a1a2e",
+    "orientation": "any",
+    "icons": [
+      {
+        "src": "pet-creator-icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "pet-creator-icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+      }
+    ]
+  },
+  {
+    "id": "rounding-game",
+    "title": "Rounding Rally",
+    "shortName": "Rounding Rally",
+    "description": "Build an approximate team and practise visual estimation and rounding.",
+    "date": "August 2026",
+    "emoji": "🎲",
+    "themeColour": "#07182d",
+    "backgroundColour": "#8ee9ff",
+    "orientation": "any",
+    "icons": [
+      { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+      {
+        "src": "icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+      }
+    ]
+  },
+  {
+    "id": "snake-species-visualiser",
+    "title": "Snake Species Visualiser",
+    "shortName": "Snake Species",
+    "description": "Turn snake-species statistics into a hands-on grid of colourful squares.",
+    "date": "April 2026",
+    "emoji": "🔬",
+    "themeColour": "#0f172a",
+    "backgroundColour": "#0f172a",
+    "orientation": "any",
+    "icons": [
+      {
+        "src": "icon.svg",
+        "sizes": "any",
+        "type": "image/svg+xml",
+        "purpose": "any maskable"
+      }
+    ]
+  }
+]

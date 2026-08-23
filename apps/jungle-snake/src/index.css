@@ -1,0 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=Chewy&family=Nunito:wght@400;700;800&display=swap");
+
+:root {
+  font-family: "Nunito", "Chewy", "Comic Sans MS", cursive, sans-serif;
+  color: #fffdff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(9, 35, 16, 0.6), rgba(8, 25, 12, 0.74)), #0e3d1d;
+}

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en-GB" style="background: #25104a">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#25104a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Imposter" />
+    <link rel="apple-touch-icon" href="./icon.svg" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <title>Imposter!</title>
+  </head>
+  <body style="margin: 0; background: #25104a">
+    <div id="root" style="min-height: 100vh; background: #25104a">
+      <div
+        style="
+          min-height: 100vh;
+          display: grid;
+          place-content: center;
+          gap: 14px;
+          color: white;
+          text-align: center;
+          font:
+            700 20px ui-rounded,
+            system-ui;
+        "
+      >
+        <img
+          src="./icon.svg"
+          alt=""
+          width="80"
+          height="80"
+          style="margin: auto"
+        />
+        <span>Loading...</span>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

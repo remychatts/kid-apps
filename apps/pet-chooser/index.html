@@ -1,0 +1,2169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Pet Chooser" />
+    <meta name="theme-color" content="#1a1a2e" />
+    <link rel="apple-touch-icon" href="pet-creator-icon-180.png" />
+    <title>🐾 Choose Your Perfect Pet!</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-gradient-1: #1a1a2e;
+        --bg-gradient-2: #16213e;
+        --bg-gradient-3: #0f3460;
+        --accent-pink: #ff6b9d;
+        --accent-yellow: #ffd93d;
+        --accent-cyan: #6bcfff;
+        --accent-green: #6bff9d;
+        --accent-purple: #a15fb6;
+        --card-bg: rgba(255, 255, 255, 0.08);
+        --text-primary: #ffffff;
+        --text-secondary: #b8c5d6;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        /* Prevent zoom on double-tap */
+        touch-action: manipulation;
+      }
+
+      html {
+        /* Prevent pinch zoom */
+        touch-action: pan-x pan-y;
+      }
+
+      body {
+        font-family: "Nunito", sans-serif;
+        background: linear-gradient(
+          135deg,
+          var(--bg-gradient-1) 0%,
+          var(--bg-gradient-2) 50%,
+          var(--bg-gradient-3) 100%
+        );
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
+        overflow-x: hidden;
+        color: var(--text-primary);
+        /* Prevent text selection on long press */
+        -webkit-user-select: none;
+        user-select: none;
+        /* Safe area for notch devices */
+        padding: env(safe-area-inset-top) env(safe-area-inset-right)
+          env(safe-area-inset-bottom) env(safe-area-inset-left);
+      }
+
+      /* Allow text selection in personality input */
+      .personality-input {
+        -webkit-user-select: text;
+        user-select: text;
+      }
+
+      /* Animated background stars */
+      .stars {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 0;
+      }
+
+      .star {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: white;
+        border-radius: 50%;
+        animation: twinkle 2s infinite ease-in-out;
+      }
+
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.3;
+          transform: scale(1);
+        }
+
+        50% {
+          opacity: 1;
+          transform: scale(1.5);
+        }
+      }
+
+      /* Floating particles */
+      .particle {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1;
+        animation: float 6s infinite ease-in-out;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0) rotate(0deg);
+        }
+
+        50% {
+          transform: translateY(-30px) rotate(180deg);
+        }
+      }
+
+      /* Main container */
+      .container {
+        position: relative;
+        z-index: 10;
+        padding: 2rem;
+        min-height: 100vh;
+      }
+
+      /* Header */
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+        animation: slideDown 0.8s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-50px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .title {
+        font-family: "Fredoka One", cursive;
+        font-size: clamp(2.5rem, 8vw, 5rem);
+        background: linear-gradient(
+          135deg,
+          var(--accent-pink),
+          var(--accent-yellow),
+          var(--accent-cyan)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 0 0 60px rgba(255, 107, 157, 0.5);
+        margin-bottom: 0.5rem;
+        animation: titlePulse 3s infinite ease-in-out;
+      }
+
+      @keyframes titlePulse {
+        0%,
+        100% {
+          filter: brightness(1);
+        }
+
+        50% {
+          filter: brightness(1.2);
+        }
+      }
+
+      .subtitle {
+        font-size: 1.3rem;
+        color: var(--text-secondary);
+        font-weight: 700;
+      }
+
+      /* Pet grid */
+      .pet-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* Pet card */
+      .pet-card {
+        background: var(--card-bg);
+        border-radius: 24px;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 3px solid transparent;
+        position: relative;
+        overflow: hidden;
+        animation: cardAppear 0.6s ease-out backwards;
+      }
+
+      .pet-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          var(--accent-pink),
+          var(--accent-cyan)
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+        z-index: -1;
+      }
+
+      .pet-card:hover {
+        transform: translateY(-10px) scale(1.05);
+        border-color: var(--accent-yellow);
+        box-shadow: 0 20px 60px rgba(255, 215, 61, 0.3);
+      }
+
+      .pet-card:hover::before {
+        opacity: 0.1;
+      }
+
+      .pet-card:active {
+        transform: translateY(-5px) scale(0.98);
+      }
+
+      .pet-image-container {
+        position: relative;
+        width: 180px;
+        height: 186px;
+        margin: 0 auto 1rem;
+        border-radius: 16px;
+        overflow: hidden;
+        background: radial-gradient(
+          circle at center,
+          rgba(161, 95, 182, 0.3),
+          transparent
+        );
+      }
+
+      .pet-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+        image-rendering: pixelated;
+      }
+
+      .pet-card:hover .pet-image {
+        transform: scale(1.1);
+        animation: bounce 0.5s ease infinite;
+      }
+
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: scale(1.1) translateY(0);
+        }
+
+        50% {
+          transform: scale(1.1) translateY(-8px);
+        }
+      }
+
+      .pet-name {
+        font-family: "Fredoka One", cursive;
+        font-size: 1.5rem;
+        text-align: center;
+        text-transform: capitalize;
+        color: var(--accent-yellow);
+        text-shadow: 0 0 20px rgba(255, 215, 61, 0.5);
+      }
+
+      /* Choose button on card */
+      .choose-btn {
+        display: block;
+        width: 100%;
+        margin-top: 1rem;
+        padding: 0.8rem 1.5rem;
+        font-family: "Fredoka One", cursive;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-pink),
+          var(--accent-purple)
+        );
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .choose-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 30px rgba(255, 107, 157, 0.5);
+      }
+
+      /* Overlay base styles */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 100;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.5s ease;
+        overflow-y: auto;
+        padding: 2rem;
+      }
+
+      .overlay.active {
+        display: flex;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
+
+      .overlay-content {
+        text-align: center;
+        animation: zoomIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        max-width: 600px;
+        width: 100%;
+      }
+
+      @keyframes zoomIn {
+        from {
+          opacity: 0;
+          transform: scale(0.3);
+        }
+
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .celebration-title {
+        font-family: "Fredoka One", cursive;
+        font-size: clamp(1.8rem, 5vw, 3rem);
+        background: linear-gradient(
+          135deg,
+          var(--accent-yellow),
+          var(--accent-pink),
+          var(--accent-cyan)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+        animation: rainbowShift 2s infinite linear;
+      }
+
+      @keyframes rainbowShift {
+        0% {
+          filter: hue-rotate(0deg);
+        }
+
+        100% {
+          filter: hue-rotate(360deg);
+        }
+      }
+
+      .chosen-pet-container {
+        position: relative;
+        width: 250px;
+        height: 258px;
+        margin: 1.5rem auto;
+      }
+
+      .chosen-pet-glow {
+        position: absolute;
+        inset: -30px;
+        background: radial-gradient(
+          circle,
+          var(--accent-purple) 0%,
+          transparent 70%
+        );
+        animation: glowPulse 2s infinite ease-in-out;
+        border-radius: 50%;
+      }
+
+      @keyframes glowPulse {
+        0%,
+        100% {
+          opacity: 0.5;
+          transform: scale(1);
+        }
+
+        50% {
+          opacity: 0.8;
+          transform: scale(1.1);
+        }
+      }
+
+      .chosen-pet-canvas {
+        position: relative;
+        width: 250px;
+        height: 258px;
+        image-rendering: pixelated;
+        z-index: 1;
+      }
+
+      /* Canvas for color manipulation */
+      .color-canvas {
+        display: none;
+      }
+
+      /* Color customisation section */
+      .color-section {
+        margin-top: 1.5rem;
+        animation: slideUp 0.5s ease-out 0.3s backwards;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .section-title {
+        font-family: "Fredoka One", cursive;
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+        color: var(--accent-cyan);
+      }
+
+      .color-palette {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 1rem;
+      }
+
+      .color-swatch {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .color-swatch:hover {
+        transform: scale(1.2);
+        box-shadow: 0 0 20px currentColor;
+      }
+
+      .color-swatch.selected {
+        border-color: white;
+        transform: scale(1.15);
+        box-shadow: 0 0 30px currentColor;
+      }
+
+      .color-swatch.selected::after {
+        content: "✓";
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: white;
+        text-shadow: 0 0 5px black;
+      }
+
+      /* Custom color picker */
+      .custom-color-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .custom-color-label {
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+
+      .custom-color-input {
+        width: 50px;
+        height: 35px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        background: transparent;
+      }
+
+      /* Personality input */
+      .personality-container {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 1rem;
+        max-width: 400px;
+        margin: 0 auto 1rem;
+      }
+
+      .personality-label {
+        display: block;
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        color: var(--accent-yellow);
+      }
+
+      .personality-input {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.3);
+        color: var(--text-primary);
+        font-family: "Nunito", sans-serif;
+        font-size: 1rem;
+        resize: none;
+        transition:
+          border-color 0.3s,
+          box-shadow 0.3s;
+      }
+
+      .personality-input:focus {
+        outline: none;
+        border-color: var(--accent-cyan);
+        box-shadow: 0 0 20px rgba(107, 207, 255, 0.3);
+      }
+
+      .personality-input::placeholder {
+        color: var(--text-secondary);
+        opacity: 0.7;
+      }
+
+      /* Button styles */
+      .btn-secondary {
+        padding: 0.8rem 2rem;
+        font-family: "Fredoka One", cursive;
+        font-size: 1rem;
+        border: 3px solid var(--accent-cyan);
+        border-radius: 50px;
+        background: transparent;
+        color: var(--accent-cyan);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 0.5rem;
+      }
+
+      .btn-secondary:hover {
+        background: var(--accent-cyan);
+        color: var(--bg-gradient-1);
+        transform: scale(1.05);
+        box-shadow: 0 0 30px rgba(107, 207, 255, 0.5);
+      }
+
+      .btn-primary {
+        padding: 1rem 2.5rem;
+        font-family: "Fredoka One", cursive;
+        font-size: 1.2rem;
+        border: none;
+        border-radius: 50px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-pink),
+          var(--accent-yellow)
+        );
+        color: var(--bg-gradient-1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .btn-primary:hover {
+        transform: scale(1.08);
+        box-shadow: 0 0 40px rgba(255, 107, 157, 0.6);
+      }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+
+      /* Hero screen */
+      .hero-overlay {
+        background: linear-gradient(
+          135deg,
+          #0a0a1a 0%,
+          #1a0a2e 30%,
+          #0a1a2e 70%,
+          #0a0a1a 100%
+        );
+      }
+
+      .hero-content {
+        animation: heroAppear 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      @keyframes heroAppear {
+        from {
+          opacity: 0;
+          transform: scale(0.5) translateY(50px);
+        }
+
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      .hero-backdrop {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .hero-ray {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 200%;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--accent-yellow),
+          transparent
+        );
+        transform-origin: 0 50%;
+        animation: rayRotate 20s linear infinite;
+        opacity: 0.3;
+      }
+
+      @keyframes rayRotate {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .hero-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border: 3px solid var(--accent-pink);
+        border-radius: 50%;
+        animation: ringPulse 2s ease-out infinite;
+        opacity: 0;
+      }
+
+      @keyframes ringPulse {
+        0% {
+          width: 100px;
+          height: 100px;
+          opacity: 0.8;
+        }
+
+        100% {
+          width: 600px;
+          height: 600px;
+          opacity: 0;
+        }
+      }
+
+      .hero-title {
+        font-family: "Fredoka One", cursive;
+        font-size: clamp(2rem, 8vw, 4.5rem);
+        background: linear-gradient(
+          135deg,
+          var(--accent-yellow) 0%,
+          var(--accent-pink) 50%,
+          var(--accent-cyan) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+        animation: heroTitleGlow 2s ease-in-out infinite alternate;
+        position: relative;
+        z-index: 1;
+      }
+
+      @keyframes heroTitleGlow {
+        from {
+          filter: brightness(1) drop-shadow(0 0 20px rgba(255, 215, 61, 0.5));
+        }
+
+        to {
+          filter: brightness(1.3) drop-shadow(0 0 40px rgba(255, 107, 157, 0.8));
+        }
+      }
+
+      .hero-subtitle {
+        font-size: 1.5rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-pet-name {
+        color: var(--accent-yellow);
+        font-weight: 900;
+        text-transform: capitalize;
+      }
+
+      .hero-pet-container {
+        position: relative;
+        width: 400px;
+        height: 413px;
+        margin: 2rem auto;
+        z-index: 1;
+      }
+
+      .hero-pet-glow {
+        position: absolute;
+        inset: -60px;
+        border-radius: 50%;
+        animation: heroGlow 3s ease-in-out infinite;
+      }
+
+      @keyframes heroGlow {
+        0%,
+        100% {
+          opacity: 0.6;
+          transform: scale(1);
+          filter: blur(30px);
+        }
+
+        50% {
+          opacity: 0.9;
+          transform: scale(1.15);
+          filter: blur(40px);
+        }
+      }
+
+      .hero-pet-canvas {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        image-rendering: pixelated;
+        z-index: 1;
+        animation: heroPetFloat 3s ease-in-out infinite;
+      }
+
+      @keyframes heroPetFloat {
+        0%,
+        100% {
+          transform: translateY(0) rotate(-2deg);
+        }
+
+        50% {
+          transform: translateY(-15px) rotate(2deg);
+        }
+      }
+
+      .hero-sparkles {
+        position: absolute;
+        inset: -100px;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      .hero-sparkle {
+        position: absolute;
+        font-size: 24px;
+        animation: heroSparkle 2s ease-in-out infinite;
+      }
+
+      @keyframes heroSparkle {
+        0%,
+        100% {
+          opacity: 0.3;
+          transform: scale(0.8);
+        }
+
+        50% {
+          opacity: 1;
+          transform: scale(1.2);
+        }
+      }
+
+      /* Hero personality display */
+      .hero-personality {
+        background: var(--card-bg);
+        border-radius: 20px;
+        padding: 1.2rem 1.5rem;
+        max-width: 500px;
+        margin: 0 auto 2rem;
+        position: relative;
+        z-index: 1;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .hero-personality:empty {
+        display: none;
+      }
+
+      .hero-personality-label {
+        font-size: 0.9rem;
+        color: var(--accent-cyan);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+
+      .hero-personality-text {
+        font-size: 1.1rem;
+        color: var(--text-primary);
+        font-style: italic;
+        line-height: 1.5;
+      }
+
+      /* Start again button - big clickable area */
+      .start-again-container {
+        position: relative;
+        z-index: 1;
+        padding: 1rem;
+        cursor: pointer;
+        border-radius: 60px;
+        transition: transform 0.3s ease;
+      }
+
+      .start-again-container:hover {
+        transform: scale(1.05);
+      }
+
+      .start-again-container:active {
+        transform: scale(0.98);
+      }
+
+      .btn-start-again {
+        padding: 1.2rem 3rem;
+        font-family: "Fredoka One", cursive;
+        font-size: 1.4rem;
+        border: none;
+        border-radius: 60px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-cyan),
+          var(--accent-green)
+        );
+        color: var(--bg-gradient-1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        box-shadow: 0 10px 40px rgba(107, 207, 255, 0.4);
+      }
+
+      .btn-start-again:hover {
+        box-shadow: 0 15px 50px rgba(107, 255, 157, 0.5);
+      }
+
+      /* Confetti */
+      .confetti {
+        position: fixed;
+        width: 15px;
+        height: 15px;
+        pointer-events: none;
+        z-index: 1000;
+        animation: confettiFall 3s linear forwards;
+      }
+
+      @keyframes confettiFall {
+        0% {
+          opacity: 1;
+          transform: translateY(-100vh) rotate(0deg);
+        }
+
+        100% {
+          opacity: 0;
+          transform: translateY(100vh) rotate(720deg);
+        }
+      }
+
+      /* Sparkle effect */
+      .sparkle {
+        position: fixed;
+        width: 20px;
+        height: 20px;
+        pointer-events: none;
+        z-index: 1000;
+        animation: sparkleAnim 0.6s ease-out forwards;
+      }
+
+      @keyframes sparkleAnim {
+        0% {
+          opacity: 1;
+          transform: scale(0) rotate(0deg);
+        }
+
+        50% {
+          opacity: 1;
+          transform: scale(1.5) rotate(180deg);
+        }
+
+        100% {
+          opacity: 0;
+          transform: scale(0) rotate(360deg);
+        }
+      }
+
+      /* Sound toggle */
+      .sound-toggle {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--card-bg);
+        border: 2px solid var(--accent-pink);
+        cursor: pointer;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 200;
+        transition: all 0.3s ease;
+      }
+
+      .sound-toggle:hover {
+        transform: scale(1.1);
+        background: var(--accent-pink);
+      }
+
+      /* Instructions */
+      .instructions {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        animation: pulse 2s infinite ease-in-out;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.7;
+        }
+
+        50% {
+          opacity: 1;
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        .pet-card {
+          padding: 1rem;
+        }
+
+        .pet-image-container {
+          width: 140px;
+          height: 145px;
+        }
+
+        .chosen-pet-container {
+          width: 200px;
+          height: 207px;
+        }
+
+        .chosen-pet-canvas {
+          width: 200px;
+          height: 207px;
+        }
+
+        .hero-pet-container {
+          width: 280px;
+          height: 289px;
+        }
+
+        .color-swatch {
+          width: 35px;
+          height: 35px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Animated stars background -->
+    <div class="stars" id="stars"></div>
+
+    <!-- Sound toggle -->
+    <button class="sound-toggle" id="soundToggle" title="Toggle Sound">
+      🔊
+    </button>
+
+    <!-- Main container - Selection screen -->
+    <div class="container" id="selectionScreen">
+      <header class="header">
+        <h1 class="title">Choose Your Pet!</h1>
+        <p class="subtitle">Every pet needs a loving home 💖</p>
+      </header>
+
+      <p class="instructions">Click on a pet to choose your new friend!</p>
+
+      <div class="pet-grid" id="petGrid">
+        <!-- Pet cards will be generated here -->
+      </div>
+    </div>
+
+    <!-- Customisation overlay -->
+    <div class="overlay" id="customiseOverlay">
+      <div class="overlay-content">
+        <h2 class="celebration-title" id="celebrationTitle">
+          🎉 You chose <span id="chosenPetName"></span>! 🎉
+        </h2>
+
+        <div class="chosen-pet-container">
+          <div class="chosen-pet-glow" id="petGlow"></div>
+          <canvas
+            class="chosen-pet-canvas"
+            id="chosenPetCanvas"
+            width="250"
+            height="258"
+          ></canvas>
+        </div>
+
+        <div class="color-section">
+          <h3 class="section-title">✨ Customise Coat Colour ✨</h3>
+
+          <div class="color-palette" id="colorPalette">
+            <!-- Color swatches will be generated here -->
+          </div>
+
+          <div class="custom-color-container">
+            <span class="custom-color-label">Or pick any colour:</span>
+            <input
+              type="color"
+              class="custom-color-input"
+              id="customColorPicker"
+              value="#ff6b9d"
+            />
+          </div>
+
+          <div class="personality-container">
+            <label class="personality-label" for="personalityInput"
+              >✏️ Describe their personality:</label
+            >
+            <textarea
+              class="personality-input"
+              id="personalityInput"
+              placeholder="e.g. Loves cuddles, chases butterflies, sleeps all day..."
+              rows="3"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button class="btn-secondary" id="backBtn">← Choose Another</button>
+          <button class="btn-primary" id="finishBtn">Finish ✨</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero overlay - Final reveal -->
+    <div class="overlay hero-overlay" id="heroOverlay">
+      <div class="hero-backdrop" id="heroBackdrop">
+        <!-- Rays and rings generated by JS -->
+      </div>
+      <div class="overlay-content hero-content">
+        <h1 class="hero-title">Meet Your New Friend!</h1>
+        <p class="hero-subtitle">
+          Say hello to <span class="hero-pet-name" id="heroPetName"></span>!
+        </p>
+
+        <div class="hero-pet-container">
+          <div class="hero-pet-glow" id="heroGlow"></div>
+          <canvas
+            class="hero-pet-canvas"
+            id="heroPetCanvas"
+            width="400"
+            height="413"
+          ></canvas>
+          <div class="hero-sparkles" id="heroSparkles">
+            <!-- Sparkles generated by JS -->
+          </div>
+        </div>
+
+        <div class="hero-personality" id="heroPersonality">
+          <!-- Personality will be shown here -->
+        </div>
+
+        <div class="start-again-container" id="startAgainContainer">
+          <button class="btn-start-again" id="startAgainBtn">
+            🔄 Start Again
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden canvas for image processing -->
+    <canvas class="color-canvas" id="colorCanvas"></canvas>
+
+    <script>
+      // Pet data
+      const pets = [
+        { name: "bandit", file: "pets/bandit.png" },
+        { name: "echo", file: "pets/echo.png" },
+        { name: "pipsqueak", file: "pets/pipsqueak.png" },
+        { name: "professor", file: "pets/professor.png" },
+        { name: "purrfect", file: "pets/purrfect.png" },
+      ];
+
+      // Colour palette options
+      const colourPalette = [
+        "#ff6b9d", // Pink
+        "#ff9f43", // Orange
+        "#ffd93d", // Yellow
+        "#6bff9d", // Green
+        "#6bcfff", // Cyan
+        "#a855f7", // Purple
+        "#ef4444", // Red
+        "#f97316", // Coral
+        "#84cc16", // Lime
+        "#06b6d4", // Teal
+        "#8b5cf6", // Violet
+      ];
+
+      // Reference purple colour (HSV)
+      const REFERENCE_PURPLE = { r: 161, g: 95, b: 182 };
+      const REFERENCE_HSV = rgbToHsv(
+        REFERENCE_PURPLE.r,
+        REFERENCE_PURPLE.g,
+        REFERENCE_PURPLE.b,
+      );
+
+      // State
+      let soundEnabled = true;
+      let audioContext = null;
+      let chosenPet = null;
+      let originalImageData = null;
+      let loadedImage = null; // Store the loaded image for fallback
+      let selectedColour = colourPalette[0];
+
+      // Initialize audio context on user interaction
+      function initAudio() {
+        if (!audioContext) {
+          audioContext = new (
+            window.AudioContext || window.webkitAudioContext
+          )();
+        }
+      }
+
+      // Sound effects using Web Audio API
+      function playSound(type) {
+        if (!soundEnabled || !audioContext) return;
+
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        switch (type) {
+          case "hover":
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(
+              1000,
+              audioContext.currentTime + 0.1,
+            );
+            oscillator.type = "sine";
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(
+              0.01,
+              audioContext.currentTime + 0.1,
+            );
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.1);
+            break;
+
+          case "click":
+            oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(
+              600,
+              audioContext.currentTime + 0.15,
+            );
+            oscillator.type = "square";
+            gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(
+              0.01,
+              audioContext.currentTime + 0.15,
+            );
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.15);
+            break;
+
+          case "celebrate":
+            // Play a little melody
+            const notes = [523, 659, 784, 1047];
+            notes.forEach((freq, i) => {
+              const osc = audioContext.createOscillator();
+              const gain = audioContext.createGain();
+              osc.connect(gain);
+              gain.connect(audioContext.destination);
+              osc.frequency.setValueAtTime(
+                freq,
+                audioContext.currentTime + i * 0.15,
+              );
+              osc.type = "sine";
+              gain.gain.setValueAtTime(
+                0.2,
+                audioContext.currentTime + i * 0.15,
+              );
+              gain.gain.exponentialRampToValueAtTime(
+                0.01,
+                audioContext.currentTime + i * 0.15 + 0.3,
+              );
+              osc.start(audioContext.currentTime + i * 0.15);
+              osc.stop(audioContext.currentTime + i * 0.15 + 0.3);
+            });
+            break;
+
+          case "fanfare":
+            // Epic fanfare for hero reveal
+            const fanfareNotes = [392, 523, 659, 784, 659, 784, 1047];
+            const fanfareDurations = [0.15, 0.15, 0.15, 0.3, 0.15, 0.15, 0.5];
+            let time = 0;
+            fanfareNotes.forEach((freq, i) => {
+              const osc = audioContext.createOscillator();
+              const gain = audioContext.createGain();
+              osc.connect(gain);
+              gain.connect(audioContext.destination);
+              osc.frequency.setValueAtTime(
+                freq,
+                audioContext.currentTime + time,
+              );
+              osc.type = "sine";
+              gain.gain.setValueAtTime(0.25, audioContext.currentTime + time);
+              gain.gain.exponentialRampToValueAtTime(
+                0.01,
+                audioContext.currentTime + time + fanfareDurations[i],
+              );
+              osc.start(audioContext.currentTime + time);
+              osc.stop(audioContext.currentTime + time + fanfareDurations[i]);
+              time += fanfareDurations[i] * 0.8;
+            });
+            break;
+
+          case "colourChange":
+            oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(
+              900,
+              audioContext.currentTime + 0.1,
+            );
+            oscillator.type = "triangle";
+            gainNode.gain.setValueAtTime(0.12, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(
+              0.01,
+              audioContext.currentTime + 0.15,
+            );
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.15);
+            break;
+
+          case "pop":
+            oscillator.frequency.setValueAtTime(1200, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(
+              100,
+              audioContext.currentTime + 0.1,
+            );
+            oscillator.type = "sine";
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(
+              0.01,
+              audioContext.currentTime + 0.1,
+            );
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.1);
+            break;
+        }
+      }
+
+      // RGB to HSV conversion
+      function rgbToHsv(r, g, b) {
+        r /= 255;
+        g /= 255;
+        b /= 255;
+
+        const max = Math.max(r, g, b);
+        const min = Math.min(r, g, b);
+        const diff = max - min;
+
+        let h = 0;
+        let s = max === 0 ? 0 : diff / max;
+        let v = max;
+
+        if (diff !== 0) {
+          switch (max) {
+            case r:
+              h = ((g - b) / diff + (g < b ? 6 : 0)) / 6;
+              break;
+            case g:
+              h = ((b - r) / diff + 2) / 6;
+              break;
+            case b:
+              h = ((r - g) / diff + 4) / 6;
+              break;
+          }
+        }
+
+        return { h: h * 360, s: s, v: v };
+      }
+
+      // HSV to RGB conversion
+      function hsvToRgb(h, s, v) {
+        h = h / 360;
+        let r, g, b;
+
+        const i = Math.floor(h * 6);
+        const f = h * 6 - i;
+        const p = v * (1 - s);
+        const q = v * (1 - f * s);
+        const t = v * (1 - (1 - f) * s);
+
+        switch (i % 6) {
+          case 0:
+            r = v;
+            g = t;
+            b = p;
+            break;
+          case 1:
+            r = q;
+            g = v;
+            b = p;
+            break;
+          case 2:
+            r = p;
+            g = v;
+            b = t;
+            break;
+          case 3:
+            r = p;
+            g = q;
+            b = v;
+            break;
+          case 4:
+            r = t;
+            g = p;
+            b = v;
+            break;
+          case 5:
+            r = v;
+            g = p;
+            b = q;
+            break;
+        }
+
+        return {
+          r: Math.round(r * 255),
+          g: Math.round(g * 255),
+          b: Math.round(b * 255),
+        };
+      }
+
+      // Hex to RGB
+      function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result
+          ? {
+              r: parseInt(result[1], 16),
+              g: parseInt(result[2], 16),
+              b: parseInt(result[3], 16),
+            }
+          : null;
+      }
+
+      // Calculate hue difference (accounting for circular nature)
+      function hueDifference(h1, h2) {
+        const diff = Math.abs(h1 - h2);
+        return Math.min(diff, 360 - diff);
+      }
+
+      // Recolour the pet image
+      function recolourPet(targetCanvas, newColourHex, hueTolerance) {
+        const ctx = targetCanvas.getContext("2d");
+        ctx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+
+        // If we don't have image data (CORS restriction), just draw the original image
+        if (!originalImageData) {
+          if (loadedImage) {
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(
+              loadedImage,
+              0,
+              0,
+              targetCanvas.width,
+              targetCanvas.height,
+            );
+          }
+          return;
+        }
+
+        // Create a copy of the original image data
+        const imageData = new ImageData(
+          new Uint8ClampedArray(originalImageData.data),
+          originalImageData.width,
+          originalImageData.height,
+        );
+
+        const newColour = hexToRgb(newColourHex);
+        const newHsv = rgbToHsv(newColour.r, newColour.g, newColour.b);
+
+        const data = imageData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const a = data[i + 3];
+
+          // Skip fully transparent pixels
+          if (a === 0) continue;
+
+          const hsv = rgbToHsv(r, g, b);
+
+          // Check if the hue is within tolerance of the reference purple
+          if (
+            hueDifference(hsv.h, REFERENCE_HSV.h) <= hueTolerance &&
+            hsv.s > 0.1
+          ) {
+            // Replace hue with new colour's hue, preserve saturation and value
+            const newRgb = hsvToRgb(newHsv.h, hsv.s, hsv.v);
+            data[i] = newRgb.r;
+            data[i + 1] = newRgb.g;
+            data[i + 2] = newRgb.b;
+          }
+        }
+
+        // Create a temporary canvas to draw the image data
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = originalImageData.width;
+        tempCanvas.height = originalImageData.height;
+        tempCanvas.getContext("2d").putImageData(imageData, 0, 0);
+
+        // Scale to fit the display canvas
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(
+          tempCanvas,
+          0,
+          0,
+          targetCanvas.width,
+          targetCanvas.height,
+        );
+      }
+
+      // Fixed hue tolerance for colour matching
+      const HUE_TOLERANCE = 15;
+
+      // Update the customisation preview
+      function updatePreview() {
+        const canvas = document.getElementById("chosenPetCanvas");
+        recolourPet(canvas, selectedColour, HUE_TOLERANCE);
+
+        // Update glow colour
+        document.getElementById("petGlow").style.background =
+          `radial-gradient(circle, ${selectedColour} 0%, transparent 70%)`;
+      }
+
+      // In-memory cache of pet data (personality + coat colour)
+      let petDataCache = null;
+
+      // Load default pet data from JSON file
+      async function loadDefaultPetData() {
+        try {
+          const response = await fetch("personalities.json");
+          if (response.ok) {
+            return await response.json();
+          }
+        } catch (e) {
+          console.warn("Could not load default pet data:", e);
+        }
+        return {};
+      }
+
+      // Normalize pet data - handle both string (legacy) and object formats
+      function normalizePetData(data) {
+        if (typeof data === "string") {
+          // Legacy format: just a personality string
+          return { personality: data, coatColour: null };
+        } else if (typeof data === "object" && data !== null) {
+          // New format: object with personality and coatColour
+          return {
+            personality: data.personality || "",
+            coatColour: data.coatColour || null,
+          };
+        }
+        return { personality: "", coatColour: null };
+      }
+
+      // Initialize pet data (load from localStorage or defaults)
+      async function initPetData() {
+        const stored = localStorage.getItem("petData");
+        if (stored) {
+          petDataCache = JSON.parse(stored);
+        } else {
+          // Try legacy format first
+          const legacyStored = localStorage.getItem("petPersonalities");
+          if (legacyStored) {
+            petDataCache = JSON.parse(legacyStored);
+          } else {
+            // Load defaults from JSON file
+            petDataCache = await loadDefaultPetData();
+          }
+          // Save to new localStorage key
+          if (Object.keys(petDataCache).length > 0) {
+            localStorage.setItem("petData", JSON.stringify(petDataCache));
+          }
+        }
+      }
+
+      // Save pet data to localStorage
+      function savePetData(petName, personality, coatColour) {
+        if (!petDataCache) petDataCache = {};
+        petDataCache[petName] = { personality, coatColour };
+        localStorage.setItem("petData", JSON.stringify(petDataCache));
+      }
+
+      // Save just personality (for auto-save on input)
+      function savePersonality(petName, personality) {
+        if (!petDataCache) petDataCache = {};
+        const existing = normalizePetData(petDataCache[petName]);
+        petDataCache[petName] = {
+          personality,
+          coatColour: existing.coatColour,
+        };
+        localStorage.setItem("petData", JSON.stringify(petDataCache));
+      }
+
+      // Save just coat colour (for auto-save on colour change)
+      function saveCoatColour(petName, coatColour) {
+        if (!petDataCache) petDataCache = {};
+        const existing = normalizePetData(petDataCache[petName]);
+        petDataCache[petName] = {
+          personality: existing.personality,
+          coatColour,
+        };
+        localStorage.setItem("petData", JSON.stringify(petDataCache));
+      }
+
+      // Load pet data from cache
+      function loadPetData(petName) {
+        if (!petDataCache) return { personality: "", coatColour: null };
+        return normalizePetData(petDataCache[petName]);
+      }
+
+      // Create stars background
+      function createStars() {
+        const starsContainer = document.getElementById("stars");
+        for (let i = 0; i < 100; i++) {
+          const star = document.createElement("div");
+          star.className = "star";
+          star.style.left = Math.random() * 100 + "%";
+          star.style.top = Math.random() * 100 + "%";
+          star.style.animationDelay = Math.random() * 2 + "s";
+          star.style.animationDuration = 1.5 + Math.random() * 1.5 + "s";
+          starsContainer.appendChild(star);
+        }
+      }
+
+      // Create floating particles
+      function createParticles() {
+        const colours = [
+          "var(--accent-pink)",
+          "var(--accent-yellow)",
+          "var(--accent-cyan)",
+          "var(--accent-green)",
+        ];
+        for (let i = 0; i < 15; i++) {
+          const particle = document.createElement("div");
+          particle.className = "particle";
+          particle.style.left = Math.random() * 100 + "%";
+          particle.style.top = Math.random() * 100 + "%";
+          particle.style.background =
+            colours[Math.floor(Math.random() * colours.length)];
+          particle.style.animationDelay = Math.random() * 6 + "s";
+          particle.style.opacity = 0.3 + Math.random() * 0.4;
+          document.body.appendChild(particle);
+        }
+      }
+
+      // Create hero backdrop effects
+      function createHeroBackdrop() {
+        const backdrop = document.getElementById("heroBackdrop");
+        backdrop.innerHTML = "";
+
+        // Create rotating rays
+        for (let i = 0; i < 12; i++) {
+          const ray = document.createElement("div");
+          ray.className = "hero-ray";
+          ray.style.transform = `rotate(${i * 30}deg)`;
+          ray.style.animationDelay = `${i * 0.5}s`;
+          ray.style.background = `linear-gradient(90deg, transparent, ${selectedColour}, transparent)`;
+          backdrop.appendChild(ray);
+        }
+
+        // Create pulsing rings
+        for (let i = 0; i < 3; i++) {
+          const ring = document.createElement("div");
+          ring.className = "hero-ring";
+          ring.style.animationDelay = `${i * 0.7}s`;
+          ring.style.borderColor = selectedColour;
+          backdrop.appendChild(ring);
+        }
+      }
+
+      // Create hero sparkles
+      function createHeroSparkles() {
+        const sparklesContainer = document.getElementById("heroSparkles");
+        sparklesContainer.innerHTML = "";
+
+        const sparkleChars = ["✦", "✧", "★", "✨", "⭐", "💫"];
+        const positions = [
+          { x: 10, y: 20 },
+          { x: 85, y: 15 },
+          { x: 5, y: 70 },
+          { x: 90, y: 65 },
+          { x: 50, y: 5 },
+          { x: 45, y: 90 },
+          { x: 15, y: 45 },
+          { x: 80, y: 50 },
+        ];
+
+        positions.forEach((pos, i) => {
+          const sparkle = document.createElement("div");
+          sparkle.className = "hero-sparkle";
+          sparkle.textContent = sparkleChars[i % sparkleChars.length];
+          sparkle.style.left = pos.x + "%";
+          sparkle.style.top = pos.y + "%";
+          sparkle.style.animationDelay = i * 0.25 + "s";
+          sparkle.style.color = ["#ffd93d", "#ff6b9d", "#6bcfff", "#6bff9d"][
+            i % 4
+          ];
+          sparklesContainer.appendChild(sparkle);
+        });
+      }
+
+      // Create confetti
+      function createConfetti() {
+        const colours = [
+          "#ff6b9d",
+          "#ffd93d",
+          "#6bcfff",
+          "#6bff9d",
+          "#a855f7",
+          "#ff9f43",
+        ];
+        const shapes = ["▲", "●", "■", "★", "♦", "♥"];
+
+        for (let i = 0; i < 100; i++) {
+          setTimeout(() => {
+            const confetti = document.createElement("div");
+            confetti.className = "confetti";
+            confetti.textContent =
+              shapes[Math.floor(Math.random() * shapes.length)];
+            confetti.style.left = Math.random() * 100 + "%";
+            confetti.style.color =
+              colours[Math.floor(Math.random() * colours.length)];
+            confetti.style.fontSize = 10 + Math.random() * 15 + "px";
+            confetti.style.animationDuration = 2 + Math.random() * 2 + "s";
+            document.body.appendChild(confetti);
+
+            setTimeout(() => confetti.remove(), 4000);
+          }, i * 25);
+        }
+      }
+
+      // Create sparkles at position
+      function createSparkle(x, y) {
+        const sparkle = document.createElement("div");
+        sparkle.className = "sparkle";
+        sparkle.textContent = "✦";
+        sparkle.style.left = x + "px";
+        sparkle.style.top = y + "px";
+        sparkle.style.color = ["#ffd93d", "#ff6b9d", "#6bcfff"][
+          Math.floor(Math.random() * 3)
+        ];
+        sparkle.style.fontSize = 15 + Math.random() * 15 + "px";
+        document.body.appendChild(sparkle);
+
+        setTimeout(() => sparkle.remove(), 600);
+      }
+
+      // Generate pet cards
+      async function generatePetCards() {
+        const grid = document.getElementById("petGrid");
+
+        for (let index = 0; index < pets.length; index++) {
+          const pet = pets[index];
+          const card = document.createElement("div");
+          card.className = "pet-card";
+          card.style.animationDelay = index * 0.1 + "s";
+
+          // Create canvas for pet image
+          const canvas = document.createElement("canvas");
+          canvas.className = "pet-image";
+          canvas.width = 180;
+          canvas.height = 186;
+          canvas.style.imageRendering = "pixelated";
+
+          card.innerHTML = `
+                    <div class="pet-image-container" id="pet-container-${pet.name}">
+                    </div>
+                    <h3 class="pet-name">${pet.name}</h3>
+                    <button class="choose-btn" data-pet="${pet.name}">Choose Me! 🐾</button>
+                `;
+
+          // Hover sound
+          card.addEventListener("mouseenter", (e) => {
+            initAudio();
+            playSound("hover");
+            createSparkle(e.clientX, e.clientY);
+          });
+
+          // Click handler for the entire card
+          card.addEventListener("click", () => {
+            playSound("click");
+            choosePet(pet);
+          });
+
+          grid.appendChild(card);
+
+          // Insert canvas into container
+          document
+            .getElementById(`pet-container-${pet.name}`)
+            .appendChild(canvas);
+
+          // Load and possibly recolor the pet image
+          await loadAndDisplayPetCard(pet, canvas);
+        }
+      }
+
+      // Load and display pet card with saved color if available
+      async function loadAndDisplayPetCard(pet, canvas) {
+        // Load saved pet data
+        const petData = loadPetData(pet.name);
+        const savedColor = petData.coatColour;
+
+        // Try to load image as data URL first (bypasses CORS)
+        let imageSrc = await loadImageAsDataURL(pet.file);
+        if (!imageSrc) {
+          imageSrc = pet.file;
+        }
+
+        const img = new Image();
+        img.onload = () => {
+          const ctx = canvas.getContext("2d");
+
+          // If no saved color, just draw the original image
+          if (!savedColor) {
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            return;
+          }
+
+          // Otherwise, recolor the image
+          const tempCanvas = document.createElement("canvas");
+          tempCanvas.width = img.width;
+          tempCanvas.height = img.height;
+          const tempCtx = tempCanvas.getContext("2d");
+          tempCtx.drawImage(img, 0, 0);
+
+          try {
+            const imageData = tempCtx.getImageData(0, 0, img.width, img.height);
+            const data = imageData.data;
+
+            const newColour = hexToRgb(savedColor);
+            const newHsv = rgbToHsv(newColour.r, newColour.g, newColour.b);
+
+            // Recolor pixels
+            for (let i = 0; i < data.length; i += 4) {
+              const r = data[i];
+              const g = data[i + 1];
+              const b = data[i + 2];
+              const a = data[i + 3];
+
+              if (a === 0) continue;
+
+              const hsv = rgbToHsv(r, g, b);
+
+              if (
+                hueDifference(hsv.h, REFERENCE_HSV.h) <= HUE_TOLERANCE &&
+                hsv.s > 0.1
+              ) {
+                const newRgb = hsvToRgb(newHsv.h, hsv.s, hsv.v);
+                data[i] = newRgb.r;
+                data[i + 1] = newRgb.g;
+                data[i + 2] = newRgb.b;
+              }
+            }
+
+            tempCtx.putImageData(imageData, 0, 0);
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
+          } catch (e) {
+            // CORS issue - just draw original
+            console.warn("Could not recolor pet card:", e);
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          }
+        };
+        img.onerror = () => {
+          console.error("Failed to load pet card image:", pet.file);
+        };
+        img.src = imageSrc;
+      }
+
+      // Generate colour palette
+      function generateColourPalette() {
+        const palette = document.getElementById("colorPalette");
+
+        colourPalette.forEach((colour, index) => {
+          const swatch = document.createElement("div");
+          swatch.className = "color-swatch";
+          swatch.style.backgroundColor = colour;
+          swatch.style.color = colour;
+          swatch.dataset.colour = colour;
+
+          if (index === 0) {
+            swatch.classList.add("selected");
+          }
+
+          swatch.addEventListener("click", () => {
+            selectColour(colour, swatch);
+          });
+
+          palette.appendChild(swatch);
+        });
+      }
+
+      // Select colour
+      function selectColour(colour, swatch) {
+        playSound("colourChange");
+        selectedColour = colour;
+
+        // Update selected state
+        document
+          .querySelectorAll(".color-swatch")
+          .forEach((s) => s.classList.remove("selected"));
+        if (swatch) swatch.classList.add("selected");
+
+        // Update custom colour picker
+        document.getElementById("customColorPicker").value = colour;
+
+        // Update preview
+        updatePreview();
+
+        // Auto-save coat colour
+        if (chosenPet) {
+          saveCoatColour(chosenPet.name, colour);
+        }
+      }
+
+      // Load image via fetch and convert to data URL to bypass CORS
+      async function loadImageAsDataURL(url) {
+        try {
+          const response = await fetch(url);
+          const blob = await response.blob();
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        } catch (e) {
+          console.warn("Fetch failed, trying direct load:", e);
+          return null;
+        }
+      }
+
+      // Choose pet - go to customisation screen
+      async function choosePet(pet) {
+        chosenPet = pet;
+
+        // Update title
+        const petNameCapitalised =
+          pet.name.charAt(0).toUpperCase() + pet.name.slice(1);
+        document.getElementById("chosenPetName").textContent =
+          petNameCapitalised;
+
+        // Load saved pet data (personality + coat colour)
+        const petData = loadPetData(pet.name);
+        document.getElementById("personalityInput").value = petData.personality;
+
+        // Set coat colour (use saved or default to first palette colour)
+        if (petData.coatColour) {
+          selectedColour = petData.coatColour;
+          // Update colour picker
+          document.getElementById("customColorPicker").value =
+            petData.coatColour;
+          // Update palette selection
+          document.querySelectorAll(".color-swatch").forEach((s) => {
+            s.classList.toggle(
+              "selected",
+              s.dataset.colour === petData.coatColour,
+            );
+          });
+        } else {
+          // Reset to default
+          selectedColour = colourPalette[0];
+          document.getElementById("customColorPicker").value = colourPalette[0];
+          document.querySelectorAll(".color-swatch").forEach((s, i) => {
+            s.classList.toggle("selected", i === 0);
+          });
+        }
+
+        // Show customisation overlay first (so user sees something immediately)
+        document.getElementById("customiseOverlay").classList.add("active");
+        playSound("celebrate");
+        createConfetti();
+
+        // Try to load image as data URL first (bypasses CORS)
+        let imageSrc = await loadImageAsDataURL(pet.file);
+        if (!imageSrc) {
+          imageSrc = pet.file;
+        }
+
+        // Load image and prepare for colour manipulation
+        const img = new Image();
+        img.onload = () => {
+          // Store the loaded image for fallback use
+          loadedImage = img;
+
+          const canvas = document.getElementById("colorCanvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+
+          // Store original image data
+          try {
+            originalImageData = ctx.getImageData(0, 0, img.width, img.height);
+          } catch (e) {
+            console.warn(
+              "Could not get image data (CORS restriction). Colour changing disabled.",
+              e,
+            );
+            originalImageData = null;
+          }
+
+          // Update preview (will use fallback if needed)
+          updatePreview();
+        };
+        img.onerror = () => {
+          console.error("Failed to load image:", pet.file);
+        };
+        img.src = imageSrc;
+      }
+
+      // Finish customisation - show hero screen
+      function finishCustomisation() {
+        playSound("fanfare");
+
+        // Save personality and coat colour
+        const personality = document
+          .getElementById("personalityInput")
+          .value.trim();
+        savePetData(chosenPet.name, personality, selectedColour);
+
+        // Hide customisation overlay
+        document.getElementById("customiseOverlay").classList.remove("active");
+
+        // Update hero content
+        const petNameCapitalised =
+          chosenPet.name.charAt(0).toUpperCase() + chosenPet.name.slice(1);
+        document.getElementById("heroPetName").textContent = petNameCapitalised;
+
+        // Set hero glow colour
+        document.getElementById("heroGlow").style.background =
+          `radial-gradient(circle, ${selectedColour} 0%, transparent 70%)`;
+
+        // Draw pet on hero canvas
+        const heroCanvas = document.getElementById("heroPetCanvas");
+        recolourPet(heroCanvas, selectedColour, HUE_TOLERANCE);
+
+        // Show personality in hero screen
+        const heroPersonalityEl = document.getElementById("heroPersonality");
+        if (personality) {
+          heroPersonalityEl.innerHTML = `
+                    <span class="hero-personality-label">✨ Personality</span>
+                    <p class="hero-personality-text">"${personality}"</p>
+                `;
+        } else {
+          heroPersonalityEl.innerHTML = "";
+        }
+
+        // Create backdrop effects
+        createHeroBackdrop();
+        createHeroSparkles();
+
+        // Show hero overlay
+        document.getElementById("heroOverlay").classList.add("active");
+
+        // Massive confetti celebration
+        setTimeout(() => createConfetti(), 300);
+        setTimeout(() => createConfetti(), 800);
+      }
+
+      // Go back to selection
+      async function goBack() {
+        playSound("pop");
+        document.getElementById("customiseOverlay").classList.remove("active");
+
+        // Refresh the pet card for the pet we just customized to show the new color
+        if (chosenPet) {
+          const canvas = document.querySelector(
+            `#pet-container-${chosenPet.name} canvas`,
+          );
+          if (canvas) {
+            await loadAndDisplayPetCard(chosenPet, canvas);
+          }
+        }
+
+        chosenPet = null;
+        originalImageData = null;
+        loadedImage = null;
+      }
+
+      // Start again from hero screen
+      async function startAgain() {
+        playSound("pop");
+        document.getElementById("heroOverlay").classList.remove("active");
+
+        // Refresh the pet card for the pet we just finished customizing
+        if (chosenPet) {
+          const canvas = document.querySelector(
+            `#pet-container-${chosenPet.name} canvas`,
+          );
+          if (canvas) {
+            await loadAndDisplayPetCard(chosenPet, canvas);
+          }
+        }
+
+        chosenPet = null;
+        originalImageData = null;
+        loadedImage = null;
+
+        // Reset colour selection to default
+        selectedColour = colourPalette[0];
+        document.querySelectorAll(".color-swatch").forEach((s, i) => {
+          s.classList.toggle("selected", i === 0);
+        });
+        document.getElementById("customColorPicker").value = colourPalette[0];
+      }
+
+      // Initialize
+      async function init() {
+        // Load pet data from localStorage or defaults
+        await initPetData();
+
+        createStars();
+        createParticles();
+        await generatePetCards();
+        generateColourPalette();
+
+        // Sound toggle
+        document.getElementById("soundToggle").addEventListener("click", () => {
+          initAudio();
+          soundEnabled = !soundEnabled;
+          document.getElementById("soundToggle").textContent = soundEnabled
+            ? "🔊"
+            : "🔇";
+          if (soundEnabled) playSound("pop");
+        });
+
+        // Back button
+        document.getElementById("backBtn").addEventListener("click", goBack);
+
+        // Finish button
+        document
+          .getElementById("finishBtn")
+          .addEventListener("click", finishCustomisation);
+
+        // Start again - both button and container are clickable
+        document
+          .getElementById("startAgainBtn")
+          .addEventListener("click", startAgain);
+        document
+          .getElementById("startAgainContainer")
+          .addEventListener("click", startAgain);
+
+        // Custom colour picker
+        const customPicker = document.getElementById("customColorPicker");
+        customPicker.addEventListener("input", () => {
+          const colour = customPicker.value;
+          selectedColour = colour;
+
+          // Deselect palette swatches
+          document
+            .querySelectorAll(".color-swatch")
+            .forEach((s) => s.classList.remove("selected"));
+
+          // Update preview
+          updatePreview();
+          playSound("colourChange");
+
+          // Auto-save coat colour
+          if (chosenPet) {
+            saveCoatColour(chosenPet.name, colour);
+          }
+        });
+
+        // Save personality on input (auto-save)
+        document
+          .getElementById("personalityInput")
+          .addEventListener("input", () => {
+            if (chosenPet) {
+              const personality = document
+                .getElementById("personalityInput")
+                .value.trim();
+              savePersonality(chosenPet.name, personality);
+            }
+          });
+
+        // Initialize audio on first interaction
+        document.addEventListener("click", initAudio, { once: true });
+      }
+
+      // Start when DOM is ready
+      document.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>

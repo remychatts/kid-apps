@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <title>Snake Species Visualiser</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --panel: #111827;
+        --panel-2: #1f2937;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --green: #22c55e;
+        --orange: #f59e0b;
+        --red: #ef4444;
+        --gap: 3px;
+        --cell-size: 10px;
+        --border: rgba(255, 255, 255, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background: linear-gradient(180deg, #0b1220, var(--bg));
+        color: var(--text);
+        min-height: 100vh;
+      }
+
+      .app {
+        width: min(1400px, calc(100vw - 24px));
+        margin: 12px auto;
+        display: grid;
+        grid-template-rows: auto auto 1fr;
+        gap: 12px;
+        min-height: calc(100vh - 24px);
+      }
+
+      .panel {
+        background: rgba(17, 24, 39, 0.9);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 14px;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      }
+
+      h1 {
+        margin: 0 0 8px 0;
+        font-size: clamp(1.2rem, 2vw, 1.8rem);
+        line-height: 1.2;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(180px, 1fr));
+        gap: 12px;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      label {
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+
+      .hint {
+        color: var(--muted);
+        font-size: 0.85rem;
+        font-weight: 400;
+      }
+
+      input[type="number"] {
+        width: 100%;
+        background: var(--panel-2);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 1rem;
+        outline: none;
+      }
+
+      input[type="number"]:focus {
+        border-color: rgba(255, 255, 255, 0.22);
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06);
+      }
+
+      .stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        align-items: center;
+      }
+
+      .legend-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text);
+        font-size: 0.95rem;
+      }
+
+      .swatch {
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        flex: 0 0 auto;
+      }
+
+      .green {
+        background: var(--green);
+      }
+      .orange {
+        background: var(--orange);
+      }
+      .red {
+        background: var(--red);
+      }
+
+      .grid-wrap {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+
+      .message {
+        min-height: 1.2em;
+        color: #fca5a5;
+        margin-bottom: 10px;
+        font-size: 0.92rem;
+      }
+
+      .grid {
+        flex: 1 1 auto;
+        min-height: 420px;
+        display: grid;
+        align-content: start;
+        justify-content: stretch;
+        gap: var(--gap);
+        padding: 4px;
+        overflow: auto;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        border-radius: 12px;
+        border: 1px solid var(--border);
+      }
+
+      .cell {
+        width: var(--cell-size);
+        height: var(--cell-size);
+        border-radius: 2px;
+      }
+
+      .footer {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 760px) {
+        .controls {
+          grid-template-columns: 1fr;
+        }
+        .grid {
+          min-height: 55vh;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <section class="panel">
+        <h1>Snake Species Visualiser</h1>
+        <p>
+          Each square represents one snake species. Starting values: 3,315 total
+          species, 600 venomous species, and 200 considered dangerous to humans.
+        </p>
+      </section>
+
+      <section class="panel">
+        <div class="controls">
+          <div class="field">
+            <label for="total"
+              >Total snake species
+              <span class="hint">(around 3315 for snakes)</span></label
+            >
+            <input id="total" type="number" min="0" step="1" value="3315" />
+          </div>
+          <div class="field">
+            <label for="venomous"
+              >Venomous species
+              <span class="hint">(around 600 for snakes)</span></label
+            >
+            <input id="venomous" type="number" min="0" step="1" value="600" />
+          </div>
+          <div class="field">
+            <label for="harmful"
+              >Dangerous to humans
+              <span class="hint">(around 200 for snakes)</span></label
+            >
+            <input id="harmful" type="number" min="0" step="1" value="200" />
+          </div>
+        </div>
+      </section>
+
+      <section class="panel grid-wrap">
+        <div class="stats" id="stats"></div>
+        <div class="message" id="message"></div>
+        <div class="grid" id="grid" aria-label="Snake species grid"></div>
+        <p class="footer">
+          Red squares are the subset considered dangerous to humans. Orange
+          squares are venomous but not in the dangerous-to-humans subset. Green
+          squares are non-venomous species.
+        </p>
+      </section>
+    </div>
+
+    <script>
+      const totalInput = document.getElementById("total");
+      const venomousInput = document.getElementById("venomous");
+      const harmfulInput = document.getElementById("harmful");
+      const grid = document.getElementById("grid");
+      const stats = document.getElementById("stats");
+      const message = document.getElementById("message");
+
+      function clampInt(value) {
+        const n = Number(value);
+        if (!Number.isFinite(n)) return 0;
+        return Math.max(0, Math.round(n));
+      }
+
+      function computeCellSize(total, width, height) {
+        const gap = 3;
+        const usableWidth = Math.max(220, width - 8);
+        const usableHeight = Math.max(220, height - 8);
+
+        if (total <= 0) return 12;
+
+        // Start from the area-per-cell estimate so the grid fills most of the space.
+        let size = Math.floor(
+          Math.sqrt((usableWidth * usableHeight) / total) - gap,
+        );
+        size = Math.max(4, Math.min(18, size));
+
+        function fits(candidate) {
+          const cols = Math.max(
+            1,
+            Math.floor((usableWidth + gap) / (candidate + gap)),
+          );
+          const rows = Math.ceil(total / cols);
+          const neededHeight = rows * candidate + Math.max(0, rows - 1) * gap;
+          return neededHeight <= usableHeight;
+        }
+
+        while (size > 4 && !fits(size)) {
+          size -= 1;
+        }
+
+        while (size < 18 && fits(size + 1)) {
+          size += 1;
+        }
+
+        return size;
+      }
+
+      function buildCells(redCount, orangeCount, greenCount) {
+        const fragment = document.createDocumentFragment();
+
+        for (let i = 0; i < redCount; i++) {
+          const cell = document.createElement("div");
+          cell.className = "cell red";
+          fragment.appendChild(cell);
+        }
+
+        for (let i = 0; i < orangeCount; i++) {
+          const cell = document.createElement("div");
+          cell.className = "cell orange";
+          fragment.appendChild(cell);
+        }
+
+        for (let i = 0; i < greenCount; i++) {
+          const cell = document.createElement("div");
+          cell.className = "cell green";
+          fragment.appendChild(cell);
+        }
+
+        grid.replaceChildren(fragment);
+      }
+
+      let lastLayoutKey = "";
+      let rafId = null;
+
+      function render() {
+        const total = clampInt(totalInput.value);
+        const venomous = clampInt(venomousInput.value);
+        const harmful = clampInt(harmfulInput.value);
+
+        let error = "";
+        if (venomous > total) {
+          error = "Venomous species cannot exceed total species.";
+        } else if (harmful > venomous) {
+          error = "Dangerous-to-humans species cannot exceed venomous species.";
+        }
+        message.textContent = error;
+
+        const safeVenomous = Math.min(venomous, total);
+        const safeHarmful = Math.min(harmful, safeVenomous);
+        const orange = Math.max(0, safeVenomous - safeHarmful);
+        const green = Math.max(0, total - safeVenomous);
+
+        const width = Math.max(
+          240,
+          Math.floor(
+            grid.clientWidth ||
+              grid.parentElement.clientWidth ||
+              window.innerWidth,
+          ),
+        );
+        const height = Math.max(
+          240,
+          Math.floor(
+            grid.clientHeight ||
+              grid.parentElement.clientHeight ||
+              window.innerHeight * 0.6,
+          ),
+        );
+        const size = computeCellSize(total, width, height);
+        const gap = 3;
+        const cols = Math.max(1, Math.floor((width + gap - 8) / (size + gap)));
+
+        document.documentElement.style.setProperty("--cell-size", size + "px");
+        grid.style.gridTemplateColumns = `repeat(${cols}, ${size}px)`;
+
+        const layoutKey = [total, safeVenomous, safeHarmful, cols, size].join(
+          "|",
+        );
+        if (layoutKey !== lastLayoutKey) {
+          buildCells(safeHarmful, orange, green);
+          lastLayoutKey = layoutKey;
+        }
+
+        stats.innerHTML = `
+        <span class="legend-item"><span class="swatch red"></span> Dangerous to humans: <strong>${safeHarmful.toLocaleString()}</strong></span>
+        <span class="legend-item"><span class="swatch orange"></span> Venomous but not dangerous-to-humans subset: <strong>${orange.toLocaleString()}</strong></span>
+        <span class="legend-item"><span class="swatch green"></span> Non-venomous: <strong>${green.toLocaleString()}</strong></span>
+        <span class="legend-item">Total: <strong>${total.toLocaleString()}</strong></span>
+      `;
+      }
+
+      function scheduleRender() {
+        if (rafId !== null) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+          rafId = null;
+          render();
+        });
+      }
+
+      [totalInput, venomousInput, harmfulInput].forEach((el) => {
+        el.addEventListener("input", () => {
+          lastLayoutKey = "";
+          scheduleRender();
+        });
+        el.addEventListener("change", () => {
+          lastLayoutKey = "";
+          scheduleRender();
+        });
+      });
+
+      window.addEventListener("resize", scheduleRender);
+
+      const resizeObserver = new ResizeObserver(() => {
+        scheduleRender();
+      });
+      resizeObserver.observe(document.body);
+      resizeObserver.observe(grid);
+
+      scheduleRender();
+    </script>
+  </body>
+</html>
