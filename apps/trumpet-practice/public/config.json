@@ -1,0 +1,21 @@
+{
+  "tasks": {
+    "trumpet_practice": {
+      "name": "trumpet practice",
+      "image_version": "trumpet_practice_1"
+    },
+    "flute_practice": {
+      "name": "flute practice",
+      "image_version": "flute_practice_1"
+    },
+    "sax_practice": {
+      "name": "saxophone practice",
+      "image_version": "sax_practice_1"
+    },
+    "writing": {
+      "name": "writing",
+      "image_version": "writing_1"
+    }
+  },
+  "applause_version": "applause_1"
+}

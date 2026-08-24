@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Practice Stars">
+  <defs>
+    <linearGradient id="bg" x1="40" y1="28" x2="216" y2="230" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff74c8" />
+      <stop offset="0.55" stop-color="#8b5cf6" />
+      <stop offset="1" stop-color="#0a60ff" />
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="url(#bg)" />
+  <path
+    d="m128 34 25.7 55.4 60.6 7.4-44.7 41.6 11.7 59.9L128 168.6l-53.3 29.7 11.7-59.9-44.7-41.6 60.6-7.4L128 34Z"
+    fill="#fff7ad"
+  />
+  <path d="M77 154c34 23 70 22 104 0" fill="none" stroke="#5b21b6" stroke-width="14" stroke-linecap="round" />
+</svg>

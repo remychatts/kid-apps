@@ -2,7 +2,7 @@
 
 Everything here is vibe-coded.
 
-A monorepo for ten playful, family-friendly web apps and the catalogue that links them together. Every app is independently runnable and installable, while one root build assembles the complete static GitHub Pages site.
+A monorepo for twelve playful, family-friendly web apps and the catalogue that links them together. Every app is independently runnable and installable, while one root build assembles the complete static GitHub Pages site.
 
 ## Apps
 
@@ -15,11 +15,13 @@ A monorepo for ten playful, family-friendly web apps and the catalogue that link
 | [Jungle Baby Snake Rescue](apps/jungle-snake/)             | A jungle rescue game starring a purple snake.         | April 2026                           |
 | [Pet Chooser](apps/pet-chooser/)                           | Matches players with a companion from a cast of pets. | December 2025                        |
 | [Podcast Episodes](apps/podcast-episodes/)                 | Loads and filters episodes from an RSS feed.          | July 2025                            |
+| [Practice Stars](apps/trumpet-practice/)                   | Builds practice streaks and unlocks reward pictures.  | August 2026                          |
 | [Probability Explorer](apps/probability-explorer/)         | Visualises repeated samples as live histograms.       | April 2025                           |
 | [Rounding Rally](apps/rounding-game/)                      | A visual estimation and rounding game.                | August 2026                          |
 | [Snake Species Visualiser](apps/snake-species-visualiser/) | Makes snake-species statistics tangible as a grid.    | April 2026                           |
+| [Trumpet Fingering](apps/trumpet-fingering/)               | Practises matching trumpet notes and fingerings.      | January 2026                         |
 
-The displayed dates for the original six apps come from the most recent commit affecting each app in `simonchatts/alyx` at the time of extraction. Dates for the four archive imports come from their member modification timestamps in `apps.tgz`; their READMEs record the exact times.
+The displayed dates for the original six apps come from the most recent commit affecting each app in `simonchatts/alyx` at the time of extraction. Dates for the four archive imports come from their member modification timestamps in `apps.tgz`. Dates for the trumpet apps come from the latest source commit at import time; their READMEs record the exact commit.
 
 ## Development
 
