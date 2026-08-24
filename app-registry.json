@@ -1,5 +1,43 @@
 [
   {
+    "id": "24-hour-clock",
+    "title": "24-Hour Clock",
+    "shortName": "24-Hour Clock",
+    "description": "Explore a full day on an interactive clock with adjustable playback speed.",
+    "date": "March 2025",
+    "emoji": "🕰️",
+    "themeColour": "#3498db",
+    "backgroundColour": "#ffffff",
+    "orientation": "any",
+    "icons": [
+      {
+        "src": "icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+      }
+    ]
+  },
+  {
+    "id": "arial-vs-helvetica",
+    "title": "Arial vs Helvetica",
+    "shortName": "Arial vs Helvetica",
+    "description": "Learn to spot the tiny differences between two famously similar typefaces.",
+    "date": "August 2026",
+    "emoji": "🔤",
+    "themeColour": "#25f5ff",
+    "backgroundColour": "#050915",
+    "orientation": "any",
+    "icons": [
+      {
+        "src": "icon.svg",
+        "sizes": "any",
+        "type": "image/svg+xml",
+        "purpose": "any maskable"
+      }
+    ]
+  },
+  {
     "id": "drawing",
     "title": "Drawing Prompt Machine",
     "shortName": "Drawing",
@@ -77,6 +115,44 @@
         "src": "pet-creator-icon-512.png",
         "sizes": "512x512",
         "type": "image/png",
+        "purpose": "any maskable"
+      }
+    ]
+  },
+  {
+    "id": "podcast-episodes",
+    "title": "Podcast Episodes",
+    "shortName": "Podcasts",
+    "description": "Load, filter and save the episode list from a favourite podcast feed.",
+    "date": "July 2025",
+    "emoji": "🎙️",
+    "themeColour": "#d4419c",
+    "backgroundColour": "#f8f9fa",
+    "orientation": "any",
+    "icons": [
+      {
+        "src": "icon.svg",
+        "sizes": "any",
+        "type": "image/svg+xml",
+        "purpose": "any maskable"
+      }
+    ]
+  },
+  {
+    "id": "probability-explorer",
+    "title": "Probability Explorer",
+    "shortName": "Probability",
+    "description": "Sample probability distributions and watch their histograms take shape.",
+    "date": "April 2025",
+    "emoji": "🎲",
+    "themeColour": "#ffb6c1",
+    "backgroundColour": "#ffffff",
+    "orientation": "any",
+    "icons": [
+      {
+        "src": "icon.svg",
+        "sizes": "any",
+        "type": "image/svg+xml",
         "purpose": "any maskable"
       }
     ]

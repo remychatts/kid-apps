@@ -2,20 +2,24 @@
 
 Everything here is vibe-coded.
 
-A monorepo for six playful, family-friendly web apps and the catalogue that links them together. Every app is independently runnable and installable, while one root build assembles the complete static GitHub Pages site.
+A monorepo for ten playful, family-friendly web apps and the catalogue that links them together. Every app is independently runnable and installable, while one root build assembles the complete static GitHub Pages site.
 
 ## Apps
 
 | App                                                        | What it does                                          | Last updated in the original history |
 | ---------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------ |
+| [24-Hour Clock](apps/24-hour-clock/)                       | Explores a full day at an adjustable playback speed.  | March 2025                           |
+| [Arial vs Helvetica](apps/arial-vs-helvetica/)             | Teaches the differences between two similar fonts.    | August 2026                          |
 | [Drawing Prompt Machine](apps/drawing/)                    | Spins up a fun drawing challenge.                     | January 2026                         |
 | [Imposter!](apps/imposter-game/)                           | A pass-the-phone secret-word game for 3–8 players.    | July 2026                            |
 | [Jungle Baby Snake Rescue](apps/jungle-snake/)             | A jungle rescue game starring a purple snake.         | April 2026                           |
 | [Pet Chooser](apps/pet-chooser/)                           | Matches players with a companion from a cast of pets. | December 2025                        |
+| [Podcast Episodes](apps/podcast-episodes/)                 | Loads and filters episodes from an RSS feed.          | July 2025                            |
+| [Probability Explorer](apps/probability-explorer/)         | Visualises repeated samples as live histograms.       | April 2025                           |
 | [Rounding Rally](apps/rounding-game/)                      | A visual estimation and rounding game.                | August 2026                          |
 | [Snake Species Visualiser](apps/snake-species-visualiser/) | Makes snake-species statistics tangible as a grid.    | April 2026                           |
 
-The displayed dates come from the most recent commit affecting each app in `simonchatts/alyx` at the time of extraction.
+The displayed dates for the original six apps come from the most recent commit affecting each app in `simonchatts/alyx` at the time of extraction. Dates for the four archive imports come from their member modification timestamps in `apps.tgz`; their READMEs record the exact times.
 
 ## Development
 
