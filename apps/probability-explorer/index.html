@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en" style="background: #ffffff">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffb6c1" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <title>Probability Explorer</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+
+      nav {
+        background: #ffe4e1;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      select,
+      button {
+        font-size: 1em;
+        padding: 4px 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: #fff;
+      }
+
+      button {
+        cursor: pointer;
+        background: #ffb6c1;
+      }
+
+      button:active {
+        opacity: 0.8;
+      }
+
+      #sampleCanvas {
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+        flex-shrink: 0;
+        max-height: 150px;
+        display: block;
+        margin: 0 auto;
+      }
+
+      #histogramCanvas {
+        flex: 1;
+        width: calc(100% - 40px);
+        display: block;
+        margin: 20px;
+      }
+    </style>
+  </head>
+
+  <body style="background-color: #ffffff">
+    <nav>
+      <select id="sourceSelect"></select>
+      <button id="singleBtn">Sample</button>
+      <button id="autoBtn">Start</button>
+      <button id="resetBtn">Reset</button>
+    </nav>
+    <canvas id="sampleCanvas" width="300" height="150"></canvas>
+    <canvas id="histogramCanvas"></canvas>
+
+    <script>
+      // Configuration constants
+      const CONFIG = {
+        ANIM_STEPS: 5,
+        ANIM_INTERVAL: 100,
+        CANVAS_SIZE: 150,
+        HIST_MARGIN: 100,
+        SAMPLES_PER_FRAME: 100,
+      };
+
+      // Audio setup (for single-sample animations)
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      function playTone(durationMs) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = 400 + Math.random() * 600;
+        osc.start();
+        gain.gain.setValueAtTime(1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+          0.001,
+          audioCtx.currentTime + durationMs / 1000,
+        );
+        osc.stop(audioCtx.currentTime + durationMs / 1000);
+      }
+
+      // RNG sources
+      const sources = [
+        {
+          title: "Coin",
+          widthFactor: 1,
+          values: ["Heads", "Tails"],
+          sample() {
+            return this.values[Math.floor(Math.random() * 2)];
+          },
+          render(ctx, val, h) {
+            ctx.clearRect(0, 0, ctx.canvas.width, h);
+            ctx.beginPath();
+            ctx.arc(h / 2, h / 2, h / 2 - 4, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.font = `${h / 4}px sans-serif`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(val[0], h / 2, h / 2);
+          },
+        },
+        {
+          title: "One Die",
+          widthFactor: 1,
+          values: [1, 2, 3, 4, 5, 6],
+          sample() {
+            return Math.floor(Math.random() * 6) + 1;
+          },
+          render(ctx, val, h) {
+            ctx.clearRect(0, 0, h, h);
+            ctx.fillStyle = "#000";
+            ctx.fillRect(4, 4, h - 8, h - 8);
+            ctx.fillStyle = "#fff";
+            const pip = h / 8;
+            const pos = [
+              [h / 4, h / 4],
+              [h / 2, h / 4],
+              [(3 * h) / 4, h / 4],
+              [h / 4, h / 2],
+              [h / 2, h / 2],
+              [(3 * h) / 4, h / 2],
+              [h / 4, (3 * h) / 4],
+              [h / 2, (3 * h) / 4],
+              [(3 * h) / 4, (3 * h) / 4],
+            ];
+            const patterns = {
+              1: [4],
+              2: [0, 8],
+              3: [0, 4, 8],
+              4: [0, 2, 6, 8],
+              5: [0, 2, 4, 6, 8],
+              6: [0, 2, 3, 5, 6, 8],
+            };
+            patterns[val].forEach((i) => {
+              ctx.beginPath();
+              ctx.arc(pos[i][0], pos[i][1], pip, 0, 2 * Math.PI);
+              ctx.fill();
+            });
+            ctx.fillStyle = "#000";
+          },
+        },
+        {
+          title: "Two Dice",
+          widthFactor: 2,
+          values: Array.from({ length: 11 }, (_, i) => i + 2),
+          _last: [0, 0],
+          sample() {
+            const r1 = Math.floor(Math.random() * 6) + 1;
+            const r2 = Math.floor(Math.random() * 6) + 1;
+            this._last = [r1, r2];
+            return r1 + r2;
+          },
+          render(ctx, val, h) {
+            const w = h * 2;
+            ctx.clearRect(0, 0, w, h);
+            const pip = h / 8;
+            const patterns = {
+              1: [4],
+              2: [0, 8],
+              3: [0, 4, 8],
+              4: [0, 2, 6, 8],
+              5: [0, 2, 4, 6, 8],
+              6: [0, 2, 3, 5, 6, 8],
+            };
+            const pos = [
+              [h / 4, h / 4],
+              [h / 2, h / 4],
+              [(3 * h) / 4, h / 4],
+              [h / 4, h / 2],
+              [h / 2, h / 2],
+              [(3 * h) / 4, h / 2],
+              [h / 4, (3 * h) / 4],
+              [h / 2, (3 * h) / 4],
+              [(3 * h) / 4, (3 * h) / 4],
+            ];
+            const [r1, r2] = this._last;
+            // first die
+            ctx.fillStyle = "#000";
+            ctx.fillRect(4, 4, h - 8, h - 8);
+            ctx.fillStyle = "#fff";
+            patterns[r1].forEach((i) => {
+              const [x, y] = pos[i];
+              ctx.beginPath();
+              ctx.arc(x, y, pip, 0, 2 * Math.PI);
+              ctx.fill();
+            });
+            // second die
+            ctx.fillStyle = "#000";
+            ctx.fillRect(h + 4, 4, h - 8, h - 8);
+            ctx.fillStyle = "#fff";
+            patterns[r2].forEach((i) => {
+              const [x, y] = pos[i];
+              ctx.beginPath();
+              ctx.arc(x + h, y, pip, 0, 2 * Math.PI);
+              ctx.fill();
+            });
+            ctx.fillStyle = "#000";
+          },
+        },
+      ];
+
+      let currentSource,
+        counts = {},
+        scale = CONFIG.ANIM_STEPS;
+      let autoRunning = false;
+      const sel = document.getElementById("sourceSelect"),
+        singleBtn = document.getElementById("singleBtn"),
+        autoBtn = document.getElementById("autoBtn"),
+        resetBtn = document.getElementById("resetBtn"),
+        sampleC = document.getElementById("sampleCanvas"),
+        sampleCtx = sampleC.getContext("2d"),
+        histC = document.getElementById("histogramCanvas"),
+        histCtx = histC.getContext("2d");
+
+      function computeScale(maxC) {
+        let step;
+        if (maxC < 10) step = 5;
+        else if (maxC < 100) step = 10;
+        else if (maxC < 1000) step = 100;
+        else if (maxC < 10000) step = 1000;
+        else step = 10000;
+        return Math.ceil(maxC / step) * step;
+      }
+
+      function resizeHistogram() {
+        histC.width = window.innerWidth;
+        histC.height =
+          window.innerHeight - sampleC.height - sel.parentNode.offsetHeight;
+      }
+      window.addEventListener("resize", () => {
+        resizeHistogram();
+        drawHistogram();
+      });
+
+      function updateSampleCanvasSize() {
+        const factor = currentSource.widthFactor || 1;
+        sampleC.width = CONFIG.CANVAS_SIZE * factor;
+        sampleC.height = CONFIG.CANVAS_SIZE;
+      }
+
+      function drawHistogram() {
+        const M = CONFIG.HIST_MARGIN;
+        const vals = currentSource.values;
+        const w = histC.width - 2 * M;
+        const h = histC.height - 2 * M;
+        histCtx.clearRect(0, 0, histC.width, histC.height);
+        const maxC = Math.max(5, ...Object.values(counts));
+        scale = computeScale(maxC);
+        const barW = w / vals.length;
+        histCtx.font = "24px sans-serif";
+        histCtx.textAlign = "center";
+        vals.forEach((v, i) => {
+          const c = counts[v] || 0;
+          const barH = (c / scale) * h;
+          histCtx.fillStyle = "#ffb6c1";
+          histCtx.fillRect(M + i * barW, M + h - barH, barW * 0.8, barH);
+          histCtx.strokeStyle = "#ddd";
+          histCtx.strokeRect(M + i * barW, M + h - barH, barW * 0.8, barH);
+          histCtx.fillStyle = "#000";
+          histCtx.fillText(v, M + i * barW + barW * 0.4, M + h + 20);
+        });
+        histCtx.strokeStyle = "#000";
+        histCtx.beginPath();
+        histCtx.moveTo(M, M);
+        histCtx.lineTo(M, M + h);
+        histCtx.lineTo(M + w, M + h);
+        histCtx.stroke();
+        histCtx.font = "24px sans-serif";
+        histCtx.textAlign = "right";
+        const ticks = 5;
+        for (let i = 0; i <= ticks; i++) {
+          const y = M + h - (h / ticks) * i;
+          const val = Math.round((scale / ticks) * i);
+          histCtx.beginPath();
+          histCtx.moveTo(M - 5, y);
+          histCtx.lineTo(M, y);
+          histCtx.stroke();
+          histCtx.fillText(val, M - 8, y + 4);
+        }
+      }
+
+      function reset() {
+        counts = {};
+        currentSource.values.forEach((v) => (counts[v] = 0));
+        sampleCtx.clearRect(0, 0, sampleC.width, sampleC.height);
+        drawHistogram();
+      }
+
+      function animateSample() {
+        for (let i = 0; i < CONFIG.ANIM_STEPS; i++) {
+          setTimeout(() => {
+            const tmp = currentSource.sample();
+            updateSampleVisualization(tmp);
+            playTone(CONFIG.ANIM_INTERVAL);
+            if (i === CONFIG.ANIM_STEPS - 1) {
+              counts[tmp]++;
+              drawHistogram();
+            }
+          }, i * CONFIG.ANIM_INTERVAL);
+        }
+      }
+
+      function updateSampleVisualization(val) {
+        sampleCtx.clearRect(0, 0, sampleC.width, sampleC.height);
+        currentSource.render(sampleCtx, val, CONFIG.CANVAS_SIZE);
+      }
+
+      function autoLoop() {
+        if (!autoRunning) return;
+        let last;
+        for (let i = 0; i < CONFIG.SAMPLES_PER_FRAME; i++) {
+          last = currentSource.sample();
+          counts[last] = (counts[last] || 0) + 1;
+        }
+        updateSampleVisualization(last);
+        drawHistogram();
+        requestAnimationFrame(autoLoop);
+      }
+
+      singleBtn.addEventListener("click", () => animateSample());
+      autoBtn.addEventListener("click", () => {
+        autoRunning = !autoRunning;
+        autoBtn.textContent = autoRunning ? "Stop" : "Start";
+        if (autoRunning) autoLoop();
+      });
+      resetBtn.addEventListener("click", () => {
+        autoRunning = false;
+        autoBtn.textContent = "Start";
+        reset();
+      });
+
+      function init() {
+        resizeHistogram();
+        sources.forEach((s, i) => {
+          const opt = document.createElement("option");
+          opt.value = i;
+          opt.textContent = s.title;
+          sel.appendChild(opt);
+        });
+        sel.addEventListener("change", () => {
+          autoRunning = false;
+          autoBtn.textContent = "Start";
+          currentSource = sources[sel.value];
+          updateSampleCanvasSize();
+          reset();
+        });
+        sel.value = 0;
+        sel.dispatchEvent(new Event("change"));
+      }
+      init();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="en" style="background: #ffffff">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- Disable zoom -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <meta name="theme-color" content="#3498db" />
+    <link rel="icon" href="./icon-512.png" type="image/png" />
+
+    <!-- Enable web app mode -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <!-- Set the app title when added to the home screen -->
+    <meta name="apple-mobile-web-app-title" content="24 hours" />
+
+    <!-- Icons for different screen sizes -->
+    <link rel="apple-touch-icon" sizes="180x180" href="time-180.png" />
+    <link rel="apple-touch-icon" sizes="167x167" href="time-167.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="time-152.png" />
+
+    <title>24-Hour Clock</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+
+      .control-panel {
+        display: flex;
+        gap: 10px;
+        padding: 10px;
+        background-color: #f0f0f0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .control-panel > * {
+        flex: 1;
+      }
+
+      .control-panel button {
+        padding: 10px;
+        min-width: 100px;
+        font-size: 1.2em;
+        border: none;
+        border-radius: 5px;
+        background-color: #3498db;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      input {
+        margin-right: 24px;
+      }
+
+      .control-panel button:hover {
+        background-color: #2980b9;
+      }
+
+      canvas {
+        flex: 1;
+        display: block;
+      }
+    </style>
+  </head>
+
+  <body style="background-color: #ffffff">
+    <canvas id="clock-canvas"></canvas>
+    <div class="control-panel">
+      <button id="btn-prev">-1</button>
+      <button id="btn-next">+1</button>
+      <button id="btn-reset">⏏</button>
+      <button id="btn-playpause">⏵</button>
+      <input
+        type="range"
+        id="time-speed"
+        min="10"
+        max="200"
+        value="60"
+        title="Time speed (minutes per second)"
+      />
+    </div>
+
+    <script>
+      // ===== CONFIGURATION CONSTANTS =====
+      let timeSpeed = 60; // Default: 60 minutes per second
+
+      // Sky color keyframes (RGB)
+      const SKY_COLORS = {
+        6: [135, 206, 235],
+        9: [100, 180, 255],
+        11: [70, 150, 245],
+        13: [70, 150, 245],
+        17: [100, 180, 255],
+        20: [50, 50, 100],
+        0: [10, 10, 40],
+        3: [10, 10, 40],
+        5: [50, 50, 100],
+      };
+
+      // Grass color keyframes (RGB)
+      const GRASS_COLORS = {
+        6: [100, 180, 50],
+        9: [120, 200, 80],
+        12: [130, 210, 90],
+        15: [120, 200, 80],
+        18: [100, 150, 50],
+        21: [50, 100, 30],
+        0: [30, 70, 20],
+        3: [50, 100, 30],
+      };
+
+      // Sun color (RGB)
+      const SUN_COLOR = [255, 220, 100]; // Yellow
+
+      // Moon color (RGB)
+      const MOON_COLOR = [240, 240, 240]; // White-ish
+
+      // Stars configuration
+      const NUM_STARS = 150;
+      const STAR_SIZE_MIN = 1;
+      const STAR_SIZE_MAX = 3;
+
+      // ===== APP STATE =====
+      let canvas, ctx;
+      let canvasWidth, canvasHeight;
+      let simulationTime = 8 * 60; // Starting at 8:00 (8 hours * 60 minutes)
+      let animationId = null;
+      let lastTimestamp = 0;
+      let stars = [];
+
+      // ===== INITIALIZATION =====
+      function init() {
+        canvas = document.getElementById("clock-canvas");
+        ctx = canvas.getContext("2d");
+
+        document.getElementById("btn-prev").addEventListener("click", prevHour);
+        document.getElementById("btn-next").addEventListener("click", nextHour);
+        document
+          .getElementById("btn-reset")
+          .addEventListener("click", resetTime);
+        document
+          .getElementById("btn-playpause")
+          .addEventListener("click", toggleAnimation);
+
+        // Update timeSpeed on slider change
+        document
+          .getElementById("time-speed")
+          .addEventListener("input", function (event) {
+            const newSpeed = Number(event.target.value);
+            if (!isNaN(newSpeed)) {
+              timeSpeed = newSpeed;
+            }
+          });
+
+        document.addEventListener("gesturestart", function (e) {
+          e.preventDefault(); // Prevents pinch zoom
+        });
+
+        let lastTouchEnd = 0;
+        document.addEventListener(
+          "touchend",
+          function (event) {
+            let now = Date.now();
+            if (now - lastTouchEnd <= 100) {
+              // Detects double-tap
+              event.preventDefault();
+            }
+            lastTouchEnd = now;
+          },
+          false,
+        );
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+        generateStars();
+        render();
+        stopAnimation();
+      }
+
+      function generateStars() {
+        stars = [];
+        for (let i = 0; i < NUM_STARS; i++) {
+          stars.push({
+            x: Math.random() * canvasWidth,
+            y: Math.random() * ((canvasHeight * 2) / 3),
+            size:
+              STAR_SIZE_MIN + Math.random() * (STAR_SIZE_MAX - STAR_SIZE_MIN),
+            opacity: 0.5 + Math.random() * 0.5,
+          });
+        }
+      }
+
+      // ===== CANVAS SIZING =====
+      function resizeCanvas() {
+        canvasWidth = window.innerWidth;
+        canvasHeight =
+          window.innerHeight -
+          document.querySelector(".control-panel").offsetHeight;
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        generateStars();
+        render();
+      }
+
+      // ===== TIME CONTROLS =====
+      function prevHour() {
+        simulationTime = Math.floor(simulationTime / 60) * 60;
+        simulationTime = (simulationTime - 60 + 24 * 60) % (24 * 60);
+        render();
+      }
+
+      function nextHour() {
+        simulationTime = Math.floor(simulationTime / 60) * 60;
+        simulationTime = (simulationTime + 60) % (24 * 60);
+        render();
+      }
+
+      function resetTime() {
+        simulationTime = 8 * 60;
+        render();
+      }
+
+      function startAnimation() {
+        if (animationId !== null) return;
+        lastTimestamp = performance.now();
+        animationId = requestAnimationFrame(animate);
+        document.getElementById("btn-playpause").textContent = "⏸";
+      }
+
+      function stopAnimation() {
+        if (animationId !== null) {
+          cancelAnimationFrame(animationId);
+          animationId = null;
+          document.getElementById("btn-playpause").textContent = "⏵";
+        }
+      }
+
+      function toggleAnimation() {
+        if (animationId === null) {
+          startAnimation();
+        } else {
+          stopAnimation();
+        }
+      }
+
+      function animate(timestamp) {
+        const delta = (timestamp - lastTimestamp) / 1000;
+        lastTimestamp = timestamp;
+        simulationTime = (simulationTime + delta * timeSpeed) % (24 * 60);
+        render();
+        animationId = requestAnimationFrame(animate);
+      }
+
+      // ===== COLOR INTERPOLATION =====
+      function interpolateColor(keyframes, time) {
+        const hour = Math.floor(time / 60);
+        const minute = time % 60;
+        const fractionalHour = hour + minute / 60;
+        let prevKey = null;
+        let nextKey = null;
+        const hourKeys = Object.keys(keyframes)
+          .map(Number)
+          .sort((a, b) => a - b);
+        for (let i = 0; i < hourKeys.length; i++) {
+          if (hourKeys[i] <= hour) {
+            prevKey = hourKeys[i];
+          }
+          if (hourKeys[i] >= hour && nextKey === null) {
+            if (hourKeys[i] === hour) {
+              return keyframes[hour];
+            }
+            nextKey = hourKeys[i];
+          }
+        }
+        if (prevKey === null) {
+          prevKey = hourKeys[hourKeys.length - 1];
+          prevKey -= 24;
+        }
+        if (nextKey === null) {
+          nextKey = hourKeys[0];
+          nextKey += 24;
+        }
+        let factor;
+        if (nextKey <= prevKey) {
+          nextKey += 24;
+          if (hour < prevKey) {
+            factor = (fractionalHour + 24 - prevKey) / (nextKey - prevKey);
+          } else {
+            factor = (fractionalHour - prevKey) / (nextKey - prevKey);
+          }
+        } else {
+          factor = (fractionalHour - prevKey) / (nextKey - prevKey);
+        }
+        prevKey = ((prevKey % 24) + 24) % 24;
+        nextKey = ((nextKey % 24) + 24) % 24;
+        const prevColor = keyframes[prevKey];
+        const nextColor = keyframes[nextKey];
+        return [
+          Math.round(prevColor[0] + factor * (nextColor[0] - prevColor[0])),
+          Math.round(prevColor[1] + factor * (nextColor[1] - prevColor[1])),
+          Math.round(prevColor[2] + factor * (nextColor[2] - prevColor[2])),
+        ];
+      }
+
+      // ===== RENDERING =====
+      function render() {
+        const hour = Math.floor(simulationTime / 60);
+        const minute = Math.floor(simulationTime % 60);
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+        const x = Math.min(canvasWidth, canvasHeight);
+        const clockRadius = x / 8;
+        renderBackground(hour, minute);
+        renderClocks(clockRadius, hour, minute);
+      }
+
+      function renderBackground(hour, minute) {
+        const skyColor = interpolateColor(SKY_COLORS, hour * 60 + minute);
+        const grassColor = interpolateColor(GRASS_COLORS, hour * 60 + minute);
+        ctx.fillStyle = `rgb(${skyColor[0]}, ${skyColor[1]}, ${skyColor[2]})`;
+        ctx.fillRect(0, 0, canvasWidth, (canvasHeight * 2) / 3);
+        const isNightWithStars = hour >= 20 || hour < 4;
+        if (isNightWithStars) {
+          renderStars(hour);
+        }
+        renderSunMoon(hour, minute);
+        ctx.fillStyle = `rgb(${grassColor[0]}, ${grassColor[1]}, ${grassColor[2]})`;
+        ctx.beginPath();
+        ctx.moveTo(0, (canvasHeight * 2) / 3);
+        ctx.bezierCurveTo(
+          canvasWidth * 0.25,
+          canvasHeight * 0.6,
+          canvasWidth * 0.75,
+          canvasHeight * 0.6,
+          canvasWidth,
+          (canvasHeight * 2) / 3,
+        );
+        ctx.lineTo(canvasWidth, canvasHeight);
+        ctx.lineTo(0, canvasHeight);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      function renderStars(hour) {
+        let opacity = 1.0;
+        if (hour >= 20 && hour < 24) {
+          opacity = (hour - 20) / 4;
+        } else if (hour >= 0 && hour < 4) {
+          opacity = 1 - hour / 4;
+        }
+        stars.forEach((star) => {
+          const starOpacity = star.opacity * opacity;
+          ctx.fillStyle = `rgba(255, 255, 255, ${starOpacity})`;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+
+      function renderSunMoon(hour, minute) {
+        const dayCycle = (hour * 60 + minute) / (24 * 60);
+        const isDaytime = hour >= 6 && hour < 18;
+        let progress;
+        let celestialRadius = Math.min(canvasWidth, canvasHeight) / 20;
+        if (isDaytime) {
+          progress = (hour * 60 + minute - 6 * 60) / (12 * 60);
+          ctx.fillStyle = `rgb(${SUN_COLOR[0]}, ${SUN_COLOR[1]}, ${SUN_COLOR[2]})`;
+        } else {
+          if (hour >= 18) {
+            progress = (hour * 60 + minute - 18 * 60) / (12 * 60);
+          } else {
+            progress = (hour * 60 + minute + 6 * 60) / (12 * 60);
+          }
+          ctx.fillStyle = `rgb(${MOON_COLOR[0]}, ${MOON_COLOR[1]}, ${MOON_COLOR[2]})`;
+          celestialRadius *= 0.8;
+        }
+        const arcHeight = canvasHeight * 0.4;
+        const arcBaseY = canvasHeight * 0.6;
+        const x = canvasWidth * progress;
+        const y = arcBaseY - Math.sin(progress * Math.PI) * arcHeight;
+        ctx.beginPath();
+        ctx.arc(x, y, celestialRadius, 0, Math.PI * 2);
+        ctx.fill();
+        if (!isDaytime) {
+          ctx.fillStyle = "rgba(200, 200, 200, 0.5)";
+          for (let i = 0; i < 5; i++) {
+            const craterX = x + (Math.random() - 0.5) * celestialRadius;
+            const craterY = y + (Math.random() - 0.5) * celestialRadius;
+            const craterSize = celestialRadius * (0.1 + Math.random() * 0.15);
+            ctx.beginPath();
+            ctx.arc(craterX, craterY, craterSize, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+
+      function renderClocks(radius, hour, minute) {
+        const analogCenterX = canvasWidth / 4;
+        const analogCenterY = canvasHeight / 4;
+        const digitalCenterX = (canvasWidth * 3) / 4;
+        const digitalCenterY = canvasHeight / 4;
+        renderAnalogClock(analogCenterX, analogCenterY, radius, hour, minute);
+        renderDigitalClock(
+          digitalCenterX,
+          digitalCenterY,
+          radius,
+          hour,
+          minute,
+        );
+      }
+
+      function renderAnalogClock(centerX, centerY, radius, hour, minute) {
+        // Draw clock face
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Draw border
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Draw hour markers
+        ctx.fillStyle = "black";
+        ctx.font = `${radius * 0.15}px sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        for (let i = 1; i <= 12; i++) {
+          const angle = (i - 3) * (Math.PI / 6);
+          const x = centerX + Math.cos(angle) * radius * 0.8;
+          const y = centerY + Math.sin(angle) * radius * 0.8;
+          ctx.fillText(i.toString(), x, y);
+        }
+
+        // Draw hour hand
+        const hourAngle =
+          ((hour % 12) + minute / 60) * (Math.PI / 6) - Math.PI / 2;
+        drawClockHand(centerX, centerY, hourAngle, radius * 0.5, 6);
+
+        // Draw minute hand
+        const minuteAngle = minute * (Math.PI / 30) - Math.PI / 2;
+        drawClockHand(centerX, centerY, minuteAngle, radius * 0.7, 4);
+
+        // Draw center dot
+        ctx.fillStyle = "black";
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // ----- AM/PM Indicator -----
+        const indicator = hour < 12 ? "AM" : "PM";
+        // Set font size to one-third of the digital display font (which is 0.7 * radius)
+        const indicatorFontSize = (radius * 0.7) / 3;
+        ctx.font = `bold ${indicatorFontSize}px sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        const paddingX = 10;
+        const paddingY = 5;
+        const textWidth = ctx.measureText(indicator).width;
+        const rectWidth = textWidth + 2 * paddingX;
+        const rectHeight = indicatorFontSize + 2 * paddingY;
+        const gap = 10; // gap between clock and indicator
+        const rectX = centerX - rectWidth / 2;
+        const rectY = centerY + radius + gap;
+
+        // Draw white rectangle with thin black border
+        ctx.fillStyle = "white";
+        ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(rectX, rectY, rectWidth, rectHeight);
+
+        // Draw the indicator text centered in the rectangle
+        ctx.fillStyle = "black";
+        ctx.fillText(indicator, centerX, rectY + rectHeight / 2);
+      }
+
+      function drawClockHand(centerX, centerY, angle, length, width) {
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = width;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(
+          centerX + Math.cos(angle) * length,
+          centerY + Math.sin(angle) * length,
+        );
+        ctx.stroke();
+      }
+
+      function renderDigitalClock(centerX, centerY, radius, hour, minute) {
+        const width = radius * 2;
+        const height = radius;
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.fillRect(centerX - width / 2, centerY - height / 2, width, height);
+        const timeString = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+        ctx.fillStyle = "red";
+        ctx.font = `bold ${height * 0.7}px sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(timeString, centerX, centerY);
+      }
+
+      window.addEventListener("load", init);
+    </script>
+  </body>
+</html>
