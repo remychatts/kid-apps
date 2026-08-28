@@ -140,6 +140,25 @@
     ]
   },
   {
+    "id": "penguin-slide",
+    "title": "Penguin Peak!",
+    "shortName": "Penguin Peak",
+    "description": "Slide, leap and splash through a sparkling Antarctic adventure.",
+    "date": "August 2026",
+    "emoji": "🐧",
+    "themeColour": "#082f5e",
+    "backgroundColour": "#082f5e",
+    "orientation": "landscape",
+    "icons": [
+      {
+        "src": "icon.svg",
+        "sizes": "any",
+        "type": "image/svg+xml",
+        "purpose": "any maskable"
+      }
+    ]
+  },
+  {
     "id": "podcast-episodes",
     "title": "Podcast Episodes",
     "shortName": "Podcasts",

@@ -1,0 +1,328 @@
+/** Phone-first presentation for Penguin Peak's canvas and overlays. */
+:root {
+  font-family: "Fredoka Variable", "Trebuchet MS", sans-serif;
+  color: white;
+  background: #082f5e;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  background: #082f5e;
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+}
+
+.game-shell {
+  position: fixed;
+  inset: 0;
+  min-height: 320px;
+  background: #082f5e;
+  overflow: hidden;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.play-area {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hud {
+  position: absolute;
+  z-index: 4;
+  top: max(12px, env(safe-area-inset-top));
+  left: max(14px, env(safe-area-inset-left));
+  right: max(14px, env(safe-area-inset-right));
+  display: grid;
+  grid-template-columns: max-content minmax(120px, 360px) 46px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  pointer-events: none;
+}
+
+.level-pill,
+.sound {
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  color: #08243f;
+  background: rgba(255, 255, 255, 0.91);
+  box-shadow: 0 6px 0 rgba(8, 36, 63, 0.2);
+  font-weight: 750;
+}
+
+.level-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px 7px 8px;
+}
+.level-pill span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: white;
+  background: #ff4a93;
+  font-weight: 900;
+}
+
+.sound {
+  width: 46px;
+  height: 46px;
+  border: 0;
+  font-size: 22px;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.progress {
+  position: relative;
+  height: 17px;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  border-radius: 99px;
+  background: rgba(8, 36, 63, 0.34);
+  box-shadow: 0 3px 0 rgba(8, 36, 63, 0.22);
+}
+.progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ffe551, #ff8a3d, #ff4a93);
+  transition: width 0.12s linear;
+}
+.progress-penguin {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -56%);
+  font-size: 25px;
+  filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.25));
+}
+.sea {
+  position: absolute;
+  right: -25px;
+  top: -11px;
+  font-size: 26px;
+}
+
+.card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(88vw, 470px);
+  padding: clamp(18px, 4vw, 32px);
+  transform: translate(-50%, -47%) rotate(-1deg);
+  border: 4px solid white;
+  border-radius: 32px 18px 34px 20px;
+  color: #08243f;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(214, 250, 255, 0.96)
+  );
+  box-shadow:
+    0 13px 0 rgba(8, 36, 63, 0.25),
+    0 22px 50px rgba(8, 36, 63, 0.2);
+  text-align: center;
+}
+
+.card::before,
+.card::after {
+  content: "✦";
+  position: absolute;
+  color: #ff4a93;
+  font-size: 28px;
+  animation: sparkle 1.5s ease-in-out infinite;
+}
+.card::before {
+  left: 22px;
+  top: 21px;
+}
+.card::after {
+  right: 23px;
+  bottom: 22px;
+  color: #17bcd7;
+  animation-delay: -0.65s;
+}
+
+.eyebrow {
+  margin: 0 0 2px !important;
+  color: #e73280;
+  font-size: clamp(14px, 3vw, 18px) !important;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.card h1 {
+  margin: 0;
+  font-size: clamp(40px, 10vw, 68px);
+  line-height: 0.96;
+  letter-spacing: -0.045em;
+  text-shadow: 0 4px 0 #b9ebf4;
+}
+.card p {
+  margin: 14px auto 18px;
+  max-width: 360px;
+  font-size: clamp(16px, 4vw, 21px);
+  line-height: 1.25;
+  font-weight: 620;
+}
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 10px 14px 10px 22px;
+  border-radius: 99px;
+  color: white;
+  background: linear-gradient(135deg, #ff3f8f, #ff743d);
+  box-shadow: 0 6px 0 #bd2865;
+  font-size: clamp(18px, 4vw, 23px);
+  font-weight: 850;
+}
+.action b {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: #ff4a93;
+  background: white;
+  font-size: 25px;
+}
+.card small {
+  display: block;
+  margin-top: 14px;
+  color: #54718a;
+  font-weight: 700;
+}
+
+.jump-hint {
+  position: absolute;
+  z-index: 3;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  transform: translateX(-50%);
+  padding: 8px 8px 8px 17px;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 99px;
+  color: white;
+  background: rgba(8, 36, 63, 0.44);
+  backdrop-filter: blur(8px);
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+}
+.jump-hint b {
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  border-radius: 50%;
+  color: #08243f;
+  background: white;
+  font-size: 20px;
+}
+
+@keyframes sparkle {
+  50% {
+    transform: scale(0.55) rotate(30deg);
+    opacity: 0.55;
+  }
+}
+
+@media (max-width: 650px) {
+  .hud {
+    grid-template-columns: max-content 1fr 42px;
+    gap: 8px;
+  }
+  .level-pill {
+    padding-right: 10px;
+    font-size: 12px;
+  }
+  .level-pill span {
+    width: 24px;
+    height: 24px;
+  }
+  .sound {
+    width: 42px;
+    height: 42px;
+  }
+  .sea {
+    display: none;
+  }
+}
+
+@media (max-height: 480px) {
+  .hud {
+    top: max(7px, env(safe-area-inset-top));
+  }
+  .card {
+    width: min(75vw, 420px);
+    padding: 14px 24px;
+    border-radius: 22px 14px 24px 16px;
+  }
+  .card h1 {
+    font-size: clamp(32px, 9vh, 48px);
+  }
+  .card p {
+    margin: 7px auto 10px;
+    font-size: 15px;
+  }
+  .action {
+    min-height: 42px;
+    padding: 6px 10px 6px 17px;
+    font-size: 17px;
+  }
+  .action b {
+    width: 28px;
+    height: 28px;
+  }
+  .card small {
+    display: none;
+  }
+  .jump-hint {
+    bottom: max(7px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card::before,
+  .card::after {
+    animation: none;
+  }
+  .progress-fill {
+    transition: none;
+  }
+}

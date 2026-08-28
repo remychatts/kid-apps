@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#4ce4ff"/><stop offset="1" stop-color="#6a43d9"/></linearGradient>
+    <linearGradient id="ice" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#80dfff"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#sky)"/>
+  <path d="M-20 386L190 213l342 173v146H-20z" fill="url(#ice)"/>
+  <g transform="translate(267 260) rotate(18)">
+    <ellipse cy="34" rx="92" ry="120" fill="#092b4c"/>
+    <ellipse cy="55" rx="58" ry="81" fill="#fff9df"/>
+    <ellipse cx="-48" cy="-54" rx="42" ry="47" fill="#092b4c"/>
+    <ellipse cx="48" cy="-54" rx="42" ry="47" fill="#092b4c"/>
+    <circle cx="-33" cy="-57" r="8" fill="#fff"/><circle cx="33" cy="-57" r="8" fill="#fff"/>
+    <circle cx="-31" cy="-56" r="4" fill="#092b4c"/><circle cx="31" cy="-56" r="4" fill="#092b4c"/>
+    <path d="M-19-35L0-21l19-14L0-47z" fill="#ff9b32"/>
+    <path d="M-58 132l-47 31 67-5zM58 132l47 31-67-5z" fill="#ff9b32"/>
+  </g>
+  <circle cx="77" cy="92" r="13" fill="#fff" opacity=".9"/><circle cx="431" cy="118" r="9" fill="#fff" opacity=".8"/><circle cx="111" cy="173" r="7" fill="#fff" opacity=".7"/>
+</svg>
