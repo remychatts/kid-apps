@@ -2,7 +2,7 @@
 
 Everything here is vibe-coded.
 
-A monorepo for thirteen playful, family-friendly web apps and the catalogue that links them together. Every app is independently runnable and installable, while one root build assembles the complete static GitHub Pages site.
+A monorepo for fourteen playful, family-friendly web apps and the catalogue that links them together. Every app is independently runnable and installable, while one root build assembles the complete static GitHub Pages site.
 
 ## Apps
 
@@ -15,6 +15,7 @@ A monorepo for thirteen playful, family-friendly web apps and the catalogue that
 | [Imposter!](apps/imposter-game/)                           | A pass-the-phone secret-word game for 3–8 players.    | July 2026                            |
 | [Jungle Baby Snake Rescue](apps/jungle-snake/)             | A jungle rescue game starring a purple snake.         | April 2026                           |
 | [Pet Chooser](apps/pet-chooser/)                           | Matches players with a companion from a cast of pets. | December 2025                        |
+| [Penguin Peak!](apps/penguin-slide/)                       | Slides a penguin down an obstacle-filled icy hill.    | August 2026                          |
 | [Podcast Episodes](apps/podcast-episodes/)                 | Loads and filters episodes from an RSS feed.          | July 2025                            |
 | [Practice Stars](apps/trumpet-practice/)                   | Builds practice streaks and unlocks reward pictures.  | August 2026                          |
 | [Probability Explorer](apps/probability-explorer/)         | Visualises repeated samples as live histograms.       | April 2025                           |
