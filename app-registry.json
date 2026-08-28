@@ -57,6 +57,26 @@
     ]
   },
   {
+    "id": "frogball-final",
+    "title": "Frogball Final!",
+    "shortName": "Frogball",
+    "description": "Captain a team of frogs through a fast, funny football cup final.",
+    "date": "August 2026",
+    "emoji": "🐸",
+    "themeColour": "#07182d",
+    "backgroundColour": "#07182d",
+    "orientation": "any",
+    "icons": [
+      { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+      {
+        "src": "icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+      }
+    ]
+  },
+  {
     "id": "imposter-game",
     "title": "Imposter!",
     "shortName": "Imposter",

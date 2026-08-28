@@ -2,7 +2,7 @@
 
 Everything here is vibe-coded.
 
-A monorepo for twelve playful, family-friendly web apps and the catalogue that links them together. Every app is independently runnable and installable, while one root build assembles the complete static GitHub Pages site.
+A monorepo for thirteen playful, family-friendly web apps and the catalogue that links them together. Every app is independently runnable and installable, while one root build assembles the complete static GitHub Pages site.
 
 ## Apps
 
@@ -11,6 +11,7 @@ A monorepo for twelve playful, family-friendly web apps and the catalogue that l
 | [24-Hour Clock](apps/24-hour-clock/)                       | Explores a full day at an adjustable playback speed.  | March 2025                           |
 | [Arial vs Helvetica](apps/arial-vs-helvetica/)             | Teaches the differences between two similar fonts.    | August 2026                          |
 | [Drawing Prompt Machine](apps/drawing/)                    | Spins up a fun drawing challenge.                     | January 2026                         |
+| [Frogball Final!](apps/frogball-final/)                    | Puts you in charge of a frog football team.           | August 2026                          |
 | [Imposter!](apps/imposter-game/)                           | A pass-the-phone secret-word game for 3–8 players.    | July 2026                            |
 | [Jungle Baby Snake Rescue](apps/jungle-snake/)             | A jungle rescue game starring a purple snake.         | April 2026                           |
 | [Pet Chooser](apps/pet-chooser/)                           | Matches players with a companion from a cast of pets. | December 2025                        |
