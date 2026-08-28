@@ -47,7 +47,7 @@ Run all checks and assemble the Pages site in `dist/`:
 just ci
 ```
 
-The app list, catalogue copy, dates, colours, PWA metadata and build targets are coordinated through `app-registry.json`. Add a new app there and under `apps/<id>/`, then give it a `vite.config.ts` built with `createAppConfig`.
+The app list, catalogue copy, dates, precise update timestamps, colours, PWA metadata and build targets are coordinated through `app-registry.json`. The catalogue uses `updatedAt` to keep apps in newest-first order, including apps with the same displayed month. Add a new app there and under `apps/<id>/`, then give it a `vite.config.ts` built with `createAppConfig`.
 
 ## Structure
 

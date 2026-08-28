@@ -2,14 +2,29 @@
 import apps from "../../../app-registry.json";
 import "./styles.css";
 
+declare const __CATALOGUE_GENERATED_AT__: string;
+
 const root = document.querySelector<HTMLDivElement>("#root");
 if (!root) throw new Error("Catalogue root element is missing");
 
-// Convert the registry's month-and-year labels into sortable timestamps.
-const appTimestamp = (date: string) => Date.parse(`1 ${date}`);
+// Keep apps with the same displayed month in their precise update order.
+const appTimestamp = (updatedAt: string) => Date.parse(updatedAt);
+
+// The seconds make short build and deployment delays visible without a full date.
+const generatedAt = new Date(__CATALOGUE_GENERATED_AT__).toLocaleTimeString(
+  "en-GB",
+  {
+    minute: "2-digit",
+    second: "2-digit",
+    timeZone: "UTC",
+  },
+);
 
 const cards = [...apps]
-  .sort((left, right) => appTimestamp(right.date) - appTimestamp(left.date))
+  .sort(
+    (left, right) =>
+      appTimestamp(right.updatedAt) - appTimestamp(left.updatedAt),
+  )
   .map(
     (app) => `
       <a class="app-card" href="./${app.id}/" style="--accent: ${app.themeColour}">
@@ -34,6 +49,9 @@ root.innerHTML = `
       <p class="intro">Games, creative prompts and curious visual experiments for the whole family.</p>
     </header>
     <section class="app-grid" aria-label="Apps">${cards}</section>
-    <footer>Made for curious minds and rainy afternoons.</footer>
+    <footer>
+      <span>Made for curious minds and rainy afternoons.</span>
+      <span class="generation-time">Generated ${generatedAt} UTC</span>
+    </footer>
   </main>
 `;
