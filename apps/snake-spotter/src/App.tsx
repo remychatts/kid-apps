@@ -256,7 +256,7 @@ export default function App() {
               Start expedition <span aria-hidden="true">→</span>
             </button>
             <p className="collection-note">
-              20 photo species · 100 possible answers
+              30 photo species · 100 possible answers
             </p>
           </section>
           <HighScores scores={scores} />
