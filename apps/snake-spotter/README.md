@@ -11,6 +11,7 @@ npm run dev -- snake-spotter
 ```
 
 The app is installable and fully playable offline after its first successful load.
+It includes a dedicated 180-pixel Apple touch icon for adding the app to an iPad Home Screen.
 
 ## Photo sources
 

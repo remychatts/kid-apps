@@ -9,6 +9,6 @@ export default defineConfig(
     appRoot: fileURLToPath(new URL(".", import.meta.url)),
     id: "snake-spotter",
     plugins: [react()],
-    includeAssets: ["icon.svg", "photos/*.webp"],
+    includeAssets: ["icon.svg", "icon-*.png", "photos/*.webp"],
   }),
 );
