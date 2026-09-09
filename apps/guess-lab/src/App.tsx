@@ -20,7 +20,7 @@ import {
 import "./styles.css";
 
 type Player = "human" | AlgorithmId;
-type RoundStatus = "idle" | "playing" | "complete";
+type RoundStatus = "playing" | "complete";
 type BusyMode = "play-game" | "auto" | null;
 
 interface Results {
@@ -62,6 +62,10 @@ function loadHumanResults(): Results {
 function friendlyAverage(turns: number[]) {
   if (turns.length === 0) return "No games yet";
   const mean = turns.reduce((sum, turn) => sum + turn, 0) / turns.length;
+  const nearestInteger = Math.round(mean);
+  if (Math.abs(mean - nearestInteger) <= 0.01) {
+    return `${nearestInteger} ${nearestInteger === 1 ? "turn" : "turns"}`;
+  }
   const lower = Math.floor(mean);
   const fraction = mean - lower;
   if (fraction < 0.35)
@@ -84,13 +88,15 @@ function possibleRange(history: GuessRecord[]) {
   return { low, high };
 }
 
-/** Renders exact counts as a colourful, horizontally scrollable histogram. */
+/** Renders exact counts on a compact, evenly spaced numeric x-axis. */
 function Histogram({
   results,
   revision,
+  highlightedTurn,
 }: {
   results: Results;
   revision: number;
+  highlightedTurn: number | null;
 }) {
   const counts = new Map<number, number>();
   results.turns.forEach((turn) =>
@@ -98,6 +104,19 @@ function Histogram({
   );
   const buckets = [...counts.entries()].sort(([left], [right]) => left - right);
   const tallest = Math.max(1, ...buckets.map(([, count]) => count));
+  const minimum = buckets[0]?.[0] ?? 0;
+  const maximum = buckets.at(-1)?.[0] ?? 0;
+  const range = maximum - minimum;
+  const slotCount = range + 1;
+  const barWidth = range === 0 ? 18 : Math.min(18, (100 / slotCount) * 0.92);
+  const xFor = (turn: number) =>
+    range === 0 ? 50 : ((turn - minimum + 0.5) / slotCount) * 100;
+  const labelStep = Math.max(1, Math.ceil(range / 6));
+  const axisLabels = Array.from(
+    { length: Math.floor(range / labelStep) + 1 },
+    (_, index) => minimum + index * labelStep,
+  );
+  if (axisLabels.at(-1) !== maximum) axisLabels.push(maximum);
 
   return (
     <section className="results" aria-label="Results">
@@ -118,27 +137,49 @@ function Histogram({
           <p>Your turns will make a graph here.</p>
         </div>
       ) : (
-        <div
-          className="histogram"
-          key={`graph-${revision}`}
-          aria-label="Turns taken in completed games"
-        >
-          {buckets.map(([turn, count]) => (
-            <div className="bar-column" key={turn}>
-              <span className="bar-count">{count}</span>
-              <div
-                className="bar"
-                style={
-                  {
-                    "--bar-height": `${Math.max(18, (count / tallest) * 100)}%`,
-                  } as CSSProperties
-                }
-                title={`${count} ${count === 1 ? "game" : "games"} took ${turn} turns`}
-              />
-              <strong>{turn}</strong>
+        <div className="histogram" aria-label="Turns taken in completed games">
+          <div className="chart-plot">
+            {buckets.map(([turn, count]) => {
+              const description = `${turn} ${turn === 1 ? "turn" : "turns"}: ${count} ${count === 1 ? "game" : "games"}`;
+              return (
+                <div
+                  className="bar-column"
+                  key={turn}
+                  style={
+                    {
+                      "--bar-left": `${xFor(turn)}%`,
+                      "--bar-width": `${barWidth}%`,
+                    } as CSSProperties
+                  }
+                >
+                  {barWidth >= 4 && <span className="bar-count">{count}</span>}
+                  <div
+                    className={`bar ${highlightedTurn === turn ? "latest" : ""}`}
+                    style={
+                      {
+                        "--bar-height": `${Math.max(8, (count / tallest) * 100)}%`,
+                      } as CSSProperties
+                    }
+                    tabIndex={0}
+                    aria-label={description}
+                  >
+                    <span className="bar-tooltip" role="tooltip">
+                      <strong>{turn} turns</strong>
+                      {count} {count === 1 ? "game" : "games"}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+            <div className="chart-axis" aria-hidden="true">
+              {axisLabels.map((turn) => (
+                <span key={turn} style={{ left: `${xFor(turn)}%` }}>
+                  {turn}
+                </span>
+              ))}
             </div>
-          ))}
-          <span className="turn-axis">turns</span>
+            <span className="turn-axis">turns</span>
+          </div>
         </div>
       )}
     </section>
@@ -156,19 +197,22 @@ function GuessHistory({ history }: { history: GuessRecord[] }) {
   }
   return (
     <ol className="history" aria-label="Guess history" aria-live="polite">
-      {history.map((record, index) => (
-        <li className={record.result} key={`${index}-${record.guess}`}>
-          <span>{index + 1}</span>
-          <strong>{record.guess}</strong>
-          <em>
-            {record.result === "too-low"
-              ? "Too low ↑"
-              : record.result === "too-high"
-                ? "Too high ↓"
-                : "Found it! ★"}
-          </em>
-        </li>
-      ))}
+      {history
+        .map((record, index) => ({ record, turn: index + 1 }))
+        .reverse()
+        .map(({ record, turn }) => (
+          <li className={record.result} key={`${turn}-${record.guess}`}>
+            <span>{turn}</span>
+            <strong>{record.guess}</strong>
+            <em>
+              {record.result === "too-low"
+                ? "Too low ↑"
+                : record.result === "too-high"
+                  ? "Too high ↓"
+                  : "Found it! ★"}
+            </em>
+          </li>
+        ))}
     </ol>
   );
 }
@@ -243,20 +287,22 @@ interface PlayerPanelProps {
 function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
   const isHuman = player === "human";
   const algorithm = isHuman ? null : getAlgorithm(player);
-  const [target, setTarget] = useState<number | null>(null);
+  const [target, setTarget] = useState(secretNumber);
   const [history, setHistory] = useState<GuessRecord[]>([]);
-  const [status, setStatus] = useState<RoundStatus>("idle");
+  const [status, setStatus] = useState<RoundStatus>("playing");
   const [guess, setGuess] = useState(1);
   const [results, setResults] = useState<Results>(() =>
     isHuman ? loadHumanResults() : EMPTY_RESULTS,
   );
   const [revision, setRevision] = useState(0);
+  const [highlightedTurn, setHighlightedTurn] = useState<number | null>(null);
   const [busy, setBusy] = useState<BusyMode>(null);
   const autoFrame = useRef<number | null>(null);
   const autoLatest = useRef<{ target: number; history: GuessRecord[] } | null>(
     null,
   );
   const autoCount = useRef(0);
+  const highlightTimer = useRef<number | null>(null);
   const range = possibleRange(history);
 
   useEffect(() => {
@@ -266,19 +312,33 @@ function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
   useEffect(
     () => () => {
       if (autoFrame.current !== null) cancelAnimationFrame(autoFrame.current);
+      if (highlightTimer.current !== null)
+        window.clearTimeout(highlightTimer.current);
     },
     [],
   );
 
-  /** Starts a fresh round and returns its secret for immediate algorithm actions. */
+  /** Starts a fresh round and clears the previous graph highlight. */
   const startRound = () => {
     wakeAudio();
-    const nextTarget = secretNumber();
-    setTarget(nextTarget);
+    setTarget(secretNumber());
     setHistory([]);
     setGuess(1);
     setStatus("playing");
-    return nextTarget;
+    setHighlightedTurn(null);
+    if (highlightTimer.current !== null)
+      window.clearTimeout(highlightTimer.current);
+  };
+
+  /** Highlights the latest result until another round starts or ten seconds pass. */
+  const markLatestTurn = (turnCount: number) => {
+    setHighlightedTurn(turnCount);
+    if (highlightTimer.current !== null)
+      window.clearTimeout(highlightTimer.current);
+    highlightTimer.current = window.setTimeout(
+      () => setHighlightedTurn(null),
+      10_000,
+    );
   };
 
   /** Adds a completed game's turn count to this panel. */
@@ -288,6 +348,7 @@ function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
       turns: [...current.turns, turnCount],
     }));
     setRevision((current) => current + 1);
+    markLatestTurn(turnCount);
   };
 
   /** Resolves one guess against a known target. */
@@ -296,7 +357,7 @@ function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
 
   /** Submits the current human guess. */
   const submitHumanGuess = () => {
-    if (target === null || status !== "playing") return;
+    if (status !== "playing") return;
     const result = resultFor(guess, target);
     const nextHistory = [...history, { guess, result }];
     setHistory(nextHistory);
@@ -307,17 +368,12 @@ function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
     }
   };
 
-  /** Takes one visible turn, starting a round automatically when necessary. */
+  /** Takes one visible turn in the already-started round. */
   const stepAlgorithm = () => {
-    if (!algorithm) return;
+    if (!algorithm || status !== "playing") return;
     wakeAudio();
-    const activeTarget =
-      status === "playing" && target !== null ? target : secretNumber();
-    const activeHistory = status === "playing" ? history : [];
-    if (status !== "playing") {
-      setTarget(activeTarget);
-      setStatus("playing");
-    }
+    const activeTarget = target;
+    const activeHistory = history;
     const value = nextGuess(algorithm.id, activeHistory);
     const result = resultFor(value, activeTarget);
     const nextHistory = [...activeHistory, { guess: value, result }];
@@ -331,14 +387,11 @@ function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
 
   /** Animates algorithm turns at a pace slow enough to follow. */
   const playAlgorithmGame = async () => {
-    if (!algorithm || busy) return;
+    if (!algorithm || busy || status !== "playing") return;
     wakeAudio();
     setBusy("play-game");
-    const activeTarget =
-      status === "playing" && target !== null ? target : secretNumber();
-    let activeHistory = status === "playing" ? history : [];
-    setTarget(activeTarget);
-    setStatus("playing");
+    const activeTarget = target;
+    let activeHistory = history;
     if (activeHistory.length === 0) setHistory([]);
     while (activeHistory.at(-1)?.result !== "correct") {
       const value = nextGuess(algorithm.id, activeHistory);
@@ -358,6 +411,9 @@ function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
   const startAuto = () => {
     if (!algorithm || busy) return;
     wakeAudio();
+    setHighlightedTurn(null);
+    if (highlightTimer.current !== null)
+      window.clearTimeout(highlightTimer.current);
     setBusy("auto");
     autoCount.current = 0;
     const runFrame = () => {
@@ -371,6 +427,7 @@ function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
         turns: [...current.turns, nextHistory.length],
       }));
       setRevision((current) => current + 1);
+      markLatestTurn(nextHistory.length);
       autoFrame.current = requestAnimationFrame(runFrame);
     };
     autoFrame.current = requestAnimationFrame(runFrame);
@@ -430,22 +487,22 @@ function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
           aria-label={`${algorithm?.name ?? "Human"} game`}
         >
           <div className="round-strip">
-            <button
-              className="new-round"
-              type="button"
-              onClick={startRound}
-              disabled={busy !== null}
-            >
-              {status === "idle" ? "Play" : "Play again"}
-            </button>
+            {status === "complete" && (
+              <button
+                className="new-round"
+                type="button"
+                onClick={startRound}
+                disabled={busy !== null}
+              >
+                Play again
+              </button>
+            )}
             <div className="possible-range">
-              {status === "idle" ? (
-                <span>
-                  Secret number: <strong>?</strong>
-                </span>
-              ) : status === "complete" ? (
+              {status === "complete" ? (
                 <span>
                   Secret number: <strong>{target}</strong>
+                  <i aria-hidden="true">•</i>
+                  Turns: <strong>{history.length}</strong>
                 </span>
               ) : (
                 <span>
@@ -503,6 +560,7 @@ function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
                   onClick={() => {
                     setResults(EMPTY_RESULTS);
                     setRevision((current) => current + 1);
+                    setHighlightedTurn(null);
                     localStorage.removeItem(STORAGE_KEY);
                   }}
                 >
@@ -522,14 +580,14 @@ function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
               <button
                 type="button"
                 onClick={stepAlgorithm}
-                disabled={busy !== null}
+                disabled={busy !== null || status === "complete"}
               >
                 Play turn
               </button>
               <button
                 type="button"
                 onClick={() => void playAlgorithmGame()}
-                disabled={busy !== null}
+                disabled={busy !== null || status === "complete"}
               >
                 Play game
               </button>
@@ -537,7 +595,10 @@ function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
                 className={busy === "auto" ? "stop-button" : "auto-button"}
                 type="button"
                 onClick={busy === "auto" ? stopAuto : startAuto}
-                disabled={busy === "play-game"}
+                disabled={
+                  busy === "play-game" ||
+                  (status === "complete" && busy !== "auto")
+                }
               >
                 {busy === "auto" ? "Stop" : "Auto"}
               </button>
@@ -550,13 +611,12 @@ function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
               <i /> Running super-fast experiments…
             </div>
           )}
-          {status === "complete" && busy !== "auto" && (
-            <div className="celebration" aria-hidden="true">
-              ★ ✦ ★
-            </div>
-          )}
         </section>
-        <Histogram results={results} revision={revision} />
+        <Histogram
+          results={results}
+          revision={revision}
+          highlightedTurn={highlightedTurn}
+        />
       </div>
     </article>
   );
