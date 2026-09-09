@@ -18,8 +18,9 @@
     "verify": "node scripts/verify-build.mjs"
   },
   "dependencies": {
-    "@fontsource/bravura": "^5.0.0",
     "@fontsource-variable/fredoka": "^5.2.8",
+    "@fontsource-variable/nunito": "^5.3.0",
+    "@fontsource/bravura": "^5.0.0",
     "lucide-react": "^0.468.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

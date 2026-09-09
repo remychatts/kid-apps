@@ -1,8 +1,8 @@
 /** Gives Guess Lab its bright, tactile, iPad-first visual system. */
-@import "@fontsource-variable/fredoka";
+@import "@fontsource-variable/nunito";
 
 :root {
-  font-family: "Fredoka Variable", "Trebuchet MS", sans-serif;
+  font-family: "Nunito Variable", "Trebuchet MS", sans-serif;
   color: #07182d;
   background: #07182d;
   font-synthesis: none;
@@ -375,6 +375,12 @@ main {
   font-size: 1.3rem;
 }
 
+.possible-range i {
+  margin: 0 9px;
+  color: #9aa8b5;
+  font-style: normal;
+}
+
 .human-controls {
   position: relative;
   display: grid;
@@ -408,6 +414,14 @@ main {
   font-size: 1.75rem;
   font-weight: 750;
   text-align: center;
+}
+
+.number-entry input:disabled {
+  border-color: #d9e1e7;
+  color: #7e8b98;
+  background: #e9eef2;
+  box-shadow: inset 0 2px 5px rgb(7 24 45 / 8%);
+  opacity: 0.58;
 }
 
 .primary-action {
@@ -664,44 +678,55 @@ main {
 }
 
 .histogram {
-  position: relative;
-  display: flex;
-  align-items: end;
+  display: block;
   min-height: 200px;
   flex: 1;
-  gap: 7px;
   margin-top: 12px;
-  padding: 25px 8px 24px;
-  overflow-x: auto;
+  padding: 10px 2px 0;
+}
+
+.chart-plot {
+  position: relative;
+  width: 100%;
+  height: 190px;
   border-bottom: 3px solid #07182d;
 }
 
 .bar-column {
-  position: relative;
+  position: absolute;
+  bottom: 28px;
+  left: var(--bar-left);
   display: flex;
-  width: max(24px, calc((100% - 38px) / 8));
-  min-width: 24px;
-  height: 150px;
-  flex: 1 0 24px;
+  width: var(--bar-width);
+  height: 135px;
   align-items: center;
   flex-direction: column;
   justify-content: end;
+  transform: translateX(-50%);
 }
 
 .bar {
+  position: relative;
   width: 100%;
   height: var(--bar-height);
-  min-height: 10px;
-  border: 2px solid color-mix(in srgb, var(--panel-colour) 68%, #07182d);
-  border-radius: 9px 9px 3px 3px;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--panel-colour) 70%, white),
-    var(--panel-colour)
-  );
+  min-width: 3px;
+  min-height: 8px;
+  border: 2px solid #084bc8;
+  border-radius: min(9px, 30%) min(9px, 30%) 2px 2px;
+  background-color: #0a60ff;
   box-shadow: inset 0 4px 0 rgb(255 255 255 / 38%);
+  cursor: help;
   transform-origin: bottom;
+  transition:
+    height 260ms ease-out,
+    background-color 1.2s ease,
+    border-color 1.2s ease;
   animation: bar-grow 420ms cubic-bezier(0.2, 0.9, 0.25, 1.15) both;
+}
+
+.bar.latest {
+  border-color: #9d0b35;
+  background-color: #ff315f;
 }
 
 .bar-count {
@@ -710,20 +735,67 @@ main {
   font-weight: 700;
 }
 
-.bar-column strong {
+.bar-tooltip {
   position: absolute;
-  top: calc(100% + 5px);
-  font-size: 0.76rem;
+  z-index: 4;
+  bottom: calc(100% + 9px);
+  left: 50%;
+  display: none;
+  min-width: max-content;
+  padding: 7px 10px;
+  border-radius: 10px;
+  color: white;
+  background: #07182d;
+  box-shadow: 0 6px 18px rgb(7 24 45 / 28%);
+  font-size: 0.75rem;
+  line-height: 1.25;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.bar-tooltip::after {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  border: 6px solid transparent;
+  border-top-color: #07182d;
+  content: "";
+  transform: translateX(-50%);
+}
+
+.bar-tooltip strong {
+  display: block;
+  color: #8ee9ff;
+  font-size: 0.8rem;
+}
+
+.bar:hover .bar-tooltip,
+.bar:focus-visible .bar-tooltip {
+  display: block;
+}
+
+.chart-axis {
+  position: absolute;
+  right: 0;
+  bottom: -25px;
+  left: 0;
+  height: 22px;
+}
+
+.chart-axis span {
+  position: absolute;
+  color: #34465a;
+  font-size: 0.78rem;
+  font-weight: 700;
+  transform: translateX(-50%);
 }
 
 .turn-axis {
-  position: sticky;
+  position: absolute;
   right: 0;
-  bottom: -22px;
-  align-self: flex-end;
+  bottom: -43px;
   padding-left: 5px;
   color: #6d7b8c;
-  background: rgb(255 255 255 / 82%);
   font-size: 0.65rem;
   text-transform: uppercase;
 }
@@ -752,16 +824,6 @@ main {
   background: #69e82f;
   box-shadow: 0 0 0 0 rgb(105 232 47 / 70%);
   animation: ping 1s ease-out infinite;
-}
-
-.celebration {
-  position: absolute;
-  top: 12px;
-  right: 20px;
-  color: #ff9000;
-  font-size: 1.1rem;
-  letter-spacing: 0.2em;
-  animation: celebrate 750ms ease-out both;
 }
 
 .add-algorithm {
@@ -932,7 +994,7 @@ main {
 
 .algorithm-diagram text {
   fill: #23384d;
-  font-family: "Fredoka Variable", sans-serif;
+  font-family: "Nunito Variable", sans-serif;
   font-size: 15px;
   font-weight: 650;
 }
@@ -1023,17 +1085,6 @@ main {
 @keyframes ping {
   70% {
     box-shadow: 0 0 0 13px rgb(105 232 47 / 0%);
-  }
-}
-
-@keyframes celebrate {
-  0% {
-    opacity: 0;
-    transform: scale(0.2) rotate(-15deg);
-  }
-  55% {
-    opacity: 1;
-    transform: scale(1.25) rotate(4deg);
   }
 }
 
