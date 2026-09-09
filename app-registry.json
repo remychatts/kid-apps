@@ -81,6 +81,26 @@
     ]
   },
   {
+    "id": "guess-lab",
+    "title": "Guess Lab",
+    "shortName": "Guess Lab",
+    "description": "Race number-guessing algorithms and watch their statistics take shape.",
+    "date": "September 2026",
+    "updatedAt": "2026-09-09T12:00:00Z",
+    "emoji": "❓",
+    "themeColour": "#07182d",
+    "backgroundColour": "#07182d",
+    "orientation": "any",
+    "icons": [
+      {
+        "src": "icon.svg",
+        "sizes": "any",
+        "type": "image/svg+xml",
+        "purpose": "any maskable"
+      }
+    ]
+  },
+  {
     "id": "imposter-game",
     "title": "Imposter!",
     "shortName": "Imposter",
