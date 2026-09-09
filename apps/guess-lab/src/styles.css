@@ -508,15 +508,21 @@ main {
 }
 
 .reset-button {
-  position: absolute;
-  right: 0;
-  bottom: -40px;
-  border: 0;
-  color: #647388;
-  background: transparent;
-  font-size: 0.78rem;
-  text-decoration: underline;
+  min-height: 32px;
+  padding: 5px 9px;
+  border: 1px solid #cad5de;
+  border-radius: 10px;
+  color: #4e6073;
+  background: #fff;
+  font-size: 0.76rem;
+  font-weight: 700;
   cursor: pointer;
+}
+
+.reset-button:hover {
+  border-color: #ff315f;
+  color: #a20e3a;
+  background: #fff1f5;
 }
 
 .algorithm-controls {
@@ -646,9 +652,15 @@ main {
   letter-spacing: -0.035em;
 }
 
-.game-count {
+.results-actions {
+  display: flex;
   flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
   margin-left: auto;
+}
+
+.game-count {
   padding: 6px 9px;
   border-radius: 10px;
   color: #516073;
@@ -1144,10 +1156,6 @@ main {
   }
   .human-controls {
     grid-template-columns: 1fr;
-  }
-  .reset-button {
-    position: static;
-    justify-self: end;
   }
   .algorithm-controls {
     grid-template-columns: 1fr 1fr;

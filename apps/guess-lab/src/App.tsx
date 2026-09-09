@@ -74,7 +74,7 @@ function friendlyAverage(turns: number[]) {
     const upper = Math.ceil(mean);
     return `About ${upper} turns`;
   }
-  return `Between ${lower} and ${lower + 1} turns`;
+  return `${lower}–${lower + 1} turns`;
 }
 
 /** Calculates the still-possible range from all answers so far. */
@@ -93,10 +93,12 @@ function Histogram({
   results,
   revision,
   highlightedTurn,
+  onReset,
 }: {
   results: Results;
   revision: number;
   highlightedTurn: number | null;
+  onReset?: () => void;
 }) {
   const counts = new Map<number, number>();
   results.turns.forEach((turn) =>
@@ -127,9 +129,16 @@ function Histogram({
             {friendlyAverage(results.turns)}
           </strong>
         </div>
-        <span className="game-count">
-          {results.games} {results.games === 1 ? "game" : "games"}
-        </span>
+        <div className="results-actions">
+          <span className="game-count">
+            {results.games} {results.games === 1 ? "game" : "games"}
+          </span>
+          {onReset && results.games > 0 && (
+            <button className="reset-button" type="button" onClick={onReset}>
+              Reset results
+            </button>
+          )}
+        </div>
       </div>
       {buckets.length === 0 ? (
         <div className="empty-graph">
@@ -553,20 +562,6 @@ function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
                 disabled={status !== "playing"}
                 onChange={setGuess}
               />
-              {results.games > 0 && (
-                <button
-                  className="reset-button"
-                  type="button"
-                  onClick={() => {
-                    setResults(EMPTY_RESULTS);
-                    setRevision((current) => current + 1);
-                    setHighlightedTurn(null);
-                    localStorage.removeItem(STORAGE_KEY);
-                  }}
-                >
-                  Reset my results
-                </button>
-              )}
             </div>
           ) : (
             <div className="algorithm-controls">
@@ -595,10 +590,7 @@ function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
                 className={busy === "auto" ? "stop-button" : "auto-button"}
                 type="button"
                 onClick={busy === "auto" ? stopAuto : startAuto}
-                disabled={
-                  busy === "play-game" ||
-                  (status === "complete" && busy !== "auto")
-                }
+                disabled={busy === "play-game"}
               >
                 {busy === "auto" ? "Stop" : "Auto"}
               </button>
@@ -616,6 +608,16 @@ function PlayerPanel({ player, onExplain, onDelete }: PlayerPanelProps) {
           results={results}
           revision={revision}
           highlightedTurn={highlightedTurn}
+          onReset={
+            isHuman
+              ? () => {
+                  setResults(EMPTY_RESULTS);
+                  setRevision((current) => current + 1);
+                  setHighlightedTurn(null);
+                  localStorage.removeItem(STORAGE_KEY);
+                }
+              : undefined
+          }
         />
       </div>
     </article>
