@@ -7,6 +7,7 @@ import {
   CHALLENGE_ORDER,
   cellFillRank,
   fractionName,
+  nextChallenge,
   SHARE_OPTIONS,
   simplify,
   type ShareCount,
@@ -50,10 +51,10 @@ function Pie({
       <div className="pie-shadow" aria-hidden="true" />
       {Array.from({ length: shares }, (_, index) => {
         const retained = index < kept;
-        const columns = shares === 4 ? 2 : shares;
-        const rows = shares === 4 ? 2 : 1;
-        const column = shares === 4 ? index % 2 : index;
-        const row = shares === 4 ? Math.floor(index / 2) : 0;
+        const columns = shares === 4 ? 2 : 1;
+        const rows = shares === 4 ? 2 : shares;
+        const column = shares === 4 ? index % 2 : 0;
+        const row = shares === 4 ? Math.floor(index / 2) : index;
         return (
           <button
             type="button"
@@ -61,7 +62,7 @@ function Pie({
             className={`pie-share ${retained ? "retained" : "eaten"}`}
             style={{
               backgroundSize: `${columns * 100}% ${rows * 100}%`,
-              backgroundPosition: `${(column * 100) / (columns - 1)}% ${rows === 1 ? 0 : (row * 100) / (rows - 1)}%`,
+              backgroundPosition: `${columns === 1 ? 0 : (column * 100) / (columns - 1)}% ${(row * 100) / (rows - 1)}%`,
             }}
             onClick={() => onKeptChange(index < kept ? index : index + 1)}
             disabled={disabled}
@@ -111,7 +112,7 @@ function HundredGrid({
               aria-label={`Fill ${filled ? rank : rank + 1} squares, ${filled ? rank : rank + 1} percent`}
               aria-pressed={filled}
             >
-              {index + 1}
+              {rank + 1}
             </button>
           );
         })}
@@ -177,10 +178,11 @@ function Stepper({
 }
 
 /** Adds a short confetti burst for a completed match. */
-function Confetti() {
+function Confetti({ grand = false }: { grand?: boolean }) {
+  const count = grand ? 100 : 36;
   return (
-    <div className="confetti" aria-hidden="true">
-      {Array.from({ length: 36 }, (_, index) => (
+    <div className={`confetti ${grand ? "grand" : ""}`} aria-hidden="true">
+      {Array.from({ length: count }, (_, index) => (
         <i
           key={index}
           style={
@@ -232,7 +234,7 @@ function storedBoolean(key: string) {
 /** Renders and coordinates both Fraction Feast activity modes. */
 function App() {
   const [mode, setMode] = useState<Mode>("guided");
-  const [level, setLevel] = useState<ShareCount>(4);
+  const [level, setLevel] = useState<ShareCount>(2);
   const [problem, setProblem] = useState(0);
   const [stage, setStage] = useState<Stage>("pie");
   const [pieShares, setPieShares] = useState<ShareCount>(2);
@@ -240,6 +242,7 @@ function App() {
   const [percentage, setPercentage] = useState(0);
   const [feedback, setFeedback] = useState("Make the pie match the words.");
   const [wordsOnly, setWordsOnly] = useState(false);
+  const [fullJourney, setFullJourney] = useState(true);
   const [streak, setStreak] = useState(0);
   const [best, setBest] = useState(() => storedNumber("fraction-feast-best"));
   const [muted, setMuted] = useState(() =>
@@ -256,11 +259,13 @@ function App() {
     (simpleTop !== targetKept || simpleBottom !== level);
   const eaten = level - targetKept;
   const exploreMatch = Math.round((pieKept / pieShares) * 100) === percentage;
+  const finalProblem = problem === CHALLENGE_ORDER[level].length - 1;
+  const grandComplete = fullJourney && level === 10 && finalProblem;
 
   /** Resets manipulatives when a new guided problem or sharing level begins. */
   const resetGuided = (nextLevel = level, nextProblem = problem) => {
     const answer = CHALLENGE_ORDER[nextLevel][nextProblem];
-    setPieShares(nextLevel === 2 ? 4 : 2);
+    setPieShares(nextLevel);
     setPieKept(answer === 0 ? 1 : 0);
     setPercentage(answer === 0 ? 25 : 0);
     setStage("pie");
@@ -271,6 +276,7 @@ function App() {
   const chooseLevel = (next: ShareCount) => {
     setLevel(next);
     setProblem(0);
+    setFullJourney(next === SHARE_OPTIONS[0]);
     resetGuided(next, 0);
     playSound("tap", muted);
   };
@@ -321,11 +327,12 @@ function App() {
         }
       }
       setStage("complete");
-      const finishedLevel = problem === CHALLENGE_ORDER[level].length - 1;
       setFeedback(
-        finishedLevel
-          ? `You matched every ${level}-share feast. Level complete!`
-          : `${percentage} little squares is exactly the same amount. Brilliant match!`,
+        grandComplete
+          ? "You matched every feast from one half to ten tenths. Magnificent work!"
+          : finalProblem
+            ? `You matched every ${level}-share feast. Level complete!`
+            : `${percentage} little squares is exactly the same amount. Brilliant match!`,
       );
       playSound("complete", muted);
     } else {
@@ -335,12 +342,13 @@ function App() {
     }
   };
 
-  /** Advances through the fixed teaching order, visibly restarting after completion. */
+  /** Advances through each teaching order and then into the next denominator. */
   const nextProblem = () => {
-    const order = CHALLENGE_ORDER[level];
-    const next = (problem + 1) % order.length;
-    setProblem(next);
-    resetGuided(level, next);
+    const next = nextChallenge(level, problem);
+    setLevel(next.shares);
+    setProblem(next.problem);
+    if (next.journeyComplete) setFullJourney(true);
+    resetGuided(next.shares, next.problem);
   };
 
   useEffect(() => {
@@ -361,7 +369,9 @@ function App() {
 
   return (
     <main className="app-shell">
-      {stage === "complete" && mode === "guided" && <Confetti />}
+      {stage === "complete" && mode === "guided" && (
+        <Confetti grand={grandComplete} />
+      )}
       <header className="toolbar">
         <div className="brand">
           <span aria-hidden="true">🥧</span>
@@ -595,8 +605,10 @@ function App() {
             )}
             {stage === "complete" && (
               <button onClick={nextProblem}>
-                {problem === CHALLENGE_ORDER[level].length - 1
-                  ? "Feast again ↻"
+                {finalProblem
+                  ? level === SHARE_OPTIONS[SHARE_OPTIONS.length - 1]
+                    ? "Feast again ↻"
+                    : "Next sharing level →"
                   : "Next feast →"}
               </button>
             )}

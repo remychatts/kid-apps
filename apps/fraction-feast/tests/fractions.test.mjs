@@ -6,6 +6,7 @@ import {
   SHARE_OPTIONS,
   cellFillRank,
   fractionName,
+  nextChallenge,
   simplify,
 } from "../src/fractions.ts";
 
@@ -21,6 +22,31 @@ test("each teaching sequence covers every amount once, including both endpoints"
       assert.equal(top / bottom, kept / shares);
     }
   }
+});
+
+test("teaching sequences start near one half, zig-zag outwards, and end at the endpoints", () => {
+  assert.deepEqual(CHALLENGE_ORDER[2], [1, 0, 2]);
+  assert.deepEqual(CHALLENGE_ORDER[4], [2, 1, 3, 0, 4]);
+  assert.deepEqual(CHALLENGE_ORDER[5], [2, 3, 1, 4, 0, 5]);
+  assert.deepEqual(CHALLENGE_ORDER[10], [5, 4, 6, 3, 7, 2, 8, 1, 9, 0, 10]);
+});
+
+test("the complete journey advances from one half through to ten tenths", () => {
+  let shares = 2;
+  let problem = 0;
+  const journey = [];
+
+  while (true) {
+    journey.push(`${CHALLENGE_ORDER[shares][problem]}/${shares}`);
+    const next = nextChallenge(shares, problem);
+    if (next.journeyComplete) break;
+    shares = next.shares;
+    problem = next.problem;
+  }
+
+  assert.equal(journey[0], "1/2");
+  assert.equal(journey.at(-1), "10/10");
+  assert.equal(journey.length, 25);
 });
 
 test("the hundred-square contains exactly the selected number of cells for every percentage", () => {
@@ -50,7 +76,7 @@ test("filled regions match the pie's equal rectangular shares", () => {
         const pieRegion =
           shares === 4
             ? (row < 5 ? 0 : 2) + (column < 5 ? 0 : 1)
-            : Math.floor(column / (10 / shares));
+            : Math.floor(row / (10 / shares));
         assert.equal(
           cellFillRank(index, shares) < (kept * 100) / shares,
           pieRegion < kept,
@@ -58,6 +84,16 @@ test("filled regions match the pie's equal rectangular shares", () => {
       }
     }
   }
+});
+
+test("four-share numbering runs through each quadrant in pie order", () => {
+  const ranks = Array.from({ length: 100 }, (_, index) =>
+    cellFillRank(index, 4),
+  );
+  assert.deepEqual(ranks.slice(0, 5), [0, 1, 2, 3, 4]);
+  assert.deepEqual(ranks.slice(5, 10), [25, 26, 27, 28, 29]);
+  assert.deepEqual(ranks.slice(50, 55), [50, 51, 52, 53, 54]);
+  assert.deepEqual(ranks.slice(55, 60), [75, 76, 77, 78, 79]);
 });
 
 test("fraction words handle singular, plural, simplified amounts and endpoints", () => {

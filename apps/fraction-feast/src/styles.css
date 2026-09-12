@@ -313,7 +313,7 @@ input:focus-visible {
 }
 .pie {
   display: grid;
-  grid-template-columns: repeat(var(--shares), 1fr);
+  grid-template-rows: repeat(var(--shares), 1fr);
   overflow: visible;
   padding: 0;
 }
@@ -327,17 +327,21 @@ input:focus-visible {
 .pie-share {
   position: relative;
   min-width: 0;
-  height: 100%;
+  min-height: 0;
+  height: auto;
   padding: 0;
   overflow: hidden;
   border: 0;
-  border-right: 3px solid #fff5c7;
+  border-bottom: 3px solid #fff5c7;
   background-image: url("/apple-pie.png");
   background-repeat: no-repeat;
   transition:
     opacity 0.28s,
     transform 0.28s,
     filter 0.28s;
+}
+.pie-share:last-of-type {
+  border-bottom: 0;
 }
 .pie.shares-4 {
   grid-template-columns: repeat(2, 1fr);
@@ -506,7 +510,8 @@ input:focus-visible {
   font-size: 0.82rem;
 }
 .pie-controls select {
-  min-height: 40px;
+  min-height: 50px;
+  padding-inline: 10px 30px;
   border: 2px solid var(--ink);
   border-radius: 11px;
   background: #fff;
@@ -578,7 +583,8 @@ input:focus-visible {
   position: relative;
   z-index: 4;
   min-height: 62px;
-  max-width: 980px;
+  width: 100%;
+  max-width: 1130px;
   align-items: center;
   justify-content: center;
   gap: 10px;
@@ -728,6 +734,11 @@ input:focus-visible {
 }
 .confetti i:nth-child(5n) {
   background: var(--yellow);
+}
+.confetti.grand i {
+  width: 13px;
+  height: 22px;
+  animation-duration: 3.2s;
 }
 @keyframes tasty-pop {
   50% {
