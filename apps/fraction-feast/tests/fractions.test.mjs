@@ -8,6 +8,7 @@ import {
   fractionName,
   nextChallenge,
   simplify,
+  startingPieKept,
 } from "../src/fractions.ts";
 
 test("each teaching sequence covers every amount once, including both endpoints", () => {
@@ -47,6 +48,16 @@ test("the complete journey advances from one half through to ten tenths", () => 
   assert.equal(journey[0], "1/2");
   assert.equal(journey.at(-1), "10/10");
   assert.equal(journey.length, 25);
+});
+
+test("a challenge never starts with the target pie value already selected", () => {
+  for (const shares of SHARE_OPTIONS) {
+    for (const targetKept of CHALLENGE_ORDER[shares]) {
+      const start = startingPieKept(targetKept, shares);
+      assert.notEqual(start, targetKept);
+      assert.ok(start >= 0 && start <= shares);
+    }
+  }
 });
 
 test("the hundred-square contains exactly the selected number of cells for every percentage", () => {

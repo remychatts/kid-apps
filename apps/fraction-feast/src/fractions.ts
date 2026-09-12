@@ -23,6 +23,11 @@ export function nextChallenge(shares: ShareCount, problem: number) {
     : { shares: SHARE_OPTIONS[0], problem: 0, journeyComplete: true };
 }
 
+/** Chooses a neutral starting pie amount that never reveals the target. */
+export function startingPieKept(targetKept: number, shares: ShareCount) {
+  return targetKept === 0 ? Math.floor(shares / 2) : 0;
+}
+
 const NUMBER_WORDS = [
   "zero",
   "one",

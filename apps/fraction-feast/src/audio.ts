@@ -1,6 +1,7 @@
-/** Creates short, cheerful Web Audio cues without network-loaded sound files. */
+/** Provides synthesised feedback cues and the recorded full-journey cheer. */
 
 let sharedContext: AudioContext | null = null;
+let cheeringAudio: HTMLAudioElement | null = null;
 
 /** Reuses one audio context so rapid slider changes do not exhaust iPad audio resources. */
 function audioContext() {
@@ -38,4 +39,14 @@ export function playSound(
     oscillator.start(start);
     oscillator.stop(start + 0.17);
   });
+}
+
+/** Plays the recorded crowd cheer for the full-journey reward. */
+export function playCheer(muted: boolean) {
+  if (muted) return;
+  cheeringAudio ??= new Audio(`${import.meta.env.BASE_URL}cheering.mp3`);
+  cheeringAudio.pause();
+  cheeringAudio.currentTime = 0;
+  cheeringAudio.volume = 0.55;
+  void cheeringAudio.play().catch(() => undefined);
 }

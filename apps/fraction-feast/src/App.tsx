@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { Volume2, VolumeX } from "lucide-react";
-import { playSound } from "./audio.ts";
+import { playCheer, playSound } from "./audio.ts";
 import {
   CHALLENGE_ORDER,
   cellFillRank,
@@ -10,6 +10,7 @@ import {
   nextChallenge,
   SHARE_OPTIONS,
   simplify,
+  startingPieKept,
   type ShareCount,
 } from "./fractions.ts";
 import "./styles.css";
@@ -238,7 +239,7 @@ function App() {
   const [problem, setProblem] = useState(0);
   const [stage, setStage] = useState<Stage>("pie");
   const [pieShares, setPieShares] = useState<ShareCount>(2);
-  const [pieKept, setPieKept] = useState(1);
+  const [pieKept, setPieKept] = useState(0);
   const [percentage, setPercentage] = useState(0);
   const [feedback, setFeedback] = useState("Make the pie match the words.");
   const [wordsOnly, setWordsOnly] = useState(false);
@@ -266,7 +267,7 @@ function App() {
   const resetGuided = (nextLevel = level, nextProblem = problem) => {
     const answer = CHALLENGE_ORDER[nextLevel][nextProblem];
     setPieShares(nextLevel);
-    setPieKept(answer === 0 ? 1 : 0);
+    setPieKept(startingPieKept(answer, nextLevel));
     setPercentage(answer === 0 ? 25 : 0);
     setStage("pie");
     setFeedback("Make the pie match the words.");
@@ -335,6 +336,7 @@ function App() {
             : `${percentage} little squares is exactly the same amount. Brilliant match!`,
       );
       playSound("complete", muted);
+      if (grandComplete) playCheer(muted);
     } else {
       setFeedback(percentHint(percentage, targetPercent));
       setStreak(0);
