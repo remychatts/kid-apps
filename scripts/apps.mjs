@@ -4,4 +4,4 @@ import { readFile } from "node:fs/promises";
 const registryUrl = new URL("../app-registry.json", import.meta.url);
 
 export const apps = JSON.parse(await readFile(registryUrl, "utf8"));
-export const allBuildIds = ["catalog", ...apps.map((app) => app.id)];
+export const allBuildIds = [...apps.map((app) => app.id), "catalog"];
