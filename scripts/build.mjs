@@ -5,6 +5,7 @@
  */
 import { rm } from "node:fs/promises";
 import { spawn } from "node:child_process";
+import { availableParallelism } from "node:os";
 import { allBuildIds } from "./apps.mjs";
 
 // Give local builds the same elapsed-time input supplied by GitHub Actions.
@@ -24,12 +25,32 @@ function run(command, args) {
 
 await rm(new URL("../dist", import.meta.url), { recursive: true, force: true });
 
-for (const id of allBuildIds) {
-  await run("npx", [
-    "vite",
-    "build",
-    `apps/${id}`,
-    "--config",
-    `apps/${id}/vite.config.ts`,
-  ]);
+const appBuildIds = allBuildIds.filter((id) => id !== "catalog");
+const workerCount = Math.min(4, availableParallelism(), appBuildIds.length);
+let nextAppIndex = 0;
+
+/** Builds apps from the shared queue until none remain. */
+async function buildNextApps() {
+  while (nextAppIndex < appBuildIds.length) {
+    const id = appBuildIds[nextAppIndex];
+    nextAppIndex += 1;
+    await run("npx", [
+      "vite",
+      "build",
+      `apps/${id}`,
+      "--config",
+      `apps/${id}/vite.config.ts`,
+    ]);
+  }
 }
+
+await Promise.all(Array.from({ length: workerCount }, buildNextApps));
+
+// Build the catalogue last so its generation time and root service worker see the completed site.
+await run("npx", [
+  "vite",
+  "build",
+  "apps/catalog",
+  "--config",
+  "apps/catalog/vite.config.ts",
+]);

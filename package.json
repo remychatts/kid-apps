@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "node scripts/build.mjs",
-    "ci": "npm run format:check && npm run lint && npm run typecheck && npm test && npm run build && npm run verify",
+    "ci": "node scripts/ci.mjs",
     "dev": "node scripts/dev.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
