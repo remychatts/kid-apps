@@ -13,7 +13,7 @@ If in doubt, stop and ask for guidance.
 
 ## Source of truth
 
-`app-registry.json` is the source of truth for the six app IDs, catalogue copy, history dates, colours and PWA metadata. Keep it in sync with any app addition, rename or visual identity change.
+`app-registry.json` is the source of truth for app IDs, catalogue copy, history dates, colours and PWA metadata. Keep it in sync with any app addition, rename or visual identity change.
 
 Each app lives at `apps/<id>/` and must remain independently runnable through `npm run dev -- <id>`. Shared build and PWA behaviour belongs in `vite.shared.ts`, not duplicated across app configs.
 
