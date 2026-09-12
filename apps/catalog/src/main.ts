@@ -10,14 +10,10 @@ if (!root) throw new Error("Catalogue root element is missing");
 // Keep apps with the same displayed month in their precise update order.
 const appTimestamp = (updatedAt: string) => Date.parse(updatedAt);
 
-// Formats the action duration with natural singular and plural units.
+// Formats the action duration in seconds with a natural singular or plural unit.
 const formatGenerationTime = (totalSeconds: number) => {
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  const minuteUnit = minutes === 1 ? "minute" : "minutes";
-  const secondUnit = seconds === 1 ? "second" : "seconds";
-
-  return `${minutes} ${minuteUnit} ${seconds} ${secondUnit}`;
+  const unit = totalSeconds === 1 ? "second" : "seconds";
+  return `${totalSeconds} ${unit}`;
 };
 
 const generationTime = formatGenerationTime(
