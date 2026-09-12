@@ -2,7 +2,7 @@
 import apps from "../../../app-registry.json";
 import "./styles.css";
 
-declare const __CATALOGUE_GENERATED_AT__: string;
+declare const __CATALOGUE_GENERATION_TIME_SECONDS__: number;
 
 const root = document.querySelector<HTMLDivElement>("#root");
 if (!root) throw new Error("Catalogue root element is missing");
@@ -10,14 +10,18 @@ if (!root) throw new Error("Catalogue root element is missing");
 // Keep apps with the same displayed month in their precise update order.
 const appTimestamp = (updatedAt: string) => Date.parse(updatedAt);
 
-// The seconds make short build and deployment delays visible without a full date.
-const generatedAt = new Date(__CATALOGUE_GENERATED_AT__).toLocaleTimeString(
-  "en-GB",
-  {
-    minute: "2-digit",
-    second: "2-digit",
-    timeZone: "UTC",
-  },
+// Formats the action duration with natural singular and plural units.
+const formatGenerationTime = (totalSeconds: number) => {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  const minuteUnit = minutes === 1 ? "minute" : "minutes";
+  const secondUnit = seconds === 1 ? "second" : "seconds";
+
+  return `${minutes} ${minuteUnit} ${seconds} ${secondUnit}`;
+};
+
+const generationTime = formatGenerationTime(
+  __CATALOGUE_GENERATION_TIME_SECONDS__,
 );
 
 const cards = [...apps]
@@ -51,7 +55,7 @@ root.innerHTML = `
     <section class="app-grid" aria-label="Apps">${cards}</section>
     <footer>
       <span>Made for curious minds and rainy afternoons.</span>
-      <span class="generation-time">Generated ${generatedAt} UTC</span>
+      <span class="generation-time">Generation time ${generationTime}</span>
     </footer>
   </main>
 `;

@@ -3,6 +3,14 @@ import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import { createAppConfig } from "../../vite.shared.ts";
 
+const actionStartedAt = Number.parseInt(
+  process.env.GITHUB_ACTION_STARTED_AT ?? "",
+  10,
+);
+const generationTimeSeconds = Number.isFinite(actionStartedAt)
+  ? Math.max(0, Math.floor(Date.now() / 1000) - actionStartedAt)
+  : 0;
+
 export default defineConfig({
   ...createAppConfig({
     appRoot: fileURLToPath(new URL(".", import.meta.url)),
@@ -11,6 +19,8 @@ export default defineConfig({
     outputAtSiteRoot: true,
   }),
   define: {
-    __CATALOGUE_GENERATED_AT__: JSON.stringify(new Date().toISOString()),
+    __CATALOGUE_GENERATION_TIME_SECONDS__: JSON.stringify(
+      generationTimeSeconds,
+    ),
   },
 });

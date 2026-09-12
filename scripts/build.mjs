@@ -7,6 +7,9 @@ import { rm } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { allBuildIds } from "./apps.mjs";
 
+// Give local builds the same elapsed-time input supplied by GitHub Actions.
+process.env.GITHUB_ACTION_STARTED_AT ??= String(Math.floor(Date.now() / 1000));
+
 /** Runs one command and rejects if it does not exit successfully. */
 function run(command, args) {
   return new Promise((resolve, reject) => {
