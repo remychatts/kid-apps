@@ -7,6 +7,7 @@ import {
   cellFillRank,
   fractionName,
   nextChallenge,
+  shareGuideLines,
   simplify,
   startingPieKept,
 } from "../src/fractions.ts";
@@ -105,6 +106,28 @@ test("four-share numbering runs through each quadrant in pie order", () => {
   assert.deepEqual(ranks.slice(5, 10), [25, 26, 27, 28, 29]);
   assert.deepEqual(ranks.slice(50, 55), [50, 51, 52, 53, 54]);
   assert.deepEqual(ranks.slice(55, 60), [75, 76, 77, 78, 79]);
+});
+
+test("share guides follow the same top-to-bottom partitions as the visuals", () => {
+  assert.deepEqual(shareGuideLines(2), [
+    { orientation: "horizontal", position: 50 },
+  ]);
+  assert.deepEqual(shareGuideLines(4), [
+    { orientation: "horizontal", position: 50 },
+    { orientation: "vertical", position: 50 },
+  ]);
+  assert.deepEqual(
+    shareGuideLines(5).map(({ orientation, position }) => [
+      orientation,
+      position,
+    ]),
+    [
+      ["horizontal", 20],
+      ["horizontal", 40],
+      ["horizontal", 60],
+      ["horizontal", 80],
+    ],
+  );
 });
 
 test("fraction words handle singular, plural, simplified amounts and endpoints", () => {

@@ -422,43 +422,38 @@ input:focus-visible {
   color: #4c1a17;
   text-shadow: 0 1px #fff7;
 }
-.grid-group-lines {
-  display: grid;
+.share-guide {
   position: absolute;
+  z-index: 3;
   inset: 0;
-  grid-template-columns: repeat(var(--shares), 1fr);
   pointer-events: none;
-  border: 4px solid transparent;
 }
-.grid-group-lines i {
-  border-right: 3px solid #fff;
-  box-shadow: 1px 0 0 #542813;
-  animation: line-in 0.5s both;
-}
-.grid-group-lines.shares-4 {
+.share-guide i {
   display: block;
-}
-.grid-group-lines.shares-4:before,
-.grid-group-lines.shares-4:after {
-  content: "";
   position: absolute;
-  background: #fff;
-  box-shadow: 1px 1px 0 #542813;
+  border-radius: 999px;
+  background: #24b34b;
+  box-shadow:
+    0 0 0 1px #125c28,
+    0 0 7px 2px #e8ffd8;
 }
-.grid-group-lines.shares-4:before {
-  left: 50%;
-  top: 0;
-  width: 3px;
-  height: 100%;
-}
-.grid-group-lines.shares-4:after {
+.share-guide .horizontal {
   left: 0;
-  top: 50%;
+  top: var(--line-position);
   width: 100%;
-  height: 3px;
+  height: 5px;
+  transform: translateY(-50%);
+  transform-origin: left;
+  animation: guide-wipe-horizontal 0.8s ease-out both;
 }
-.grid-group-lines.shares-4 i {
-  display: none;
+.share-guide .vertical {
+  left: var(--line-position);
+  top: 0;
+  width: 5px;
+  height: 100%;
+  transform: translateX(-50%);
+  transform-origin: top;
+  animation: guide-wipe-vertical 0.8s ease-out both;
 }
 .equals {
   display: flex;
@@ -745,10 +740,19 @@ input:focus-visible {
     transform: scale(1.045) rotate(-1deg);
   }
 }
-@keyframes line-in {
+@keyframes guide-wipe-horizontal {
   from {
-    opacity: 0;
-    transform: scaleY(0);
+    transform: translateY(-50%) scaleX(0);
+  }
+}
+@keyframes guide-wipe-vertical {
+  from {
+    transform: translateX(-50%) scaleY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .share-guide i {
+    animation: none;
   }
 }
 @keyframes confetti-fall {

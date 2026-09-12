@@ -2,6 +2,10 @@
 
 export const SHARE_OPTIONS = [2, 4, 5, 10] as const;
 export type ShareCount = (typeof SHARE_OPTIONS)[number];
+export type ShareGuideLine = {
+  orientation: "horizontal" | "vertical";
+  position: number;
+};
 
 export const CHALLENGE_ORDER: Record<ShareCount, number[]> = {
   2: [1, 0, 2],
@@ -76,4 +80,19 @@ export function cellFillRank(index: number, shares: ShareCount) {
   const column = index % 10;
   const group = Math.floor(row / 5) * 2 + Math.floor(column / 5);
   return group * 25 + (row % 5) * 5 + (column % 5);
+}
+
+/** Places guide lines over the boundaries used by the pie and hundred-square. */
+export function shareGuideLines(shares: ShareCount): ShareGuideLine[] {
+  if (shares === 4) {
+    return [
+      { orientation: "horizontal", position: 50 },
+      { orientation: "vertical", position: 50 },
+    ];
+  }
+
+  return Array.from({ length: shares - 1 }, (_, index) => ({
+    orientation: "horizontal" as const,
+    position: ((index + 1) * 100) / shares,
+  }));
 }
