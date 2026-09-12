@@ -1,14 +1,9 @@
-/**
- * Boots the React game and registers its auto-updating service worker.
- */
+/** Boots the React game. */
 import "@fontsource-variable/fredoka";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { registerSW } from "virtual:pwa-register";
 import App from "./App";
 import "./styles.css";
-
-registerSW({ immediate: true });
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

@@ -39,6 +39,10 @@ for (const id of allBuildIds) {
     resolve(repositoryRoot, output, "sw.js"),
     "utf8",
   );
+  const indexHtml = await readFile(
+    resolve(repositoryRoot, output, "index.html"),
+    "utf8",
+  );
   const bundles = scopedFiles.filter((file) =>
     /^assets\/.*\.(?:css|js)$/.test(file),
   );
@@ -47,6 +51,12 @@ for (const id of allBuildIds) {
     !scopedFiles.includes("manifest.webmanifest")
   ) {
     throw new Error(`${id}: missing index.html or manifest.webmanifest`);
+  }
+  if (
+    !indexHtml.includes('updateViaCache: "none"') ||
+    !indexHtml.includes('addEventListener("controllerchange"')
+  ) {
+    throw new Error(`${id}: missing immediate service-worker update handling`);
   }
   for (const bundle of bundles) {
     if (!serviceWorker.includes(bundle)) {
