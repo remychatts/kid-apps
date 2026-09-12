@@ -2,7 +2,7 @@
 
 Fraction Feast helps a child connect equal shares of one whole with fraction words, notation and percentages. It is designed for landscape iPads and works offline as an installable PWA.
 
-Challenge mode teaches one relationship at a time: first build the requested pie, then match it on a numbered hundred-square. Choose sharing between 2, 4, 5 or 10 people; each level follows a deliberate teaching sequence. “Words only” removes the sharing story when it is no longer needed.
+Challenge mode teaches one relationship at a time: first build the requested pie, then match it on a numbered hundred-square. Choose sharing between 2, 4, 5 or 10 people; each level starts around one half, zig-zags outwards and ends with none and one whole before advancing to the next denominator. Completing the full journey from 1/2 to 10/10 earns a larger celebration. “Words only” removes the sharing story when it is no longer needed.
 
 Explore mode is an open teaching display. The pie fraction and percentage remain independently adjustable so a teacher and student can make examples, compare them and see when the areas match.
 
