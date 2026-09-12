@@ -81,6 +81,27 @@
     ]
   },
   {
+    "id": "fraction-feast",
+    "title": "Fraction Feast",
+    "shortName": "Fraction Feast",
+    "description": "Match delicious pie shares with fraction words and a colourful hundred-square.",
+    "date": "September 2026",
+    "updatedAt": "2026-09-12T12:00:00Z",
+    "emoji": "🥧",
+    "themeColour": "#ff8a1f",
+    "backgroundColour": "#fff4cf",
+    "orientation": "landscape",
+    "icons": [
+      { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+      {
+        "src": "icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+      }
+    ]
+  },
+  {
     "id": "guess-lab",
     "title": "Guess Lab",
     "shortName": "Guess Lab",
