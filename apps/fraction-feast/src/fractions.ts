@@ -2,10 +2,6 @@
 
 export const SHARE_OPTIONS = [2, 4, 5, 10] as const;
 export type ShareCount = (typeof SHARE_OPTIONS)[number];
-export type ShareGuideLine = {
-  orientation: "horizontal" | "vertical";
-  position: number;
-};
 
 export const CHALLENGE_ORDER: Record<ShareCount, number[]> = {
   2: [1, 0, 2],
@@ -82,17 +78,12 @@ export function cellFillRank(index: number, shares: ShareCount) {
   return group * 25 + (row % 5) * 5 + (column % 5);
 }
 
-/** Places guide lines over the boundaries used by the pie and hundred-square. */
-export function shareGuideLines(shares: ShareCount): ShareGuideLine[] {
+/** Traces the single boundary between retained and eaten regions. */
+export function shareGuidePath(kept: number, shares: ShareCount) {
+  if (kept <= 0 || kept >= shares) return null;
   if (shares === 4) {
-    return [
-      { orientation: "horizontal", position: 50 },
-      { orientation: "vertical", position: 50 },
-    ];
+    if (kept === 1) return "M 50 0 V 50 H 0";
+    if (kept === 3) return "M 100 50 H 50 V 100";
   }
-
-  return Array.from({ length: shares - 1 }, (_, index) => ({
-    orientation: "horizontal" as const,
-    position: ((index + 1) * 100) / shares,
-  }));
+  return `M 0 ${(kept / shares) * 100} H 100`;
 }

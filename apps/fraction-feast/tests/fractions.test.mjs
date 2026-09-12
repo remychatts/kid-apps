@@ -7,7 +7,7 @@ import {
   cellFillRank,
   fractionName,
   nextChallenge,
-  shareGuideLines,
+  shareGuidePath,
   simplify,
   startingPieKept,
 } from "../src/fractions.ts";
@@ -108,26 +108,14 @@ test("four-share numbering runs through each quadrant in pie order", () => {
   assert.deepEqual(ranks.slice(55, 60), [75, 76, 77, 78, 79]);
 });
 
-test("share guides follow the same top-to-bottom partitions as the visuals", () => {
-  assert.deepEqual(shareGuideLines(2), [
-    { orientation: "horizontal", position: 50 },
-  ]);
-  assert.deepEqual(shareGuideLines(4), [
-    { orientation: "horizontal", position: 50 },
-    { orientation: "vertical", position: 50 },
-  ]);
-  assert.deepEqual(
-    shareGuideLines(5).map(({ orientation, position }) => [
-      orientation,
-      position,
-    ]),
-    [
-      ["horizontal", 20],
-      ["horizontal", 40],
-      ["horizontal", 60],
-      ["horizontal", 80],
-    ],
-  );
+test("a matched amount has only one internal guide boundary", () => {
+  assert.equal(shareGuidePath(0, 5), null);
+  assert.equal(shareGuidePath(2, 5), "M 0 40 H 100");
+  assert.equal(shareGuidePath(1, 2), "M 0 50 H 100");
+  assert.equal(shareGuidePath(1, 4), "M 50 0 V 50 H 0");
+  assert.equal(shareGuidePath(2, 4), "M 0 50 H 100");
+  assert.equal(shareGuidePath(3, 4), "M 100 50 H 50 V 100");
+  assert.equal(shareGuidePath(5, 5), null);
 });
 
 test("fraction words handle singular, plural, simplified amounts and endpoints", () => {

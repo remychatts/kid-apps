@@ -9,7 +9,7 @@ import {
   fractionName,
   nextChallenge,
   SHARE_OPTIONS,
-  shareGuideLines,
+  shareGuidePath,
   simplify,
   startingPieKept,
   type ShareCount,
@@ -29,18 +29,20 @@ function Fraction({ top, bottom }: { top: number; bottom: number }) {
   );
 }
 
-/** Wipes matching equal-share boundaries across either visual. */
-function ShareGuide({ shares }: { shares: ShareCount }) {
+/** Wipes the retained/eaten boundary across either visual. */
+function ShareGuide({ kept, shares }: { kept: number; shares: ShareCount }) {
+  const path = shareGuidePath(kept, shares);
+  if (path === null) return null;
+
   return (
-    <div className="share-guide" aria-hidden="true">
-      {shareGuideLines(shares).map(({ orientation, position }) => (
-        <i
-          key={`${orientation}-${position}`}
-          className={orientation}
-          style={{ "--line-position": `${position}%` } as CSSProperties}
-        />
-      ))}
-    </div>
+    <svg
+      className="share-guide"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <path d={path} pathLength="1" />
+    </svg>
   );
 }
 
@@ -91,7 +93,7 @@ function Pie({
         );
       })}
       <div className="pie-outline" aria-hidden="true" />
-      {revealGroups && <ShareGuide shares={shares} />}
+      {revealGroups && <ShareGuide kept={kept} shares={shares} />}
     </div>
   );
 }
@@ -135,7 +137,9 @@ function HundredGrid({
           );
         })}
       </div>
-      {showGroups && <ShareGuide shares={shares} />}
+      {showGroups && (
+        <ShareGuide kept={(value * shares) / 100} shares={shares} />
+      )}
     </div>
   );
 }
