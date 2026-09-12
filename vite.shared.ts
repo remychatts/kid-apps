@@ -51,6 +51,55 @@ const catalogue: RegistryApp = {
   ],
 };
 
+/** Registers each app's service worker and reloads once an update takes control. */
+function pwaUpdatePlugin(): PluginOption {
+  return {
+    name: "kid-apps-pwa-update",
+    apply: "build",
+    transformIndexHtml: {
+      order: "post",
+      handler() {
+        return [
+          {
+            tag: "script",
+            injectTo: "head",
+            children: `
+if ("serviceWorker" in navigator) {
+  const hadController = Boolean(navigator.serviceWorker.controller);
+  let reloading = false;
+
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (hadController && !reloading) {
+      reloading = true;
+      window.location.reload();
+    }
+  });
+
+  const checkForUpdate = async () => {
+    try {
+      const registration = await navigator.serviceWorker.register("./sw.js", {
+        scope: "./",
+        updateViaCache: "none",
+      });
+      await registration.update();
+    } catch (error) {
+      console.warn("Unable to check for an app update.", error);
+    }
+  };
+
+  void checkForUpdate();
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") void checkForUpdate();
+  });
+}
+`,
+          },
+        ];
+      },
+    },
+  };
+}
+
 /** Builds a relative-path-safe, offline-capable Vite configuration for one app. */
 export function createAppConfig({
   appRoot,
@@ -70,9 +119,10 @@ export function createAppConfig({
     base: "./",
     plugins: [
       ...plugins,
+      pwaUpdatePlugin(),
       VitePWA({
         registerType: "autoUpdate",
-        injectRegister: "auto",
+        injectRegister: false,
         includeAssets,
         manifest: {
           name: app.title,
