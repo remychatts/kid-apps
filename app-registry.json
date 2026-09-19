@@ -71,7 +71,11 @@
     "backgroundColour": "#07182d",
     "orientation": "any",
     "icons": [
-      { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+      {
+        "src": "icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
       {
         "src": "icon-512.png",
         "sizes": "512x512",
@@ -92,7 +96,11 @@
     "backgroundColour": "#fff4cf",
     "orientation": "landscape",
     "icons": [
-      { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+      {
+        "src": "icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
       {
         "src": "icon-512.png",
         "sizes": "512x512",
@@ -153,7 +161,11 @@
     "backgroundColour": "#112c14",
     "orientation": "any",
     "icons": [
-      { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+      {
+        "src": "icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
       {
         "src": "icon-512.png",
         "sizes": "512x512",
@@ -284,7 +296,11 @@
     "backgroundColour": "#8ee9ff",
     "orientation": "any",
     "icons": [
-      { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+      {
+        "src": "icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
       {
         "src": "icon-512.png",
         "sizes": "512x512",
@@ -360,6 +376,26 @@
         "src": "trumpet-icon.png",
         "sizes": "180x180",
         "type": "image/png"
+      }
+    ]
+  },
+  {
+    "id": "moth-studio",
+    "title": "Moth Studio",
+    "shortName": "Moth Studio",
+    "description": "Meet friendly peppered moths and explore their light and dark forms, big eyes and little quirks.",
+    "date": "September 2026",
+    "updatedAt": "2026-09-19T12:00:00Z",
+    "emoji": "🦋",
+    "themeColour": "#f7f5ec",
+    "backgroundColour": "#f7f5ec",
+    "orientation": "any",
+    "icons": [
+      {
+        "src": "icon.svg",
+        "sizes": "any",
+        "type": "image/svg+xml",
+        "purpose": "any maskable"
       }
     ]
   }
