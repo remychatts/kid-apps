@@ -235,6 +235,7 @@ export function App() {
                   </span>
                   <input
                     type="range"
+                    aria-label={range.label}
                     min={range.min}
                     max={range.max}
                     step="0.01"

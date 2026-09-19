@@ -103,14 +103,19 @@ export function Moth({
             </g>
           ))}
         </g>
-        <path
-          d="M -18 36 Q -24 108 -10 140 Q 0 161 10 140 Q 24 108 18 36"
-          fill={fur}
-          stroke={outline}
-          strokeWidth="3"
-        />
-        <g stroke={outline} strokeWidth="3" fill="none" opacity="0.5">
-          <path d="M -19 80 Q 0 88 19 80 M -17 99 Q 0 107 17 99 M -13 118 Q 0 125 13 118 M -8 135 Q 0 140 8 135" />
+        {/* Lengthen the abdomen from its attachment beneath the fluffy thorax. */}
+        <g
+          transform={`translate(0 36) scale(1 ${anatomy.bodyLength}) translate(0 -36)`}
+        >
+          <path
+            d="M -18 36 Q -24 108 -10 140 Q 0 161 10 140 Q 24 108 18 36"
+            fill={fur}
+            stroke={outline}
+            strokeWidth="3"
+          />
+          <g stroke={outline} strokeWidth="3" fill="none" opacity="0.5">
+            <path d="M -19 80 Q 0 88 19 80 M -17 99 Q 0 107 17 99 M -13 118 Q 0 125 13 118 M -8 135 Q 0 140 8 135" />
+          </g>
         </g>
         {[-1, 1].map((side) => (
           <g

@@ -31,6 +31,9 @@ Optional `features` override individual seeded values. Each value is a multiplie
 | `wingSpan`      | 0.85    | 1.12    |
 | `wingDepth`     | 0.85    | 1.15    |
 | `antennaLength` | 0.70    | 1.25    |
+| `bodyLength`    | 0.80    | 1.25    |
+
+`bodyLength` stretches the segmented abdomen from its attachment beneath the thorax, keeping the face and wings in place.
 
 Changing the seed changes the pepper pattern as well as anatomy. **Shuffle look** affects only the selected specimen and preserves its form. **Reset look** restores that slot's original seed and anatomy, also preserving its current form. **Meet a new bunch** regenerates all four cosmetic identities while preserving their forms. Changes are held for the current session; saved JSON can be passed back into the component by a host app.
 

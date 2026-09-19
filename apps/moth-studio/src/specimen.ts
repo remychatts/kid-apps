@@ -6,6 +6,7 @@ export const featureRanges = {
   wingSpan: { label: "Wing span", min: 0.85, max: 1.12 },
   wingDepth: { label: "Wing depth", min: 0.85, max: 1.15 },
   antennaLength: { label: "Antenna length", min: 0.7, max: 1.25 },
+  bodyLength: { label: "Body length", min: 0.8, max: 1.25 },
 } as const;
 export type Features = Record<keyof typeof featureRanges, number>;
 export type Specimen = { seed: number; form: MothForm; features: Features };
