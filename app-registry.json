@@ -71,7 +71,11 @@
     "backgroundColour": "#07182d",
     "orientation": "any",
     "icons": [
-      { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+      {
+        "src": "icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
       {
         "src": "icon-512.png",
         "sizes": "512x512",
@@ -92,7 +96,11 @@
     "backgroundColour": "#fff4cf",
     "orientation": "landscape",
     "icons": [
-      { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+      {
+        "src": "icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
       {
         "src": "icon-512.png",
         "sizes": "512x512",
@@ -153,7 +161,11 @@
     "backgroundColour": "#112c14",
     "orientation": "any",
     "icons": [
-      { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+      {
+        "src": "icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
       {
         "src": "icon-512.png",
         "sizes": "512x512",
@@ -284,7 +296,11 @@
     "backgroundColour": "#8ee9ff",
     "orientation": "any",
     "icons": [
-      { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+      {
+        "src": "icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
       {
         "src": "icon-512.png",
         "sizes": "512x512",
@@ -360,6 +376,31 @@
         "src": "trumpet-icon.png",
         "sizes": "180x180",
         "type": "image/png"
+      }
+    ]
+  },
+  {
+    "id": "grammar",
+    "title": "Word Detective",
+    "shortName": "Word Detective",
+    "description": "Crack curious sentence cases, discover word classes and build your grammar detective streak.",
+    "date": "September 2026",
+    "updatedAt": "2026-09-30T15:30:00Z",
+    "emoji": "🔎",
+    "themeColour": "#133f43",
+    "backgroundColour": "#f7f3e8",
+    "orientation": "any",
+    "icons": [
+      {
+        "src": "icon-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
       }
     ]
   }

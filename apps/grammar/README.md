@@ -1,8 +1,49 @@
-# Grammar sentence data
+# Word Detective
 
-This directory contains reviewed content for a future KS2 word-class game. It
-does not yet contain a runnable app. The working directory name is `grammar`;
-the public app name and icon have not been chosen.
+An independently runnable, offline-capable KS2 word-class game with a paper-and-teal
+detective desk, clear fonts and a magnifying-glass icon. The app ID remains `grammar`.
+
+Run `npm run dev -- grammar` from the repository root. Run the shared quality checks
+with `just ci` (or `npm run ci`), including this app's model and content tests.
+
+## Playing
+
+Two randomly mixed mechanics ask the student to classify a highlighted word or
+find any word of a requested class. Practice balances class coverage, gives a
+little extra attention to the newest class and revisits weaker first-attempt
+results. Incorrect answers give a clue; descriptor links are shown on retries and
+after success. Students advance deliberately after reading the feedback.
+
+The cog opens seven cumulative levels, sound and reduced-motion preferences.
+Level 2 unlocks nouns and verbs. Raising the level introduces the new classes;
+changing the level starts a fresh case and streak. A field guide and session
+summary are available from the notebook.
+
+The magnifying glass preserves the case and explains any tapped word, including
+locked classes. Help on an unsolved question ends the independent streak and
+marks that question as supported practice. Inspecting an already solved case
+does not change its reward.
+
+Independent first answers earn one point and increase the streak. Mistakes reset
+the streak immediately; a corrected or help-supported answer starts at one and
+earns a smaller reward without a point. Every multiple of ten brings a randomly
+chosen confetti, fireworks or ribbon celebration with applause. Celebrations are
+brief and skippable, and become still badges with reduced motion enabled.
+
+Settings and per-level best streaks are saved under `word-detective:v1` in
+localStorage. Records are saved immediately; beating the previous record earns a
+celebration when the streak ends. Points, practice statistics and the current
+streak belong to the current session. If storage is unavailable, gameplay still
+works and the app explains that records cannot be saved.
+
+Fonts, content, icons and audio are bundled locally. The shared service worker
+precaches them for offline use; the app makes no dynamic data requests.
+
+## Audio
+
+The three MP3 applause recordings in `public/applause/` are copied unchanged from
+`apps/trumpet-practice/public/assets/applause_1/applause/`, as requested. They retain
+their existing Mixkit filenames. Small rewards use short synthesised chimes.
 
 `noun-pool.json` preserves the ten original categories and their ten target nouns.
 `sentence-pool.json` contains the corresponding 100 sentence entries, with extra
