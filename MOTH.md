@@ -6,7 +6,7 @@ Moth is an interactive teaching canvas for children around 10 years old, guided 
 
 Five chapters lead on sequentially, but every chapter is immediately available from persistent navigation. There are no locked levels, compulsory quizzes, scores, timers or completion requirements. Children and instructors can pause, inspect, predict, repeat and compare at their own pace.
 
-This document specifies the first version; it does not implement the app. The working title and app ID are **Moth** and `moth`. Implementation will live in `apps/moth/`.
+This document specifies the first version of **Moth**, app ID `moth`. The implementation lives in `apps/moth/`; run `just dev moth`. Implementation and validation notes are in [the app README](apps/moth/README.md).
 
 ### Learning outcomes
 
@@ -362,3 +362,11 @@ These inform the framing and are not runtime dependencies.
 - [Walton and Stevens (2018): bird vision and survival value of moth camouflage](https://www.nature.com/articles/s42003-018-0126-3). Supports camouflage as consequential; it does not calibrate the daylight slider or selection formula.
 
 The model deliberately avoids naming a molecular effector at the colour locus. Molecular details and excluded intermediate peppered-moth forms are unnecessary for these learning outcomes.
+
+## Implementation notes (October 2026)
+
+The initial implementation retains the proposed 48-parent population, 32-locus many-gene model and selection formula. Across seeds 1–100, the many-gene mean shade moves approximately 0.159 towards light after 40 generations on bark shade 0.8. The regression threshold is a mean shift greater than 0.14, rather than demanding a specific outcome from each run.
+
+Replay plays the recorded generations, including their original environments, without discarding history or drawing new random outcomes. Repeat with fresh chance is the separate action that clears descendants and draws new outcomes from the same founders. This distinction avoids rewriting a run's environment changes during replay.
+
+Local progress uses atomic IndexedDB saves, throttled during playback. Chapter changes settle any already selected birth or computed generation. A physical-iPad daylight assessment and guided child evaluation remain human usability checks; automated model tests cannot establish pedagogical effectiveness.

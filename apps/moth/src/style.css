@@ -1,0 +1,1776 @@
+/* Warm woodland lesson layout, accessible controls and lightweight teaching animations. */
+:root {
+  font-family: "Nunito Variable", sans-serif;
+  color: #273b2e;
+  background: #f5f3e9;
+  font-synthesis: none;
+  --ink: #273b2e;
+  --green: #37583d;
+  --muted: #5e6e5c;
+  --border: #d8dfcf;
+  --cream: #fffef8;
+  --gold: #e9b951;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+input,
+select {
+  font: inherit;
+}
+button,
+a,
+input,
+select {
+  touch-action: manipulation;
+}
+button {
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 9px 15px;
+  background: #fffef8;
+  color: var(--ink);
+  font-weight: 750;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1.25;
+  transition:
+    background 0.15s,
+    transform 0.15s;
+}
+button:hover:not(:disabled) {
+  background: #eaf0e2;
+  border-color: #a7b49c;
+}
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+button.primary {
+  background: var(--green);
+  color: #fffef5;
+  border-color: var(--green);
+}
+button.primary:hover {
+  background: #29452f;
+}
+button.accent {
+  background: #f5dfac;
+}
+button[aria-pressed="true"] {
+  background: #e2ead6;
+  border-color: #647b53;
+}
+button.text-button {
+  border: 0;
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: 0.88rem;
+}
+button svg {
+  flex-shrink: 0;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+summary:focus-visible,
+select:focus-visible {
+  outline: 3px solid #b06310;
+  outline-offset: 3px;
+}
+h1:focus {
+  outline: none;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+h1,
+h2,
+h3 {
+  font-family: "Fredoka Variable", sans-serif;
+  font-weight: 500;
+}
+h1 {
+  font-size: clamp(2rem, 3.3vw, 3rem);
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+}
+h2 {
+  font-size: 1.7rem;
+  line-height: 1.15;
+}
+h3 {
+  font-size: 1.18rem;
+}
+p {
+  line-height: 1.6;
+}
+small {
+  font-size: 0.78rem;
+}
+img,
+svg {
+  max-width: 100%;
+}
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+legend {
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+summary {
+  cursor: pointer;
+  padding: 12px 0;
+  font-weight: 750;
+  min-height: 44px;
+}
+details p {
+  margin-bottom: 8px;
+}
+details ul {
+  padding-left: 18px;
+}
+.app {
+  max-width: 1440px;
+  margin: auto;
+  padding: 0 36px;
+}
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 0 21px;
+}
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  text-decoration: none;
+  color: var(--ink);
+}
+.brand > span {
+  font-family: "Fredoka Variable", sans-serif;
+  font-size: 1.9rem;
+  line-height: 1;
+}
+.brand small {
+  display: block;
+  font-family: "Nunito Variable", sans-serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-top: 6px;
+  color: var(--muted);
+}
+.brand img {
+  border-radius: 14px;
+}
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+.header-actions button {
+  font-size: 0.85rem;
+  background: transparent;
+}
+.chapter-nav {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 5px;
+  background: #e9eddf;
+  gap: 5px;
+}
+.chapter-nav button {
+  background: transparent;
+  border-color: transparent;
+  justify-content: flex-start;
+  font-size: 0.94rem;
+  padding: 12px;
+}
+.chapter-nav button > span {
+  font-family: "Fredoka Variable", sans-serif;
+  font-weight: 400;
+  color: #657654;
+  margin-right: 4px;
+}
+.chapter-nav button[aria-current="step"] {
+  background: var(--cream);
+  box-shadow: 0 2px 4px #304c3910;
+  border: 1px solid #d8dfcf;
+}
+.chapter-nav button[aria-current="step"] > span {
+  color: #93602b;
+}
+.chapter-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 30px 0 23px;
+}
+.chapter-heading .eyebrow {
+  margin-bottom: 9px;
+}
+.chapter-heading p {
+  color: var(--muted);
+  margin-top: 9px;
+  font-size: 1.03rem;
+}
+.eyebrow {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  text-transform: uppercase;
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  font-weight: 850;
+  color: #576f51;
+  line-height: 1.5;
+}
+.reset-button {
+  font-size: 0.83rem;
+  background: transparent;
+  border: 0;
+}
+.card {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: 0 3px 0 #334b3210;
+  min-width: 0;
+}
+.card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 30px;
+  background: #eaf0df;
+  color: #3f583b;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.caption {
+  font-size: 0.82rem;
+  color: #586750;
+  line-height: 1.55;
+}
+.thought {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  border-radius: 14px;
+  background: #f8edcd;
+  padding: 14px 17px;
+  font-size: 0.94rem;
+  color: #5b481e;
+}
+.thought > span {
+  color: #987128;
+  font-size: 1.3rem;
+  line-height: 1.3;
+}
+.thought p {
+  line-height: 1.5;
+}
+.segmented {
+  display: flex;
+  gap: 4px;
+  background: #edf0e5;
+  border-radius: 13px;
+  padding: 4px;
+}
+.segmented > button {
+  flex: 1;
+  background: transparent;
+  border-color: transparent;
+  padding: 9px 12px;
+  min-height: 44px;
+  font-size: 0.86rem;
+}
+.segmented > button[aria-pressed="true"] {
+  background: #fffef8;
+  border-color: #a6b598;
+  box-shadow: 0 2px 3px #304c3910;
+}
+.slider {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  font-weight: 800;
+}
+.slider input {
+  width: 100%;
+  height: 28px;
+  accent-color: var(--green);
+  margin: 0;
+  cursor: pointer;
+}
+.endpoints {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 650;
+  color: var(--muted);
+}
+.endpoints small {
+  font-size: 0.72rem;
+}
+.discover-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  gap: 22px;
+}
+.search-card {
+  padding: 20px;
+}
+.search-scene {
+  position: relative;
+  height: 365px;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.lit-scene {
+  position: absolute;
+  inset: 0;
+}
+.bark-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.twilight {
+  position: absolute;
+  inset: 0;
+  background: #233c69;
+  pointer-events: none;
+}
+.hidden-moth,
+.find-target {
+  position: absolute;
+  width: 120px;
+  height: 94px;
+  transform: translate(-50%, -50%);
+}
+.hidden-moth .silhouette {
+  width: 100%;
+  height: 100%;
+}
+.find-target {
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  padding: 0;
+  transition: none;
+}
+.find-target:hover:not(:disabled),
+.find-target:active:not(:disabled) {
+  background: transparent;
+  border-color: transparent;
+  transform: translate(-50%, -50%);
+}
+.find-target.found {
+  border: 2px dashed #fffbe3;
+}
+.found-label {
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  transform: translateX(-50%);
+  background: #fffcdf;
+  color: #253323;
+  border-radius: 20px;
+  padding: 3px 9px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+.search-card .toolbar {
+  margin-top: 18px;
+}
+.search-card .toolbar button {
+  font-size: 0.82rem;
+}
+.control-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.control-card > p {
+  font-size: 0.93rem;
+  color: var(--muted);
+}
+.control-card .eyebrow {
+  margin-bottom: -8px;
+}
+.daylight-control {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding-top: 6px;
+}
+.daylight-control > svg {
+  margin-top: 2px;
+  color: #8e6b28;
+}
+.control-card details {
+  font-size: 0.85rem;
+}
+.specimen-list {
+  list-style: none;
+  padding: 0 !important;
+}
+.specimen-list button {
+  font-size: 0.85rem;
+  width: 100%;
+  margin-bottom: 4px;
+}
+.intro-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.intro-strip p {
+  font-size: 1.05rem;
+}
+.moth-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.build-card {
+  text-align: center;
+  padding: 20px 15px;
+}
+.build-card .card-heading {
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 0;
+}
+.build-card .moth {
+  height: 190px;
+  width: 100%;
+  display: block;
+}
+.genes {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+.gene-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.gene {
+  width: 47px;
+  height: 47px;
+  min-height: 47px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Fredoka Variable", sans-serif;
+  font-size: 1.2rem;
+  border: 2px solid #69735c;
+  padding: 0;
+}
+.gene.light,
+.dot.light,
+.tiny-genes .light {
+  color: #324332;
+  background: #e6e7d5;
+}
+.gene.dark,
+.dot.dark,
+.tiny-genes .dark {
+  color: #fffef0;
+  background: #384437;
+}
+.gene.dark {
+  border-style: dashed;
+  border-color: #dce3d1;
+  outline: 1px solid #384437;
+}
+.gene-wrap small {
+  color: #5d6b55;
+}
+.build-card .caption {
+  margin-top: 10px;
+}
+.hidden-copies {
+  height: 130px;
+}
+.hidden-copies > span {
+  display: inline-flex;
+  width: 47px;
+  height: 47px;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #b3bca6;
+  border-radius: 50%;
+  margin: 0 8px;
+  font-size: 1.3rem;
+  color: #647154;
+}
+.hidden-copies p {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 16px;
+}
+.parent-actions {
+  display: flex;
+  gap: 7px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+  margin-top: 12px;
+}
+.parent-actions button {
+  flex: 1;
+  font-size: 0.8rem;
+}
+.mystery {
+  height: 190px;
+  display: grid;
+  place-items: center;
+  font-family: "Fredoka Variable", sans-serif;
+  font-size: 5rem;
+  color: #8a9979;
+}
+.builder-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+  align-items: center;
+}
+.parent-preview {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+.parent-preview > span {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.parent-preview > div {
+  text-align: center;
+}
+.parent-preview .gene {
+  width: 28px;
+  height: 28px;
+  min-height: 28px;
+  font-size: 0.8rem;
+}
+.parent-preview .genes {
+  gap: 6px;
+}
+.parent-preview button {
+  font-size: 0.83rem;
+}
+.offspring-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 1fr);
+  gap: 22px;
+}
+.parents {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  text-align: center;
+}
+.parent {
+  border-radius: 18px;
+  padding: 10px 4px;
+  transition: background 0.3s;
+}
+.parent.highlight {
+  background: #f8edcd;
+}
+.parent h2 {
+  font-size: 1.5rem;
+}
+.parent .moth {
+  height: 145px;
+  width: 100%;
+}
+.parent > small {
+  display: block;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+.inheritance-path {
+  display: grid;
+  grid-template-columns: 1fr 26px 1fr;
+  text-align: center;
+  margin: 10px 0 18px;
+}
+.inheritance-path > div {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.8rem;
+  color: #60744f;
+}
+.inheritance-path .join-sign {
+  justify-content: center;
+  font-size: 1.7rem;
+}
+.life-stages {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.life-stages span {
+  font-size: 0.78rem;
+  padding: 7px;
+  border-radius: 20px;
+  background: #edf0e5;
+}
+.life-stages span.active {
+  background: #e7d18f;
+  color: #473f20;
+}
+.conception {
+  padding: 17px;
+  border-radius: 16px;
+  background: #f5f6ee;
+  text-align: center;
+}
+.conception p {
+  font-size: 0.89rem;
+  margin: 14px 0;
+  min-height: 44px;
+}
+.conception .toolbar {
+  justify-content: center;
+}
+.conception .toolbar button {
+  font-size: 0.82rem;
+}
+.brood-panel > h2 {
+  margin: 9px 0 18px;
+}
+.brood-panel > .segmented {
+  margin-bottom: 22px;
+}
+.brood-panel > .segmented button {
+  font-size: 0.78rem;
+}
+.brood-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin: 12px 0 18px;
+}
+.baby {
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 9px;
+  background: #fafbf3;
+  text-align: center;
+  min-height: 145px;
+}
+.baby .moth {
+  height: 90px;
+  width: 100%;
+}
+.baby .gene {
+  width: 25px;
+  height: 25px;
+  min-height: 25px;
+  font-size: 0.7rem;
+}
+.baby .genes {
+  gap: 8px;
+}
+.baby > small {
+  display: block;
+  margin-top: 5px;
+}
+.empty-baby {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 126px;
+  color: #7e8a6d;
+  gap: 12px;
+}
+.tally {
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 13px;
+  margin-bottom: 15px;
+}
+.tally > div {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 2px;
+}
+.tally strong {
+  font-family: "Fredoka Variable", sans-serif;
+  font-weight: 500;
+  font-size: 1.7rem;
+}
+.tally span {
+  font-size: 0.77rem;
+  color: var(--muted);
+}
+.brood-panel .thought {
+  font-size: 0.85rem;
+}
+.brood-panel details {
+  margin-top: 10px;
+  font-size: 0.85rem;
+}
+.manual-lab {
+  text-align: center;
+  background: #f5f6ee;
+  border-radius: 16px;
+  padding: 16px;
+}
+.manual-lab > p {
+  font-size: 0.85rem;
+  margin: 8px;
+}
+.gamete-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.gamete-choices legend {
+  font-size: 0.85rem;
+}
+.gamete-choices .segmented {
+  flex-direction: column;
+}
+.gamete-choices button {
+  font-size: 0.77rem;
+}
+.possible-child {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+.possible-child button {
+  font-size: 0.85rem;
+}
+.possible-moth {
+  width: 170px;
+}
+.possible-moth .moth {
+  height: 100px;
+}
+.possible-moth > span {
+  font-size: 0.8rem;
+}
+.model-note {
+  background: #e8eddd;
+  border: 1px solid #cbd7bc;
+  border-radius: 16px;
+  padding: 0 18px;
+  margin-bottom: 18px;
+}
+.model-note p {
+  padding-bottom: 10px;
+  font-size: 0.92rem;
+  max-width: 900px;
+}
+.population-card {
+  padding: 20px;
+}
+.population-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.phase-label h2 {
+  font-size: 1.4rem;
+  margin-top: 4px;
+}
+.population-controls .toolbar button {
+  font-size: 0.8rem;
+}
+.experiment-options {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 17px 0;
+}
+.experiment-options label {
+  display: flex;
+  align-items: center;
+  font-size: 0.8rem;
+  gap: 8px;
+}
+.experiment-options button {
+  font-size: 0.78rem;
+  background: #f3f5eb;
+  min-height: 44px;
+}
+.experiment-options select {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--cream);
+  padding: 8px;
+  min-height: 44px;
+  color: var(--ink);
+}
+.woodlands {
+  display: grid;
+  gap: 18px;
+}
+.woodlands.two {
+  grid-template-columns: 1fr 1fr;
+}
+.woodlands.two h3 {
+  margin: 12px 0 20px;
+}
+.bark-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+}
+.bark-controls .slider {
+  max-width: 410px;
+}
+.woodland-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+.woodland-heading > span:last-child {
+  font-size: 0.77rem;
+  color: var(--muted);
+}
+.population-scene {
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+  background: var(--bark);
+}
+.population-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  position: relative;
+  padding: 16px;
+  gap: 2px;
+  min-height: 260px;
+}
+.population-moth {
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  padding: 0;
+  min-width: 0;
+  min-height: 48px;
+  position: relative;
+  flex-direction: column;
+  gap: 0;
+}
+.population-moth .silhouette {
+  width: 100%;
+  height: 54px;
+  display: block;
+}
+.population-moth:hover:not(:disabled) {
+  background: #ffffec22;
+  border-color: #ffffec88;
+}
+.population-moth.eaten {
+  opacity: 0.12;
+  transition: opacity 1s;
+}
+.population-moth.eaten::after {
+  content: "×";
+  position: absolute;
+  font-size: 24px;
+  color: #fff;
+}
+.tiny-genes {
+  display: flex;
+  gap: 4px;
+  position: absolute;
+  bottom: -3px;
+}
+.tiny-genes i {
+  font-size: 0.6rem;
+  font-style: normal;
+  display: grid;
+  place-items: center;
+  border: 1px solid #9ca08f;
+  border-radius: 50%;
+  width: 17px;
+  height: 17px;
+}
+.woodlands.two .population-grid {
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  padding: 12px 8px;
+}
+.woodlands.two .population-moth .silhouette {
+  height: 44px;
+}
+.woodlands.two .population-moth {
+  min-height: 44px;
+}
+.population-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  min-height: 52px;
+}
+.population-summary > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.population-summary > span:last-child {
+  font-size: 0.75rem;
+}
+.dot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1px solid #7d8673;
+}
+.distribution {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 80px;
+  flex: 1;
+  max-width: 280px;
+}
+.distribution-column {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: flex-end;
+  flex: 1;
+  height: 80px;
+}
+.distribution-column > span {
+  font-size: 0.66rem;
+  color: var(--muted);
+}
+.distribution-column > i {
+  display: block;
+  width: 100%;
+  min-height: 2px;
+  border-radius: 4px 4px 0 0;
+  border: 1px solid #76816d55;
+}
+.bird-swoop {
+  position: absolute;
+  top: 12%;
+  left: 80%;
+  color: #253329;
+  animation: swoop 1.2s ease-out both;
+  pointer-events: none;
+}
+.teaching-family {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f0f3e6;
+  border-radius: 15px;
+  text-align: center;
+}
+.teaching-family > div {
+  display: flex;
+  max-width: 560px;
+  margin: 10px auto;
+  gap: 10px;
+}
+.teaching-family button {
+  flex: 1;
+  flex-direction: column;
+  background: #fcfdf6;
+  padding: 6px;
+  gap: 4px;
+}
+.teaching-family .silhouette {
+  height: 60px;
+}
+.teaching-family .gene {
+  width: 26px;
+  height: 26px;
+  min-height: 26px;
+  font-size: 0.73rem;
+}
+.teaching-family .genes {
+  gap: 6px;
+}
+.teaching-family small {
+  font-size: 0.72rem;
+}
+.history-row {
+  display: grid;
+  gap: 18px;
+  margin-top: 20px;
+}
+.history-row.two {
+  grid-template-columns: 1fr 1fr;
+}
+.history-row .card {
+  padding: 16px 20px;
+}
+.history svg {
+  display: block;
+  width: 100%;
+  height: 115px;
+}
+.history .card-heading {
+  margin-bottom: 5px;
+}
+.history-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.history-slider input {
+  flex: 1;
+  accent-color: #567745;
+  min-width: 0;
+  height: 32px;
+}
+.history details {
+  font-size: 0.8rem;
+}
+.generation-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  max-height: 180px;
+  overflow: auto;
+}
+.generation-list button {
+  font-size: 0.75rem;
+}
+.population-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 18px;
+}
+.population-footer .thought {
+  max-width: 670px;
+}
+.population-footer .toolbar {
+  flex-shrink: 0;
+}
+.population-footer button {
+  font-size: 0.8rem;
+}
+.ancestry-breadcrumb {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 20px 0 10px;
+}
+.ancestry-breadcrumb > span {
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+.ancestry-breadcrumb button {
+  font-size: 0.8rem;
+}
+.ancestry-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+.ancestor,
+.selected-descendant {
+  flex: 1;
+  max-width: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  border-radius: 16px;
+}
+.ancestor {
+  background: #f3f6e9;
+}
+.selected-descendant {
+  background: #f8edcd;
+}
+.ancestor .moth,
+.ancestor .silhouette,
+.selected-descendant .moth,
+.selected-descendant .silhouette {
+  height: 120px;
+  width: 100%;
+}
+.ancestor > span,
+.selected-descendant > strong {
+  font-size: 0.8rem;
+  margin-top: 9px;
+  text-align: center;
+}
+.sibling-list {
+  display: flex;
+  gap: 10px;
+}
+.sibling-list > button {
+  flex: 1;
+  flex-direction: column;
+  font-size: 0.8rem;
+}
+.sibling-list .silhouette {
+  height: 70px;
+}
+.family-inspector > .caption {
+  margin-top: 12px;
+}
+.lesson-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  border-top: 1px solid var(--border);
+  padding: 24px 0;
+  margin-top: 30px;
+}
+.lesson-footer > span {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  font-size: 0.79rem;
+  color: #67755b;
+}
+.lesson-footer > button {
+  font-size: 0.85rem;
+}
+.instructor {
+  margin-bottom: 22px;
+  background: #eff3e5;
+}
+.notes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+.notes-grid h3 {
+  margin: 12px 0 5px;
+}
+.notes-grid p {
+  font-size: 0.89rem;
+}
+.instructor > .caption {
+  margin-top: 14px;
+}
+.notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8edcd;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin: 16px 0;
+  font-size: 0.86rem;
+}
+.notice button {
+  background: transparent;
+  border: 0;
+}
+.confirm-dialog {
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--cream);
+  padding: 30px;
+  max-width: 460px;
+  width: calc(100% - 40px);
+  color: var(--ink);
+  box-shadow: 0 20px 100px #16251d44;
+}
+.confirm-dialog::backdrop {
+  background: #182d2670;
+  backdrop-filter: blur(3px);
+}
+.confirm-dialog h2 {
+  margin-bottom: 15px;
+}
+.confirm-dialog p {
+  margin-bottom: 24px;
+}
+.confirm-dialog .toolbar {
+  justify-content: flex-end;
+}
+.loading {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+@keyframes swoop {
+  from {
+    transform: translate(-700px, -90px) rotate(-15deg);
+  }
+  to {
+    transform: translate(0, 0) rotate(8deg);
+  }
+}
+[data-motion="false"] *,
+[data-motion="false"] *::before,
+[data-motion="false"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+@media (max-width: 1100px) {
+  .app {
+    padding: 0 22px;
+  }
+  .discover-grid {
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 16px;
+  }
+  .search-scene {
+    height: 350px;
+  }
+  .control-card {
+    padding: 20px;
+    gap: 15px;
+  }
+  .chapter-heading {
+    margin: 24px 0 20px;
+  }
+  .hidden-moth,
+  .find-target {
+    width: 104px;
+    height: 86px;
+  }
+  .site-header {
+    padding: 19px 0;
+  }
+  .builder-bottom {
+    grid-template-columns: 1fr;
+  }
+  .parent-preview {
+    justify-content: center;
+  }
+  .population-controls {
+    align-items: flex-start;
+  }
+  .population-controls .toolbar {
+    justify-content: flex-end;
+  }
+  .population-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .build-card .moth {
+    height: 155px;
+  }
+  .offspring-layout {
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 1fr);
+  }
+  .family-lab {
+    padding: 18px;
+  }
+  .parent .moth {
+    height: 120px;
+  }
+  .population-moth .silhouette {
+    height: 48px;
+  }
+  .population-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  .chapter-nav button {
+    font-size: 0.82rem;
+    padding: 10px;
+  }
+}
+@media (max-width: 800px) {
+  .app {
+    padding: 0 14px;
+  }
+  .brand small {
+    font-size: 0.66rem;
+  }
+  .header-actions {
+    gap: 3px;
+  }
+  .header-actions button {
+    font-size: 0.72rem;
+    padding: 8px;
+  }
+  .chapter-nav {
+    overflow: auto;
+    grid-template-columns: repeat(5, minmax(112px, 1fr));
+  }
+  .chapter-heading {
+    align-items: flex-start;
+  }
+  .chapter-heading h1 {
+    font-size: 2rem;
+  }
+  .chapter-heading p {
+    font-size: 0.94rem;
+  }
+  .reset-button {
+    font-size: 0.73rem;
+    padding: 8px;
+  }
+  .discover-grid,
+  .offspring-layout {
+    grid-template-columns: 1fr;
+  }
+  .control-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .control-card h2,
+  .control-card > .eyebrow,
+  .control-card > p,
+  .control-card > .thought,
+  .control-card > details {
+    grid-column: 1/-1;
+  }
+  .control-card h2 br {
+    display: none;
+  }
+  .search-scene {
+    height: 330px;
+  }
+  .moth-cards {
+    gap: 10px;
+  }
+  .build-card {
+    padding: 13px 9px;
+  }
+  .build-card .pill {
+    font-size: 0.65rem;
+  }
+  .build-card .moth {
+    height: 125px;
+  }
+  .parent-actions {
+    flex-direction: column;
+  }
+  .build-card .gene {
+    width: 40px;
+    height: 44px;
+    min-height: 44px;
+  }
+  .intro-strip {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .build-card .hidden-copies p {
+    font-size: 0.77rem;
+  }
+  .lesson-footer > span {
+    display: none;
+  }
+  .woodlands.two,
+  .history-row.two {
+    grid-template-columns: 1fr;
+  }
+  .population-controls {
+    flex-direction: column;
+  }
+  .population-controls .toolbar {
+    justify-content: flex-start;
+  }
+  .notes-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .population-grid {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  .woodlands.two .population-grid {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  .ancestry-row {
+    gap: 8px;
+  }
+  .ancestor,
+  .selected-descendant {
+    padding: 5px;
+  }
+  .ancestor .moth,
+  .selected-descendant .moth {
+    height: 90px;
+  }
+}
+@media (max-width: 500px) {
+  .brand small {
+    display: none;
+  }
+  .brand > span {
+    font-size: 1.5rem;
+  }
+  .brand img {
+    width: 38px;
+    height: 38px;
+  }
+  .header-actions button {
+    padding: 7px;
+    font-size: 0.67rem;
+  }
+  .header-actions svg {
+    width: 15px;
+  }
+  .chapter-heading {
+    gap: 8px;
+  }
+  .chapter-heading h1 {
+    font-size: 1.8rem;
+  }
+  .chapter-heading .eyebrow {
+    font-size: 0.59rem;
+  }
+  .reset-button {
+    font-size: 0;
+    min-width: 44px;
+  }
+  .reset-button svg {
+    width: 19px;
+    height: 19px;
+  }
+  .card {
+    border-radius: 17px;
+    padding: 16px;
+  }
+  .search-scene {
+    height: 350px;
+  }
+  .hidden-moth,
+  .find-target {
+    width: 76px;
+    height: 72px;
+  }
+  .search-card .toolbar {
+    gap: 5px;
+  }
+  .search-card .toolbar button {
+    font-size: 0.75rem;
+    padding: 8px;
+  }
+  .control-card {
+    grid-template-columns: 1fr;
+  }
+  .control-card > * {
+    grid-column: 1 !important;
+  }
+  .moth-cards {
+    grid-template-columns: 1fr;
+  }
+  .build-card .moth {
+    height: 170px;
+  }
+  .build-card .card-heading {
+    flex-direction: row;
+  }
+  .parent-actions {
+    flex-direction: row;
+  }
+  .builder-bottom {
+    gap: 14px;
+  }
+  .parent-preview {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .parent-preview > span {
+    width: 100%;
+    text-align: center;
+  }
+  .parents {
+    gap: 9px;
+  }
+  .parent .moth {
+    height: 110px;
+  }
+  .population-grid,
+  .woodlands.two .population-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    padding: 10px 5px;
+  }
+  .population-moth {
+    min-height: 44px;
+  }
+  .population-moth .silhouette {
+    height: 44px;
+  }
+  .woodland-heading {
+    align-items: flex-start;
+  }
+  .woodland-heading > span:last-child {
+    max-width: 150px;
+  }
+  .population-summary {
+    flex-wrap: wrap;
+  }
+  .population-summary > span:last-child {
+    width: 100%;
+  }
+  .teaching-family {
+    padding: 10px;
+  }
+  .teaching-family > div {
+    gap: 4px;
+  }
+  .teaching-family button {
+    min-width: 0;
+    padding: 4px;
+  }
+  .teaching-family .genes {
+    gap: 3px;
+  }
+  .teaching-family .gene {
+    width: 22px;
+    height: 22px;
+    min-height: 22px;
+  }
+  .ancestry-row {
+    flex-wrap: wrap;
+  }
+  .ancestor {
+    flex-basis: 40%;
+  }
+  .selected-descendant {
+    flex-basis: 100%;
+    max-width: none;
+  }
+  .selected-descendant .moth,
+  .selected-descendant .silhouette {
+    height: 140px;
+  }
+  .sibling-list {
+    flex-wrap: wrap;
+  }
+  .sibling-list > button {
+    flex-basis: 40%;
+  }
+  .lesson-footer button {
+    font-size: 0.75rem;
+    padding: 9px;
+  }
+  .gamete-choices {
+    gap: 6px;
+  }
+  .gamete-choices button {
+    padding: 8px;
+    font-size: 0.73rem;
+  }
+}
+
+/* Contributions move into cells while both parental copies remain in place. */
+.gene.transmitted {
+  box-shadow: 0 0 0 5px #e9b951;
+  outline: 0;
+}
+.gamete-transfer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  background: #f8f3dd;
+  border-radius: 16px;
+  padding: 15px;
+  margin-bottom: 16px;
+}
+.gamete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: copy-transfer 0.6s ease-out both;
+}
+.gamete small {
+  color: #5b654f;
+  font-size: 0.76rem;
+}
+.gamete.sperm .gene {
+  position: relative;
+}
+.gamete.sperm .gene::after {
+  content: "";
+  position: absolute;
+  width: 30px;
+  height: 15px;
+  border-top: 2px solid #667351;
+  border-radius: 50%;
+  left: 40px;
+  top: 27px;
+}
+.combined-copies {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px dashed #d3c599;
+  padding-top: 10px;
+  animation: copy-transfer 0.5s ease-out both;
+}
+.combined-copies > span {
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+.combined-copies > small {
+  font-size: 0.72rem;
+}
+.variation-note {
+  border-left: 3px solid #bd8a35;
+  padding: 9px 12px;
+  background: #f8edcd;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin: 8px 0;
+}
+.specimen {
+  height: 160px;
+  width: 100%;
+}
+@keyframes copy-transfer {
+  from {
+    opacity: 0;
+    transform: translateY(-35px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Keep the primary family experiment compact on landscape tablets. */
+@media (min-width: 900px) {
+  .brood-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .baby {
+    min-height: 118px;
+    padding: 6px;
+  }
+  .baby .moth {
+    height: 62px;
+  }
+  .baby .genes {
+    gap: 5px;
+  }
+  .baby .gene {
+    width: 22px;
+    height: 22px;
+    min-height: 22px;
+  }
+  .empty-baby {
+    height: 104px;
+  }
+  .brood-panel > h2 br {
+    display: none;
+  }
+  .brood-panel > h2 {
+    font-size: 1.5rem;
+  }
+  .parent .moth {
+    height: 112px;
+  }
+  .family-lab .card-heading {
+    margin-bottom: 8px;
+  }
+  .conception {
+    padding: 12px;
+  }
+  .conception p {
+    margin: 10px 0;
+    min-height: 36px;
+  }
+  .parents {
+    gap: 12px;
+  }
+  .parent {
+    padding: 6px 4px;
+  }
+  .gamete-transfer {
+    padding: 10px;
+    gap: 16px;
+  }
+}
+.family-inspector h3:focus {
+  outline: none;
+}

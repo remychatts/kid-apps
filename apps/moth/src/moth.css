@@ -1,0 +1,69 @@
+/* Self-contained motion for the reusable SVG; no JavaScript frame loop required. */
+.moth {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.moth-wing {
+  transform-origin: 9px 8px;
+  animation: moth-flex var(--flap-time) ease-in-out infinite;
+  animation-delay: var(--moth-delay);
+}
+.moth-eye {
+  transform-origin: 0 0;
+  animation: moth-blink var(--blink-time) linear infinite;
+  animation-delay: var(--moth-delay);
+}
+.moth-antennae {
+  transform-origin: 0 0;
+  animation: moth-feelers 7s ease-in-out infinite;
+  animation-delay: var(--moth-delay);
+}
+.moth[data-moving="false"] .moth-wing,
+.moth[data-moving="false"] .moth-eye,
+.moth[data-moving="false"] .moth-antennae {
+  animation: none;
+}
+@keyframes moth-blink {
+  0%,
+  43%,
+  47%,
+  100% {
+    transform: scaleY(1);
+  }
+  45% {
+    transform: scaleY(0.06);
+  }
+}
+@keyframes moth-flex {
+  0%,
+  73%,
+  87%,
+  100% {
+    transform: scaleX(1) rotate(0);
+  }
+  78%,
+  83% {
+    transform: scaleX(0.92) rotate(-2deg);
+  }
+  81% {
+    transform: scaleX(0.98) rotate(-0.5deg);
+  }
+}
+@keyframes moth-feelers {
+  0%,
+  100% {
+    transform: rotate(-1.8deg);
+  }
+  50% {
+    transform: rotate(1.8deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .moth .moth-wing,
+  .moth .moth-eye,
+  .moth .moth-antennae {
+    animation: none;
+  }
+}
