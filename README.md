@@ -31,6 +31,8 @@ The displayed dates for the original six apps come from the most recent commit a
 
 ## Development
 
+The planned Moth teaching app is described in [MOTH.md](MOTH.md): five guided interaction canvases covering camouflage, inheritance and population change. Its rendering prototype is the existing Moth Studio app; Moth itself is not yet implemented.
+
 Install the single shared dependency tree:
 
 ```sh
