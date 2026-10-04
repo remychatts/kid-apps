@@ -5,6 +5,7 @@ import {
   inherit,
   random,
   mix,
+  MANY_LOCI,
   type Experiment,
 } from "./model.ts";
 export type BroodState = {
@@ -299,7 +300,15 @@ export function validSession(value: unknown): value is Session {
         run.history.length > 257
       )
         return false;
-      const genesLength = run.model === "single" ? 2 : 64;
+      // Keep the original 32-locus saved experiments intact; new runs use eight loci.
+      const genesLength =
+        run.model === "single" ? 2 : run.history[0].offspring[0].genes.length;
+      if (
+        run.model === "many" &&
+        genesLength !== MANY_LOCI * 2 &&
+        genesLength !== 64
+      )
+        return false;
       const generations = [
         ...run.history,
         ...(exp.pending ? [exp.pending] : []),
@@ -341,7 +350,7 @@ export function validSession(value: unknown): value is Session {
           const shade =
             run.model === "single"
               ? Number(moth.genes.every((n) => n === 1))
-              : moth.genes.reduce<number>((sum, n) => sum + n, 0) / 64;
+              : moth.genes.reduce<number>((sum, n) => sum + n, 0) / genesLength;
           if (moth.shade !== shade) return false;
           if (
             index > 0 &&

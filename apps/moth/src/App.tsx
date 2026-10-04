@@ -17,6 +17,7 @@ import { loadSession, saveSession } from "./storage";
 import { Discover, Instructions } from "./Discover";
 import { Offspring } from "./Offspring";
 import { Population } from "./Population";
+import { BarkMismatch } from "./ui";
 import "@fontsource-variable/nunito";
 import "@fontsource-variable/fredoka";
 import "./style.css";
@@ -75,7 +76,7 @@ const chapters = [
     try: "Hold light bark steady for a few dozen generations. Compare start and now, then trace both parents of a moth.",
     misconception:
       "No moth decides its offspring's shade. One individual does not live through the whole history and gradually change.",
-    note: "This is a fictional many-gene model, not peppered-moth colour genetics. 32 independent pairs contribute to shade. All variation comes from existing copies; recombination may produce shades outside either parent's appearance. Selection can exhaust variation. No mutation or speciation is modelled. The simulation continues indefinitely; the starting population and latest 256 generations remain available for inspection.",
+    note: "This is a fictional many-gene model, not peppered-moth colour genetics. New experiments use eight independent pairs to give a wider offspring shade spread. Earlier saved experiments retain their 32 pairs. All variation comes from existing copies; recombination may produce shades outside either parent's appearance. Selection can exhaust variation. No mutation or speciation is modelled. The simulation continues indefinitely; the starting population and latest 256 generations remain available for inspection.",
   },
 ];
 
@@ -126,6 +127,7 @@ export function App() {
   const [ready, setReady] = useState(false);
   const [notice, setNotice] = useState("");
   const [notes, setNotes] = useState(false);
+  const [barkMismatch, setBarkMismatch] = useState(0);
   const [resetEpoch, setResetEpoch] = useState(0);
   const [reduced, setReduced] = useState(
     window.matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -252,268 +254,297 @@ export function App() {
       </main>
     );
   return (
-    <div
-      className="app"
-      data-motion={motion}
-      onPointerDown={unlockSound}
-      onKeyDown={unlockSound}
-    >
-      <header className="site-header">
-        <a
-          className="brand"
-          href="#chapter=1"
-          onClick={(event) => {
-            event.preventDefault();
-            navigate(1);
-          }}
-          aria-label="Moth, first chapter"
-        >
-          <img src="./icon.svg" alt="" width="48" height="48" />
-          <span>
-            Moth<small>A little world of big discoveries</small>
-          </span>
-        </a>
-        <div className="header-actions">
-          <button
-            aria-label={session.muted ? "Unmute sound" : "Mute sound"}
-            aria-pressed={session.muted}
-            onClick={() => {
-              muteSound(!session.muted);
-              setSession({ ...session, muted: !session.muted });
+    <BarkMismatch.Provider value={barkMismatch}>
+      <div
+        className="app"
+        data-motion={motion}
+        onPointerDown={unlockSound}
+        onKeyDown={unlockSound}
+      >
+        <header className="site-header">
+          <a
+            className="brand"
+            href="#chapter=1"
+            onClick={(event) => {
+              event.preventDefault();
+              navigate(1);
             }}
+            aria-label="Moth, first chapter"
           >
-            {session.muted ? <VolumeX size={18} /> : <Volume2 size={18} />}{" "}
-            {session.muted ? "Sound off" : "Sound on"}
-          </button>
-          <button
-            aria-pressed={session.motion}
-            onClick={() => setSession({ ...session, motion: !session.motion })}
-          >
-            {motion ? "Motion on" : "Motion off"}
-          </button>
-          <button aria-expanded={notes} onClick={() => setNotes(!notes)}>
-            <BookOpen size={18} />
-            Instructor notes
-          </button>
-        </div>
-      </header>
-      <nav className="chapter-nav" aria-label="Lesson chapters">
-        {chapters.map((item, i) => (
-          <button
-            key={item.short}
-            aria-current={session.chapter === i + 1 ? "step" : undefined}
-            onClick={() => navigate(i + 1)}
-          >
-            <span>{String(i + 1).padStart(2, "0")}</span>
-            {item.short}
-          </button>
-        ))}
-      </nav>
-      <main>
-        {notice && (
-          <div className="notice" role="status">
-            {notice}
+            <img src="./icon.svg" alt="" width="48" height="48" />
+            <span>
+              Moth<small>A little world of big discoveries</small>
+            </span>
+          </a>
+          <div className="header-actions">
+            <label className="bark-mismatch">
+              <span>Bark match</span>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={barkMismatch}
+                aria-label="Bark colour mismatch"
+                aria-valuetext={
+                  barkMismatch === 0
+                    ? "Original colours"
+                    : `${Math.round(barkMismatch * 100)}% of slight mismatch`
+                }
+                onChange={(event) =>
+                  setBarkMismatch(Number(event.target.value))
+                }
+              />
+              <span className="endpoints">
+                <small>Matched</small>
+                <small>Slightly different</small>
+              </span>
+            </label>
             <button
-              aria-label="Dismiss storage notice"
-              onClick={() => setNotice("")}
+              aria-label={session.muted ? "Unmute sound" : "Mute sound"}
+              aria-pressed={session.muted}
+              onClick={() => {
+                muteSound(!session.muted);
+                setSession({ ...session, muted: !session.muted });
+              }}
             >
-              <X size={16} />
+              {session.muted ? <VolumeX size={18} /> : <Volume2 size={18} />}{" "}
+              {session.muted ? "Sound off" : "Sound on"}
+            </button>
+            <button
+              aria-pressed={session.motion}
+              onClick={() =>
+                setSession({ ...session, motion: !session.motion })
+              }
+            >
+              {motion ? "Motion on" : "Motion off"}
+            </button>
+            <button aria-expanded={notes} onClick={() => setNotes(!notes)}>
+              <BookOpen size={18} />
+              Instructor notes
             </button>
           </div>
-        )}
-        <div className="chapter-heading">
-          <div>
-            <span className="eyebrow">
-              <Leaf size={14} />
-              Chapter {session.chapter} of 5 · explore together
-            </span>
-            <h1 tabIndex={-1} ref={heading}>
-              {chapter.name}
-            </h1>
-            <p>{chapter.subtitle}</p>
+        </header>
+        <nav className="chapter-nav" aria-label="Lesson chapters">
+          {chapters.map((item, i) => (
+            <button
+              key={item.short}
+              aria-current={session.chapter === i + 1 ? "step" : undefined}
+              onClick={() => navigate(i + 1)}
+            >
+              <span>{String(i + 1).padStart(2, "0")}</span>
+              {item.short}
+            </button>
+          ))}
+        </nav>
+        <main>
+          {notice && (
+            <div className="notice" role="status">
+              {notice}
+              <button
+                aria-label="Dismiss storage notice"
+                onClick={() => setNotice("")}
+              >
+                <X size={16} />
+              </button>
+            </div>
+          )}
+          <div className="chapter-heading">
+            <div>
+              <span className="eyebrow">
+                <Leaf size={14} />
+                Chapter {session.chapter} of 5 · explore together
+              </span>
+              <h1 tabIndex={-1} ref={heading}>
+                {chapter.name}
+              </h1>
+              <p>{chapter.subtitle}</p>
+            </div>
+            <button className="reset-button" onClick={reset}>
+              <RotateCcw size={16} />
+              Reset chapter
+            </button>
           </div>
-          <button className="reset-button" onClick={reset}>
-            <RotateCcw size={16} />
-            Reset chapter
-          </button>
-        </div>
-        {notes && (
-          <aside className="instructor card">
-            <div className="card-heading">
-              <h2>For the grown-up</h2>
-              <span className="pill">{chapter.time}</span>
-            </div>
-            <div className="notes-grid">
-              <div>
-                <h3>Ask</h3>
-                <p>{chapter.question}</p>
-                <h3>Try</h3>
-                <p>{chapter.try}</p>
+          {notes && (
+            <aside className="instructor card">
+              <div className="card-heading">
+                <h2>For the grown-up</h2>
+                <span className="pill">{chapter.time}</span>
               </div>
-              <div>
-                <h3>Listen for</h3>
-                <p>{chapter.misconception}</p>
-                <h3>About this model</h3>
-                <p>{chapter.note}</p>
+              <div className="notes-grid">
+                <div>
+                  <h3>Ask</h3>
+                  <p>{chapter.question}</p>
+                  <h3>Try</h3>
+                  <p>{chapter.try}</p>
+                </div>
+                <div>
+                  <h3>Listen for</h3>
+                  <p>{chapter.misconception}</p>
+                  <h3>About this model</h3>
+                  <p>{chapter.note}</p>
+                </div>
               </div>
-            </div>
-            <p className="caption">
-              No need to finish every activity. Follow a question, pause for a
-              conversation, or jump to another chapter.
-            </p>
-          </aside>
-        )}
-        {session.chapter === 1 && (
-          <Discover
-            state={session.search}
-            update={(search) =>
-              setSession((current) => ({ ...current, search }))
-            }
-          />
-        )}
-        {session.chapter === 2 && (
-          <Instructions
-            state={session.builder}
-            update={(builder) =>
-              setSession((current) => ({
-                ...current,
-                builder: {
-                  ...builder,
-                  dirty:
-                    current.builder.dirty ||
-                    builder.parents.some(
-                      (pair, i) =>
-                        pair.join() !== current.builder.parents[i].join(),
-                    ),
-                },
-              }))
-            }
-            motion={motion}
-          />
-        )}
-        {session.chapter === 3 && (
-          <Offspring
-            key={`brood-${session.brood.seed}-${resetEpoch}`}
-            state={session.brood}
-            update={(brood) => setSession((current) => ({ ...current, brood }))}
-            motion={motion}
-            confirm={confirm}
-          />
-        )}
-        {session.chapter === 4 && (
-          <Population
-            key={`woodland-${session.woodland.comparing}-${resetEpoch}`}
-            experiments={
-              session.woodland.comparing
-                ? session.woodland.comparison!
-                : [session.woodland.single]
-            }
-            update={(experiments) =>
-              setSession((current) => ({
-                ...current,
-                woodland: {
-                  ...current.woodland,
-                  ...(current.woodland.comparing
-                    ? { comparison: experiments }
-                    : { single: experiments[0] }),
-                },
-              }))
-            }
-            speed={session.speeds[0]}
-            setSpeed={(speed) =>
-              setSession((current) => ({
-                ...current,
-                speeds: [speed, current.speeds[1]],
-              }))
-            }
-            muted={session.muted}
-            many={false}
-            suspended={Boolean(confirmation)}
-            comparing={session.woodland.comparing}
-            onCompare={() =>
-              setSession((current) => ({
-                ...settle(current),
-                woodland: {
-                  ...settle(current).woodland,
-                  comparing: !current.woodland.comparing,
-                  comparison: current.woodland.comparison ?? [
-                    repeatExperiment(
-                      current.woodland.single,
-                      current.woodland.single.run.seed,
-                      1,
-                    ),
-                    repeatExperiment(
-                      current.woodland.single,
-                      current.woodland.single.run.seed,
-                      0,
-                    ),
-                  ],
-                },
-              }))
-            }
-            motion={motion}
-            confirm={confirm}
-          />
-        )}
-        {session.chapter === 5 && (
-          <Population
-            key={`many-${resetEpoch}`}
-            experiments={[session.deep]}
-            update={(experiments) =>
-              setSession((current) => ({ ...current, deep: experiments[0] }))
-            }
-            speed={session.speeds[1]}
-            setSpeed={(speed) =>
-              setSession((current) => ({
-                ...current,
-                speeds: [current.speeds[0], speed],
-              }))
-            }
-            muted={session.muted}
-            many
-            suspended={Boolean(confirmation)}
-            comparing={false}
-            motion={motion}
-            confirm={confirm}
-          />
-        )}
-      </main>
-      <footer className="lesson-footer">
-        <button
-          disabled={session.chapter === 1}
-          onClick={() => navigate(session.chapter - 1)}
-        >
-          <ArrowLeft size={18} />
-          Previous chapter
-        </button>
-        <span>
-          <Leaf size={14} /> Take your time. Follow your curiosity.
-        </span>
-        {session.chapter < 5 ? (
+              <p className="caption">
+                No need to finish every activity. Follow a question, pause for a
+                conversation, or jump to another chapter.
+              </p>
+            </aside>
+          )}
+          {session.chapter === 1 && (
+            <Discover
+              state={session.search}
+              update={(search) =>
+                setSession((current) => ({ ...current, search }))
+              }
+            />
+          )}
+          {session.chapter === 2 && (
+            <Instructions
+              state={session.builder}
+              update={(builder) =>
+                setSession((current) => ({
+                  ...current,
+                  builder: {
+                    ...builder,
+                    dirty:
+                      current.builder.dirty ||
+                      builder.parents.some(
+                        (pair, i) =>
+                          pair.join() !== current.builder.parents[i].join(),
+                      ),
+                  },
+                }))
+              }
+              motion={motion}
+            />
+          )}
+          {session.chapter === 3 && (
+            <Offspring
+              key={`brood-${session.brood.seed}-${resetEpoch}`}
+              state={session.brood}
+              update={(brood) =>
+                setSession((current) => ({ ...current, brood }))
+              }
+              motion={motion}
+              confirm={confirm}
+            />
+          )}
+          {session.chapter === 4 && (
+            <Population
+              key={`woodland-${session.woodland.comparing}-${resetEpoch}`}
+              experiments={
+                session.woodland.comparing
+                  ? session.woodland.comparison!
+                  : [session.woodland.single]
+              }
+              update={(experiments) =>
+                setSession((current) => ({
+                  ...current,
+                  woodland: {
+                    ...current.woodland,
+                    ...(current.woodland.comparing
+                      ? { comparison: experiments }
+                      : { single: experiments[0] }),
+                  },
+                }))
+              }
+              speed={session.speeds[0]}
+              setSpeed={(speed) =>
+                setSession((current) => ({
+                  ...current,
+                  speeds: [speed, current.speeds[1]],
+                }))
+              }
+              muted={session.muted}
+              many={false}
+              suspended={Boolean(confirmation)}
+              comparing={session.woodland.comparing}
+              onCompare={() =>
+                setSession((current) => ({
+                  ...settle(current),
+                  woodland: {
+                    ...settle(current).woodland,
+                    comparing: !current.woodland.comparing,
+                    comparison: current.woodland.comparison ?? [
+                      repeatExperiment(
+                        current.woodland.single,
+                        current.woodland.single.run.seed,
+                        1,
+                      ),
+                      repeatExperiment(
+                        current.woodland.single,
+                        current.woodland.single.run.seed,
+                        0,
+                      ),
+                    ],
+                  },
+                }))
+              }
+              motion={motion}
+              confirm={confirm}
+            />
+          )}
+          {session.chapter === 5 && (
+            <Population
+              key={`many-${resetEpoch}`}
+              experiments={[session.deep]}
+              update={(experiments) =>
+                setSession((current) => ({ ...current, deep: experiments[0] }))
+              }
+              speed={session.speeds[1]}
+              setSpeed={(speed) =>
+                setSession((current) => ({
+                  ...current,
+                  speeds: [current.speeds[0], speed],
+                }))
+              }
+              muted={session.muted}
+              many
+              suspended={Boolean(confirmation)}
+              comparing={false}
+              motion={motion}
+              confirm={confirm}
+            />
+          )}
+        </main>
+        <footer className="lesson-footer">
           <button
-            className="primary"
-            onClick={() => navigate(session.chapter + 1)}
+            disabled={session.chapter === 1}
+            onClick={() => navigate(session.chapter - 1)}
           >
-            Next: {chapters[session.chapter].short}
-            <ArrowRight size={18} />
+            <ArrowLeft size={18} />
+            Previous chapter
           </button>
-        ) : (
-          <button className="primary" onClick={() => navigate(1)}>
-            Explore again
-            <ArrowRight size={18} />
-          </button>
+          <span>
+            <Leaf size={14} /> Take your time. Follow your curiosity.
+          </span>
+          {session.chapter < 5 ? (
+            <button
+              className="primary"
+              onClick={() => navigate(session.chapter + 1)}
+            >
+              Next: {chapters[session.chapter].short}
+              <ArrowRight size={18} />
+            </button>
+          ) : (
+            <button className="primary" onClick={() => navigate(1)}>
+              Explore again
+              <ArrowRight size={18} />
+            </button>
+          )}
+        </footer>
+        {confirmation && (
+          <Confirmation
+            message={confirmation.message}
+            onCancel={() => setConfirmation(null)}
+            onConfirm={() => {
+              confirmation.action();
+              setConfirmation(null);
+            }}
+          />
         )}
-      </footer>
-      {confirmation && (
-        <Confirmation
-          message={confirmation.message}
-          onCancel={() => setConfirmation(null)}
-          onConfirm={() => {
-            confirmation.action();
-            setConfirmation(null);
-          }}
-        />
-      )}
-    </div>
+      </div>
+    </BarkMismatch.Provider>
   );
 }

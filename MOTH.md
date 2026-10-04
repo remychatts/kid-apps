@@ -251,11 +251,11 @@ Construction controls deliberately build specimens; they are not changes to livi
 
 ### Model B: many contributions
 
-Chapter 5's initial implementation baseline is:
+Chapter 5's current model is:
 
-- 32 independent diploid loci with Light and Dark versions.
+- Eight independent diploid loci with Light and Dark versions for new experiments (reduced from the original 32 to widen the offspring shade distribution). Saved 32-locus experiments retain their original genes.
 - At each locus, independently transmit one copy per parent. This abstracts independent assortment without teaching chromosome mechanics.
-- Shade is `number of Light copies / 64`, giving 65 closely spaced shades from 0 (dark) to 1 (light). Render a visually continuous range; omit numbers from the main child view.
+- Shade is `number of Light copies / 16`, giving 17 shades from 0 (dark) to 1 (light). Render a visually continuous range; omit numbers from the main child view.
 - Each founder has approximately 40–60% Light copies, distributed differently across loci. Seeded initialisation includes both versions at every locus across the founding population. Apply this condition only to founders; never preserve it artificially thereafter.
 - Derive appearance only from inherited copies. Do not average parental shades and add Gaussian noise.
 

@@ -6,29 +6,29 @@ A monorepo for twenty playful, family-friendly web apps and the catalogue that l
 
 ## Apps
 
-| App                                                        | What it does                                                              | Last updated in the original history |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------ |
-| [24-Hour Clock](apps/24-hour-clock/)                       | Explores a full day at an adjustable playback speed.                      | March 2025                           |
-| [Arial vs Helvetica](apps/arial-vs-helvetica/)             | Teaches the differences between two similar fonts.                        | August 2026                          |
-| [Drawing Prompt Machine](apps/drawing/)                    | Spins up a fun drawing challenge.                                         | January 2026                         |
-| [Frogball Final!](apps/frogball-final/)                    | Puts you in charge of a frog football team.                               | August 2026                          |
-| [Fraction Feast](apps/fraction-feast/)                     | Matches pie fractions with a hundred-square.                              | September 2026                       |
-| [Guess Lab](apps/guess-lab/)                               | Compares number-guessing algorithms and statistics.                       | September 2026                       |
-| [Imposter!](apps/imposter-game/)                           | A pass-the-phone secret-word game for 3–8 players.                        | July 2026                            |
-| [Jungle Baby Snake Rescue](apps/jungle-snake/)             | A jungle rescue game starring a purple snake.                             | April 2026                           |
-| [Moth](apps/moth/)                                         | Explores camouflage, inheritance and generations in five guided chapters. | October 2026                         |
-| [Moth Studio](apps/moth-studio/)                           | Explores friendly peppered moths and cosmetic variation.                  | September 2026                       |
-| [Pet Chooser](apps/pet-chooser/)                           | Matches players with a companion from a cast of pets.                     | December 2025                        |
-| [Penguin Peak!](apps/penguin-slide/)                       | Slides a penguin down an obstacle-filled icy hill.                        | August 2026                          |
-| [Podcast Episodes](apps/podcast-episodes/)                 | Loads and filters episodes from an RSS feed.                              | July 2025                            |
-| [Practice Stars](apps/trumpet-practice/)                   | Builds practice streaks and unlocks reward pictures.                      | August 2026                          |
-| [Probability Explorer](apps/probability-explorer/)         | Visualises repeated samples as live histograms.                           | April 2025                           |
-| [Rounding Rally](apps/rounding-game/)                      | A visual estimation and rounding game.                                    | August 2026                          |
-| [Snake Species Visualiser](apps/snake-species-visualiser/) | Makes snake-species statistics tangible as a grid.                        | April 2026                           |
-| [Snake Spotter](apps/snake-spotter/)                       | Tests visual snake identification with photos.                            | September 2026                       |
-| [Trumpet Fingering](apps/trumpet-fingering/)               | Practises matching trumpet notes and fingerings.                          | January 2026                         |
+| App                                                        | What it does                                                                 | Last updated in the original history |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------ |
+| [24-Hour Clock](apps/24-hour-clock/)                       | Explores a full day at an adjustable playback speed.                         | March 2025                           |
+| [Arial vs Helvetica](apps/arial-vs-helvetica/)             | Teaches the differences between two similar fonts.                           | August 2026                          |
+| [Drawing Prompt Machine](apps/drawing/)                    | Spins up a fun drawing challenge.                                            | January 2026                         |
+| [Frogball Final!](apps/frogball-final/)                    | Puts you in charge of a frog football team.                                  | August 2026                          |
+| [Fraction Feast](apps/fraction-feast/)                     | Matches pie fractions with a hundred-square.                                 | September 2026                       |
+| [Guess Lab](apps/guess-lab/)                               | Compares number-guessing algorithms and statistics.                          | September 2026                       |
+| [Imposter!](apps/imposter-game/)                           | A pass-the-phone secret-word game for 3–8 players.                           | July 2026                            |
+| [Jungle Baby Snake Rescue](apps/jungle-snake/)             | A jungle rescue game starring a purple snake.                                | April 2026                           |
+| [Moth](apps/moth/)                                         | Explores camouflage, illustrated life cycles and inherited colour variation. | October 2026                         |
+| [Moth Studio](apps/moth-studio/)                           | Explores friendly peppered moths and cosmetic variation.                     | September 2026                       |
+| [Pet Chooser](apps/pet-chooser/)                           | Matches players with a companion from a cast of pets.                        | December 2025                        |
+| [Penguin Peak!](apps/penguin-slide/)                       | Slides a penguin down an obstacle-filled icy hill.                           | August 2026                          |
+| [Podcast Episodes](apps/podcast-episodes/)                 | Loads and filters episodes from an RSS feed.                                 | July 2025                            |
+| [Practice Stars](apps/trumpet-practice/)                   | Builds practice streaks and unlocks reward pictures.                         | August 2026                          |
+| [Probability Explorer](apps/probability-explorer/)         | Visualises repeated samples as live histograms.                              | April 2025                           |
+| [Rounding Rally](apps/rounding-game/)                      | A visual estimation and rounding game.                                       | August 2026                          |
+| [Snake Species Visualiser](apps/snake-species-visualiser/) | Makes snake-species statistics tangible as a grid.                           | April 2026                           |
+| [Snake Spotter](apps/snake-spotter/)                       | Tests visual snake identification with photos.                               | September 2026                       |
+| [Trumpet Fingering](apps/trumpet-fingering/)               | Practises matching trumpet notes and fingerings.                             | January 2026                         |
 
-| [Word Detective](apps/grammar/)                            | Cracks sentence cases and practises seven word classes. | September 2026                       |
+| [Word Detective](apps/grammar/) | Cracks sentence cases and practises seven word classes. | September 2026 |
 
 The displayed dates for the original six apps come from the most recent commit affecting each app in `simonchatts/alyx` at the time of extraction. Dates for the four archive imports come from their member modification timestamps in `apps.tgz`. Dates for the trumpet apps come from the latest source commit at import time; their READMEs record the exact commit.
 

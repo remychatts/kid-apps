@@ -1,5 +1,11 @@
 /** Population experiments with teaching phases, shared-scale history and recorded ancestry. */
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Play,
   Pause,
@@ -36,7 +42,9 @@ import {
   Thought,
   cssVars,
   shadeColour,
+  BarkMismatch,
 } from "./ui";
+import { barkColour } from "./palette";
 
 /** Displays every living shade on a stable nine-bin scale with an accessible summary. */
 function Distribution({ generation }: { generation: Generation }) {
@@ -315,6 +323,7 @@ function WoodlandCanvas({
   onSelect: (id: string) => void;
 }) {
   const last = experiment.run.history.at(-1)!;
+  const mismatch = useContext(BarkMismatch);
   const generation =
     view === null ? (experiment.pending ?? last) : experiment.run.history[view];
   const phase = view === null ? experiment.phase : 0;
@@ -367,6 +376,7 @@ function WoodlandCanvas({
     return () => animations.forEach((animation) => animation.cancel());
   }, [generation, phase, motion, tempo, view]);
   const surviving = new Set(generation.survivors);
+  const eaten = generation.offspring.filter((moth) => !surviving.has(moth.id));
   const counts = living(generation);
   const light = counts.filter((m) => m.shade === 1).length;
   const lightCopies = counts.reduce(
@@ -404,19 +414,23 @@ function WoodlandCanvas({
       </div>
       <div
         className={`population-scene phase-${phase}`}
-        style={cssVars({ "--bark": shadeColour(bark), "--tempo": tempo })}
+        style={cssVars({
+          "--bark": barkColour(bark, mismatch),
+          "--tempo": tempo,
+        })}
       >
         <Bark shade={bark} />
         <div
           ref={grid}
           className={`population-grid ${phase ? "offspring-grid" : ""}`}
         >
-          {moths.map((moth, index) => (
+          {moths.map((moth) => (
             <button
               key={moth.id}
               data-moth={moth.id}
               style={cssVars({
-                "--bird-delay": `${(650 + index * 4) * tempo}ms`,
+                // Six waves of eight strikes leave time to see each bird approach and feed.
+                "--bird-delay": `${650 + Math.floor(eaten.indexOf(moth) / 8) * 650 + (eaten.indexOf(moth) % 8) * 60}ms`,
               })}
               className={`population-moth ${phase === 2 && !surviving.has(moth.id) ? "eaten" : ""}`}
               aria-label={`Moth ${moth.id}, ${experiment.run.model === "single" ? (moth.shade ? "light" : "dark") : `${Math.round(moth.shade * 100)}% light shade`}${phase === 2 && !surviving.has(moth.id) ? ", eaten" : ""}`}
@@ -424,7 +438,7 @@ function WoodlandCanvas({
             >
               <Silhouette shade={moth.shade} seed={moth.cosmetic} />
               {phase === 2 && !surviving.has(moth.id) && (
-                <Bird className="bird-strike" size={38} aria-hidden="true" />
+                <Bird className="bird-strike" size={48} aria-hidden="true" />
               )}
               {inside && experiment.run.model === "single" && (
                 <span className="tiny-genes">
@@ -577,7 +591,9 @@ export function Population({
           }
         } else
           playback.current.update(
-            playback.current.experiments.map(many ? advance : step),
+            playback.current.experiments.map(
+              many || speed !== "Slow" ? advance : step,
+            ),
           );
       },
       many
@@ -586,7 +602,13 @@ export function Population({
           : speed === "Medium"
             ? 50
             : 100
-        : (first.phase === 2 ? 2700 : first.phase === 1 ? 1500 : 800) * tempo,
+        : !replaying && speed === "Slow"
+          ? first.phase === 2
+            ? 6600
+            : first.phase === 1
+              ? 1500
+              : 800
+          : 1800 * tempo,
     );
     return () => window.clearInterval(timer);
   }, [

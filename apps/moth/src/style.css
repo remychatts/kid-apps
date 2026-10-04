@@ -188,6 +188,27 @@ details ul {
 .header-actions {
   display: flex;
   gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.bark-mismatch {
+  display: grid;
+  width: 145px;
+  gap: 2px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+.bark-mismatch input {
+  width: 100%;
+  margin: 0;
+  min-height: 24px;
+  accent-color: #667351;
+}
+.bark-mismatch .endpoints {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  font-weight: 400;
 }
 .header-actions button {
   font-size: 0.85rem;
@@ -1693,6 +1714,44 @@ details ul {
 .combined-copies > small {
   font-size: 0.72rem;
 }
+.life-cycle {
+  width: 100%;
+  height: 190px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-top: 1px dashed #d3c599;
+  padding-top: 10px;
+  animation: life-expand 650ms ease-in-out both;
+}
+.life-picture {
+  width: 260px;
+  max-width: 100%;
+  height: 150px;
+  animation: copy-transfer 500ms ease-out both;
+}
+.life-picture > svg {
+  width: 100%;
+  height: 100%;
+}
+.life-cycle strong {
+  font-size: 0.85rem;
+}
+.guided-examples .baby .moth {
+  position: relative;
+  z-index: 5;
+}
+@keyframes life-expand {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: 190px;
+    opacity: 1;
+  }
+}
 .variation-note {
   border-left: 3px solid #bd8a35;
   padding: 9px 12px;
@@ -1839,19 +1898,19 @@ details ul {
 }
 .population-moth.eaten > .silhouette,
 .population-moth.eaten .tiny-genes {
-  animation: moth-eaten calc(300ms * var(--tempo)) var(--bird-delay) both;
-  animation-delay: calc(var(--bird-delay) + 400ms * var(--tempo));
+  animation: moth-eaten 300ms var(--bird-delay) both;
+  animation-delay: calc(var(--bird-delay) + 1100ms);
 }
 .population-moth.eaten::after {
   opacity: 0;
-  animation: death-marker calc(300ms * var(--tempo)) both;
-  animation-delay: calc(var(--bird-delay) + 400ms * var(--tempo));
+  animation: death-marker 300ms both;
+  animation-delay: calc(var(--bird-delay) + 1100ms);
 }
 .phase-2 .population-moth > .silhouette {
   filter: none;
 }
 .phase-2 .population-moth:not(.eaten) > .silhouette {
-  animation: camouflage-window calc(2400ms * var(--tempo)) both;
+  animation: camouflage-window 6400ms both;
 }
 .phase-2 .tiny-genes {
   visibility: hidden;
@@ -1862,7 +1921,7 @@ details ul {
   color: #182a38;
   fill: #84959b;
   pointer-events: none;
-  animation: predator-flight calc(900ms * var(--tempo)) var(--bird-delay) both;
+  animation: predator-flight 2000ms var(--bird-delay) both;
 }
 @keyframes camouflage-window {
   0% {
@@ -1891,18 +1950,19 @@ details ul {
 }
 @keyframes predator-flight {
   0% {
-    transform: translate(100vw, -100px) scale(0.6);
+    transform: translate(150px, -100px) scale(0.8);
     opacity: 0;
   }
   15% {
     opacity: 1;
   }
-  48% {
+  35%,
+  65% {
     transform: translate(0, 0) scale(1);
     opacity: 1;
   }
   100% {
-    transform: translate(-100vw, -80px) scale(0.7);
+    transform: translate(-150px, -80px) scale(0.8);
     opacity: 0;
   }
 }
@@ -1913,6 +1973,11 @@ details ul {
   --rows: 12;
 }
 @media (max-width: 700px) {
+  .site-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
   .population-grid,
   .woodlands.two .population-grid {
     --rows: 8;
@@ -1945,9 +2010,8 @@ details ul {
 }
 .phase-2 .population-moth.eaten > .silhouette {
   animation:
-    camouflage-window calc(2400ms * var(--tempo)) both,
-    moth-eaten calc(300ms * var(--tempo))
-      calc(var(--bird-delay) + 400ms * var(--tempo)) both;
+    camouflage-window 6400ms both,
+    moth-eaten 300ms calc(var(--bird-delay) + 1100ms) both;
 }
 [data-motion="false"] .population-moth.eaten::after {
   opacity: 1;

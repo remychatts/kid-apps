@@ -23,6 +23,7 @@ export type Experiment = {
 };
 export const LIMIT = 200;
 export const HISTORY_WINDOW = 256;
+export const MANY_LOCI = 8;
 
 /** Mixes a seed and stream number without consuming another stream's draws. */
 export function mix(seed: number, stream: number): number {
@@ -101,11 +102,13 @@ export function createRun(model: Model, seed = 2417): Run {
   const founders = Array.from({ length: 48 }, (_, i) => {
     let genes: number[];
     if (model === "single") genes = i < 12 ? [1, 1] : i < 36 ? [0, 1] : [0, 0];
-    else if (i < 2) genes = Array.from({ length: 64 }, (_, j) => (i + j) % 2);
+    else if (i < 2)
+      genes = Array.from({ length: MANY_LOCI * 2 }, (_, j) => (i + j) % 2);
     else {
-      const lights = 26 + Math.floor(draw() * 13);
+      // Fewer equal contributions widen segregation spread without inventing new gene copies.
+      const lights = 7 + Math.floor(draw() * 3);
       genes = shuffled(
-        Array.from({ length: 64 }, (_, j) => Number(j < lights)),
+        Array.from({ length: MANY_LOCI * 2 }, (_, j) => Number(j < lights)),
         draw,
       );
     }

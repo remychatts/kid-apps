@@ -26,9 +26,16 @@
 - The stronger dim-light endpoint visibly reduces contrast for mismatched moths while controls remain clear. All five revised chapters fit a 390 × 844 viewport without horizontal page overflow. Mute survives a production reload.
 - Existing first-release saved progress loaded through the migration, and no browser console errors were reported in the revised flow.
 
+## Bark and animation revision checks (4 October 2026)
+
+- Header mismatch control starts at the original palette, changes bark at intermediate and maximum settings, and leaves transmitted copies and moth appearances intact.
+- Chapter 3 expands the yellow life-cycle area with exactly two transmitted copies, shows the correctly dark adult for D/D, D/L and L/D and the light adult for L/L, then flies it to the recorded example without increasing the chance tally.
+- Chapter 4 renders 48 strikes, with visibly recognisable birds approaching, resting over prey and departing even when manual steps use Fast speed. Medium and Fast Play advance directly through completed 48-parent generations; Slow Play reaches the offspring and predation teaching phases.
+- At 390 × 844, the new toolbar wraps beneath the brand and the page has no horizontal overflow. The life-cycle panel and offspring examples also fit the 1024 × 768 tablet layout.
+
 ## Automated checks
 
-`just ci` checks formatting, lint, types, all 31 repository tests (19 for Moth), all app builds and generated service-worker precache entries. Moth's tests include 100-seed selection ensembles, true parentage, mutation-free inheritance, reproducibility, history bounds, saved-state validation and preservation of exact founders when repeating experiments.
+`just ci` checks formatting, lint, types, all 47 repository tests (24 for Moth), all app builds and generated service-worker precache entries. Moth's tests include 100-seed selection ensembles, true parentage, mutation-free inheritance, reproducibility, history bounds, saved-state validation and preservation of exact founders when repeating experiments. New checks verify exact original bark colours, 5% HSV-value compression, doubled segregation spread for mixed parents, visible shade variation after 40 generations and intact legacy 32-locus saves.
 
 ## Human evaluation still needed
 

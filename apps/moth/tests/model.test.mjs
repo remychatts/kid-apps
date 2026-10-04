@@ -16,6 +16,7 @@ import {
   findMoth,
   LIMIT,
   HISTORY_WINDOW,
+  MANY_LOCI,
 } from "../src/model.ts";
 import {
   initialSession,
@@ -93,7 +94,7 @@ test("founders have documented counts and both versions at each many-gene locus"
   );
   const many = living(createRun("many").history[0]);
   assert.ok(many.every((moth) => moth.shade >= 0.4 && moth.shade <= 0.6));
-  for (let i = 0; i < 64; i += 2) {
+  for (let i = 0; i < MANY_LOCI * 2; i += 2) {
     const versions = new Set(
       many.flatMap((moth) => moth.genes.slice(i, i + 2)),
     );
@@ -114,7 +115,7 @@ test("every offspring has two distinct live parents and inherits per locus witho
       assert.notEqual(...moth.parents);
       const [mum, dad] = moth.parents.map((id) => prior.get(id));
       assert.ok(mum && dad);
-      for (let i = 0; i < 64; i += 2) {
+      for (let i = 0; i < MANY_LOCI * 2; i += 2) {
         assert.ok(mum.genes.slice(i, i + 2).includes(moth.genes[i]));
         assert.ok(dad.genes.slice(i, i + 2).includes(moth.genes[i + 1]));
       }
@@ -169,6 +170,61 @@ test("many-gene populations shift visibly within 40 generations across 100 seeds
     shift += mean(run.history.at(-1)) - mean(run.history[0]);
   }
   assert.ok(shift / 100 > 0.14, `Average shift was ${shift / 100}`);
+});
+
+test("eight contributing gene pairs double offspring shade spread for mixed parents", () => {
+  const spreads = [8, 32].map((loci) => {
+    const parent = Array.from({ length: loci * 2 }, (_, i) => i % 2);
+    const draw = random(819);
+    const shades = Array.from({ length: 12000 }, () =>
+      appearance(inherit(parent, parent, draw), "many"),
+    );
+    return Math.sqrt(
+      shades.reduce((sum, shade) => sum + (shade - 0.5) ** 2, 0) /
+        shades.length,
+    );
+  });
+  assert.ok(spreads[0] > 0.12 && spreads[0] < 0.13);
+  assert.ok(spreads[0] / spreads[1] > 1.9 && spreads[0] / spreads[1] < 2.1);
+});
+
+test("saved 32-locus experiments retain their copies, appearances and valid descendants", () => {
+  const session = initialSession();
+  for (const moth of session.deep.run.history[0].offspring) {
+    moth.genes = Array.from({ length: 4 }, () => moth.genes).flat();
+  }
+  session.deep = advance(session.deep);
+  assert.ok(validSession(session));
+  assert.ok(
+    session.deep.run.history[1].offspring.every(
+      (moth) => moth.genes.length === 64,
+    ),
+  );
+  const loaded = upgradeSession(structuredClone(session));
+  assert.deepEqual(loaded.deep, session.deep);
+  assert.ok(validSession({ ...loaded, deep: advance(loaded.deep) }));
+});
+
+test("new many-gene populations retain a visible colour spread through 40 generations", () => {
+  let spread = 0;
+  let fixed = 0;
+  for (let seed = 1; seed <= 100; seed++) {
+    const generation = runFor("many", seed, 0.8, 40).history.at(-1);
+    const average = mean(generation);
+    const deviation = Math.sqrt(
+      living(generation).reduce(
+        (sum, moth) => sum + (moth.shade - average) ** 2,
+        0,
+      ) / 48,
+    );
+    spread += deviation;
+    fixed += deviation === 0;
+  }
+  assert.ok(
+    spread / 100 > 0.075,
+    `Average standard deviation was ${spread / 100}`,
+  );
+  assert.equal(fixed, 0);
 });
 
 test("stepwise, skipped and restored playback give identical biology", () => {

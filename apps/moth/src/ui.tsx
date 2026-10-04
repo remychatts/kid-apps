@@ -1,7 +1,16 @@
 /** Shared specimens, gene-copy controls and woodland scenery for the five canvases. */
-import { useId, type CSSProperties, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useId,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { Moth } from "./Moth";
 import { appearance, type Individual } from "./model";
+import { barkColour } from "./palette";
+
+export const BarkMismatch = createContext(0);
 
 /** Maps inherited shade to the same muted palette used for the bark. */
 export function shadeColour(shade: number): string {
@@ -62,13 +71,14 @@ export function Silhouette({
 /** Supplies deterministic bark grain and lichen; CSS sets the underlying shade. */
 export function Bark({ shade }: { shade: number }) {
   const pattern = useId().replace(/:/g, "");
+  const mismatch = useContext(BarkMismatch);
   return (
     <svg
       className="bark-art"
       preserveAspectRatio="none"
       viewBox="0 0 900 440"
       aria-hidden="true"
-      style={{ background: shadeColour(shade) }}
+      style={{ background: barkColour(shade, mismatch) }}
     >
       <defs>
         <pattern
