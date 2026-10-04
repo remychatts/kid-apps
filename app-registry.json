@@ -380,26 +380,6 @@
     ]
   },
   {
-    "id": "moth-studio",
-    "title": "Moth Studio",
-    "shortName": "Moth Studio",
-    "description": "Meet friendly peppered moths and explore their light and dark forms, big eyes and little quirks.",
-    "date": "September 2026",
-    "updatedAt": "2026-09-19T12:00:00Z",
-    "emoji": "🦋",
-    "themeColour": "#f7f5ec",
-    "backgroundColour": "#f7f5ec",
-    "orientation": "any",
-    "icons": [
-      {
-        "src": "icon.svg",
-        "sizes": "any",
-        "type": "image/svg+xml",
-        "purpose": "any maskable"
-      }
-    ]
-  },
-  {
     "id": "moth",
     "title": "Moth",
     "shortName": "Moth",

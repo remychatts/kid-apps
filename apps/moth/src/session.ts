@@ -108,28 +108,28 @@ export function settle(session: Session): Session {
   };
 }
 
-/** Changes chapters without ever reassigning parents to an existing brood. */
+/** Opens a fresh chapter scene while carrying selected parents into a fresh brood. */
 export function goToChapter(
   session: Session,
   chapter: number,
   carryParents = true,
 ): Session {
   const next = settle(session);
+  if (chapter === session.chapter) return next;
+  const defaults = initialSession();
+  if (chapter === 2) next.builder = defaults.builder;
   if (chapter === 3) {
+    next.brood = defaults.brood;
     if (carryParents && session.builder.dirty) {
-      if (
-        session.builder.parents.some(
-          (genes, i) => genes.join() !== next.brood.parents[i].join(),
-        )
-      )
-        next.brood = {
-          ...initialSession().brood,
-          parents: session.builder.parents.map((genes) => [...genes]),
-          visited: true,
-        };
+      next.brood = {
+        ...next.brood,
+        parents: session.builder.parents.map((genes) => [...genes]),
+        visited: true,
+      };
       next.builder = { ...next.builder, dirty: false };
     } else next.brood = { ...next.brood, visited: true };
   }
+  if (chapter === 4) next.woodland = defaults.woodland;
   return { ...next, chapter };
 }
 

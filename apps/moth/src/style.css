@@ -191,32 +191,13 @@ details ul {
   align-items: center;
   flex-wrap: wrap;
 }
-.bark-mismatch {
-  display: grid;
-  width: 145px;
-  gap: 2px;
-  font-size: 0.78rem;
-  font-weight: 800;
-}
-.bark-mismatch input {
-  width: 100%;
-  margin: 0;
-  min-height: 24px;
-  accent-color: #667351;
-}
-.bark-mismatch .endpoints {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.65rem;
-  font-weight: 400;
-}
 .header-actions button {
   font-size: 0.85rem;
   background: transparent;
 }
 .chapter-nav {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   border: 1px solid var(--border);
   border-radius: 15px;
   padding: 5px;
@@ -1911,9 +1892,6 @@ details ul {
 }
 .phase-2 .population-moth:not(.eaten) > .silhouette {
   animation: camouflage-window 6400ms both;
-}
-.phase-2 .tiny-genes {
-  visibility: hidden;
 }
 .bird-strike {
   position: absolute;

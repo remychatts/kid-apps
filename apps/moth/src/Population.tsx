@@ -1,11 +1,5 @@
 /** Population experiments with teaching phases, shared-scale history and recorded ancestry. */
-import {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   Play,
   Pause,
@@ -42,7 +36,6 @@ import {
   Thought,
   cssVars,
   shadeColour,
-  BarkMismatch,
 } from "./ui";
 import { barkColour } from "./palette";
 
@@ -323,7 +316,6 @@ function WoodlandCanvas({
   onSelect: (id: string) => void;
 }) {
   const last = experiment.run.history.at(-1)!;
-  const mismatch = useContext(BarkMismatch);
   const generation =
     view === null ? (experiment.pending ?? last) : experiment.run.history[view];
   const phase = view === null ? experiment.phase : 0;
@@ -415,7 +407,7 @@ function WoodlandCanvas({
       <div
         className={`population-scene phase-${phase}`}
         style={cssVars({
-          "--bark": barkColour(bark, mismatch),
+          "--bark": barkColour(bark),
           "--tempo": tempo,
         })}
       >
@@ -526,7 +518,7 @@ export function Population({
 }) {
   const [playing, setPlaying] = useState(false);
   const [replaying, setReplaying] = useState(false);
-  const [inside, setInside] = useState(false);
+  const [inside, setInside] = useState(true);
   const [view, setView] = useState<number | null>(null);
   const [selection, setSelection] = useState<{
     side: number;
@@ -649,8 +641,7 @@ export function Population({
   }
   /** Preserves existing biology and queues the new background at the next cycle. */
   function bark(value: number, side: number) {
-    if (!many) live();
-    else {
+    if (!playing) {
       setView(null);
       setReplaying(false);
       setSelection(null);
