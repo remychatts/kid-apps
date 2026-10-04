@@ -14,9 +14,9 @@
     "format:check": "prettier --check .",
     "lint": "oxlint apps scripts vite.shared.ts --ignore-pattern apps/podcast-episodes/public/episode-bundle.js",
     "preview": "vite preview --host 0.0.0.0",
-    "typecheck": "tsc -b apps/catalog/tsconfig.json apps/fraction-feast/tsconfig.json apps/frogball-final/tsconfig.json apps/guess-lab/tsconfig.json apps/imposter-game/tsconfig.json apps/penguin-slide/tsconfig.json apps/rounding-game/tsconfig.json apps/snake-spotter/tsconfig.json apps/trumpet-fingering/tsconfig.json apps/trumpet-practice/tsconfig.json apps/grammar/tsconfig.json --pretty false",
+    "typecheck": "tsc -b apps/catalog/tsconfig.json apps/fraction-feast/tsconfig.json apps/frogball-final/tsconfig.json apps/guess-lab/tsconfig.json apps/imposter-game/tsconfig.json apps/penguin-slide/tsconfig.json apps/rounding-game/tsconfig.json apps/snake-spotter/tsconfig.json apps/trumpet-fingering/tsconfig.json apps/trumpet-practice/tsconfig.json apps/moth-studio/tsconfig.json apps/moth/tsconfig.json apps/grammar/tsconfig.json --pretty false",
     "verify": "node scripts/verify-build.mjs",
-    "test": "node --test apps/fraction-feast/tests/*.test.mjs apps/grammar/tests/*.test.mjs"
+    "test": "node --test apps/fraction-feast/tests/*.test.mjs apps/moth-studio/tests/*.test.mjs apps/moth/tests/*.test.mjs apps/grammar/tests/*.test.mjs"
   },
   "dependencies": {
     "@fontsource-variable/fredoka": "^5.2.8",

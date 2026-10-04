@@ -380,6 +380,46 @@
     ]
   },
   {
+    "id": "moth-studio",
+    "title": "Moth Studio",
+    "shortName": "Moth Studio",
+    "description": "Meet friendly peppered moths and explore their light and dark forms, big eyes and little quirks.",
+    "date": "September 2026",
+    "updatedAt": "2026-09-19T12:00:00Z",
+    "emoji": "🦋",
+    "themeColour": "#f7f5ec",
+    "backgroundColour": "#f7f5ec",
+    "orientation": "any",
+    "icons": [
+      {
+        "src": "icon.svg",
+        "sizes": "any",
+        "type": "image/svg+xml",
+        "purpose": "any maskable"
+      }
+    ]
+  },
+  {
+    "id": "moth",
+    "title": "Moth",
+    "shortName": "Moth",
+    "description": "Explore camouflage, inheritance and small changes across generations in a little woodland of moths.",
+    "date": "October 2026",
+    "updatedAt": "2026-10-04T09:58:35Z",
+    "emoji": "🦋",
+    "themeColour": "#f5f3e9",
+    "backgroundColour": "#f5f3e9",
+    "orientation": "landscape",
+    "icons": [
+      {
+        "src": "icon.svg",
+        "sizes": "any",
+        "type": "image/svg+xml",
+        "purpose": "any maskable"
+      }
+    ]
+  },
+  {
     "id": "grammar",
     "title": "Word Detective",
     "shortName": "Word Detective",
