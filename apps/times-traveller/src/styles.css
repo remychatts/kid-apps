@@ -614,11 +614,9 @@ dialog::backdrop {
   z-index: 1;
 }
 .reward-dialog > img {
-  width: 190px;
-  height: 190px;
+  width: 220px;
+  height: 220px;
   object-fit: contain;
-  border-radius: 40%;
-  mix-blend-mode: lighten;
 }
 .reward-planet {
   font-size: 58px;
