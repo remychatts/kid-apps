@@ -372,17 +372,6 @@ export default function App() {
                 {Array.from({ length: maxAnswer }, (_, i) => i + 1).map((n) => (
                   <button
                     key={n}
-                    style={
-                      {
-                        "--tile": [
-                          "#c8b6ff",
-                          "#9ce7d5",
-                          "#ffcd87",
-                          "#f6add1",
-                          "#a7d8ff",
-                        ][(n - 1) % 5],
-                      } as CSSProperties
-                    }
                     className={`answer-tile ${wrong.includes(n) ? "missed" : ""} ${solved && n === question.left * question.right ? "chosen" : ""}`}
                     disabled={solved || wrong.includes(n)}
                     onClick={() => answer(n)}
