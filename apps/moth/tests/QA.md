@@ -35,7 +35,7 @@
 
 ## Automated checks
 
-`just ci` checks formatting, lint, types, all 47 repository tests (24 for Moth), all app builds and generated service-worker precache entries. Moth's tests include 100-seed selection ensembles, true parentage, mutation-free inheritance, reproducibility, history bounds, saved-state validation and preservation of exact founders when repeating experiments. New checks verify exact original bark colours, 5% HSV-value compression, doubled segregation spread for mixed parents, visible shade variation after 40 generations and intact legacy 32-locus saves.
+`just ci` checks formatting, lint, types, all 47 repository tests (24 for Moth), all app builds and generated service-worker precache entries. Moth's tests include 100-seed selection ensembles, true parentage, mutation-free inheritance, reproducibility, history bounds, saved-state validation and preservation of exact founders when repeating experiments. New checks verify exact original bark colours, 10% HSV-value compression, doubled segregation spread for mixed parents, visible shade variation after 40 generations and intact legacy 32-locus saves.
 
 ## Human evaluation still needed
 
