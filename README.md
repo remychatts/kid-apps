@@ -17,7 +17,6 @@ A monorepo for twenty-one playful, family-friendly web apps and the catalogue th
 | [Imposter!](apps/imposter-game/)                           | A pass-the-phone secret-word game for 3–8 players.                                | July 2026                            |
 | [Jungle Baby Snake Rescue](apps/jungle-snake/)             | A jungle rescue game starring a purple snake.                                     | April 2026                           |
 | [Moth](apps/moth/)                                         | Explores camouflage, illustrated life cycles and inherited colour variation.      | October 2026                         |
-| [Moth Studio](apps/moth-studio/)                           | Explores friendly peppered moths and cosmetic variation.                          | September 2026                       |
 | [Pet Chooser](apps/pet-chooser/)                           | Matches players with a companion from a cast of pets.                             | December 2025                        |
 | [Penguin Peak!](apps/penguin-slide/)                       | Slides a penguin down an obstacle-filled icy hill.                                | August 2026                          |
 | [Podcast Episodes](apps/podcast-episodes/)                 | Loads and filters episodes from an RSS feed.                                      | July 2025                            |
@@ -35,7 +34,7 @@ The displayed dates for the original six apps come from the most recent commit a
 
 ## Development
 
-[Moth](apps/moth/) provides five guided interaction canvases covering camouflage, inheritance and population change. Run `just dev moth`; its teaching specification is in [MOTH.md](MOTH.md). Moth Studio remains a separate rendering workshop. Moth includes guided inheritance examples, animated predation, continuous many-gene playback and optional generation tones.
+[Moth](apps/moth/) provides four guided interaction canvases covering camouflage, inheritance and population change. Run `just dev moth`; its teaching specification is in [MOTH.md](MOTH.md). Moth includes guided inheritance examples, animated predation, optional generation tones.
 
 Install the single shared dependency tree:
 

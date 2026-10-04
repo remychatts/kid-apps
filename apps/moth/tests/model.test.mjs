@@ -344,16 +344,22 @@ test("chapter navigation settles pending events but never runs an extra generati
   assert.ok(validSession(settled));
 });
 
-test("new chapter-two parent choices clear old broods on any route to chapter three", () => {
+test("switching to chapters two, three and four starts fresh scenes", () => {
   let session = goToChapter(initialSession(), 3, false);
   session.brood = birth(session.brood, true);
   session = goToChapter(session, 2);
+  assert.equal(session.builder.dirty, false);
   session.builder.parents = [
     [1, 1],
     [1, 1],
   ];
   session.builder.dirty = true;
   session = goToChapter(session, 4);
+  session.woodland.single = advance(session.woodland.single);
+  assert.equal(
+    goToChapter(goToChapter(session, 1), 4).woodland.single.run.history.length,
+    1,
+  );
   session = goToChapter(session, 3);
   assert.deepEqual(session.brood.broods, []);
   assert.deepEqual(session.brood.parents, [
@@ -361,10 +367,7 @@ test("new chapter-two parent choices clear old broods on any route to chapter th
     [1, 1],
   ]);
   session.brood = birth(session.brood, true);
-  assert.deepEqual(
-    goToChapter(goToChapter(session, 2), 3).brood.broods,
-    session.brood.broods,
-  );
+  assert.deepEqual(goToChapter(goToChapter(session, 2), 3).brood.broods, []);
   const firstVisit = { ...initialSession(), chapter: 2 };
   firstVisit.builder.dirty = true;
   firstVisit.builder.parents = [
