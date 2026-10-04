@@ -1,6 +1,6 @@
 # Times Traveller
 
-A colourful multiplication adventure starring Captain Whiskers and a time capsule. Optimised for landscape iPads, with a stacked phone layout and generously spaced answer buttons.
+A colourful multiplication adventure starring Captain Whiskers and a time capsule. Optimised for landscape iPads, with a stacked phone layout and generously spaced, uniformly coloured answer buttons.
 
 ```sh
 npm run dev -- times-traveller

@@ -440,13 +440,13 @@ h1 > span:first-child {
   gap: 12px;
 }
 .answer-tile {
-  background: var(--tile);
+  background: #c8b6ff;
   color: #302540;
   border: 0;
   border-radius: 15px;
   font-size: 31px;
   min-height: 65px;
-  box-shadow: 0 5px 0 color-mix(in srgb, var(--tile) 45%, #17102d);
+  box-shadow: 0 5px 0 color-mix(in srgb, #c8b6ff 45%, #17102d);
   transition:
     transform 0.12s,
     filter 0.12s;
