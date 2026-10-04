@@ -26,7 +26,7 @@ The many-gene model uses only existing variation. There is no mutation, speciati
 
 ## Controls and saved progress
 
-- The header **Bark match** slider preserves the original colours at its left endpoint and compresses HSV value towards the midpoint by 5% at its right endpoint. It affects bark artwork only; moths and biological selection stay unchanged.
+- The header **Bark match** slider preserves the original colours at its left endpoint and compresses HSV value towards the midpoint by 10% at its right endpoint. It affects bark artwork only; moths and biological selection stay unchanged.
 - New chapter-5 experiments use eight equally contributing gene pairs, doubling segregation standard deviation relative to 32 pairs for fully mixed parents. Existing saved 32-pair runs continue with their original genes. Variation can still be exhausted: this model never injects new copies.
 
 - Every chapter can be opened directly using `#chapter=1` through `#chapter=5`.

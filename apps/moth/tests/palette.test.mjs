@@ -9,7 +9,7 @@ test("left endpoint exactly preserves the original bark colours", () => {
   }
 });
 
-test("right endpoint compresses HSV value by five percent while preserving saturation", () => {
+test("right endpoint compresses HSV value by ten percent while preserving saturation", () => {
   for (const shade of [0, 0.5, 1]) {
     const lightness = (23 + shade * 56) / 100;
     const chroma = (1 - Math.abs(2 * lightness - 1)) * 0.12;
@@ -19,7 +19,7 @@ test("right endpoint compresses HSV value by five percent while preserving satur
       .map(Number)
       .map((n) => n / 255);
     const actualValue = Math.max(...channels);
-    assert.ok(Math.abs(actualValue - (value + (0.5 - value) * 0.05)) < 0.00001);
+    assert.ok(Math.abs(actualValue - (value + (0.5 - value) * 0.1)) < 0.00001);
     assert.ok(
       Math.abs(
         (actualValue - Math.min(...channels)) / actualValue - chroma / value,
