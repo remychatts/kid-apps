@@ -1,0 +1,155 @@
+{
+  "status": "reviewed",
+  "categories": [
+    {
+      "name": "Animals",
+      "nouns": [
+        "dog",
+        "cat",
+        "rabbit",
+        "horse",
+        "lion",
+        "elephant",
+        "monkey",
+        "penguin",
+        "frog",
+        "butterfly"
+      ]
+    },
+    {
+      "name": "Toys and games",
+      "nouns": [
+        "ball",
+        "doll",
+        "kite",
+        "puzzle",
+        "teddy",
+        "robot",
+        "marble",
+        "yo-yo",
+        "dice",
+        "skateboard"
+      ]
+    },
+    {
+      "name": "Household objects",
+      "nouns": [
+        "chair",
+        "table",
+        "bed",
+        "lamp",
+        "sofa",
+        "mirror",
+        "clock",
+        "spoon",
+        "plate",
+        "towel"
+      ]
+    },
+    {
+      "name": "Food and drink",
+      "nouns": [
+        "apple",
+        "banana",
+        "carrot",
+        "potato",
+        "bread",
+        "cheese",
+        "sandwich",
+        "biscuit",
+        "milk",
+        "juice"
+      ]
+    },
+    {
+      "name": "People and roles",
+      "nouns": [
+        "child",
+        "parent",
+        "friend",
+        "neighbour",
+        "teacher",
+        "doctor",
+        "nurse",
+        "farmer",
+        "chef",
+        "driver"
+      ]
+    },
+    {
+      "name": "Places",
+      "nouns": [
+        "home",
+        "playground",
+        "park",
+        "shop",
+        "library",
+        "hospital",
+        "beach",
+        "farm",
+        "theatre",
+        "city"
+      ]
+    },
+    {
+      "name": "Nature",
+      "nouns": [
+        "tree",
+        "flower",
+        "leaf",
+        "river",
+        "mountain",
+        "cloud",
+        "rain",
+        "snow",
+        "wind",
+        "sunlight"
+      ]
+    },
+    {
+      "name": "Abstract nouns",
+      "nouns": [
+        "time",
+        "freedom",
+        "fairness",
+        "kindness",
+        "courage",
+        "honesty",
+        "peace",
+        "beauty",
+        "luck",
+        "success"
+      ]
+    },
+    {
+      "name": "Feelings",
+      "nouns": [
+        "happiness",
+        "sadness",
+        "anger",
+        "fear",
+        "excitement",
+        "pride",
+        "shame",
+        "joy",
+        "loneliness",
+        "disappointment"
+      ]
+    },
+    {
+      "name": "Thoughts and mental states",
+      "nouns": [
+        "thought",
+        "idea",
+        "memory",
+        "dream",
+        "belief",
+        "doubt",
+        "curiosity",
+        "confusion",
+        "concentration",
+        "confidence"
+      ]
+    }
+  ]
+}
