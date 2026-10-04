@@ -7,8 +7,11 @@ import {
   RotateCcw,
   Leaf,
   X,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import { initialSession, settle, goToChapter, type Session } from "./session";
+import { unlockSound, muteSound } from "./sound";
 import { repeatExperiment } from "./model";
 import { loadSession, saveSession } from "./storage";
 import { Discover, Instructions } from "./Discover";
@@ -36,7 +39,7 @@ const chapters = [
     subtitle: "What you can see isn't the whole story.",
     time: "3–10 minutes",
     question: "Can two dark moths carry different instructions?",
-    try: "Reveal the copies in both dark moths. Build a mixed pair and swap its order.",
+    try: "Predict each moth from its copies, then tap to reveal. Build a mixed pair and swap its order.",
     misconception:
       "Dark does not mean stronger, better or more likely to be inherited.",
     note: "We model a single diploid colour locus with two versions (alleles). Dark is dominant: a mixed pair looks dark. The three combinations are not a claim about their frequencies in a real population. Cosmetic features are decorative.",
@@ -50,7 +53,7 @@ const chapters = [
     try: "Use two mixed parents. Try a possible light offspring, then let chance choose several broods.",
     misconception:
       "One chance in four does not mean exactly one light baby in each brood of four.",
-    note: "Every birth independently samples each parent's copies with equal probability. Two mixed parents give 1/4 light offspring per birth. Four-offspring broods are display groups; moths lay many more eggs. The life cycle is compressed. There is no mutation.",
+    note: "Guided births cycle through the four ordered copy choices; they do not enter the chance tally. Random broods independently sample each parent's copies with equal probability. Two mixed parents give 1/4 light offspring per birth. Four-offspring broods are display groups; moths lay many more eggs. The life cycle is compressed. There is no mutation.",
   },
   {
     name: "A changing woodland",
@@ -61,7 +64,7 @@ const chapters = [
     try: "Step through one family, then compare the same founders on opposite bark colours. Inspect a survivor's parents.",
     misconception:
       "Birds do not inspect genes, and changing bark does not recolour existing moths.",
-    note: "48 parents produce 96 offspring; weighted chance selects 48 survivors. Real predation does not remove exactly half. Pairing assigns reproductive roles without tracking sex ratios. Hidden light copies may remain in dark moths. Lost versions cannot reappear. During industrial melanism, pollution altered resting backgrounds and which inherited forms were well hidden; soot did not directly recolour moths.",
+    note: "48 parents produce 96 offspring; weighted chance selects 48 survivors. An illustrative search-image rule makes birds focus more on common appearances, so rare appearances tend to persist. This is a teaching heuristic, not a calibrated model of field predation. Real predation does not remove exactly half. Pairing assigns reproductive roles without tracking sex ratios. Hidden light copies may remain in dark moths. Lost versions cannot reappear. During industrial melanism, pollution altered resting backgrounds and which inherited forms were well hidden; soot did not directly recolour moths.",
   },
   {
     name: "Small changes, many generations",
@@ -72,7 +75,7 @@ const chapters = [
     try: "Hold light bark steady for a few dozen generations. Compare start and now, then trace both parents of a moth.",
     misconception:
       "No moth decides its offspring's shade. One individual does not live through the whole history and gradually change.",
-    note: "This is a fictional many-gene model, not peppered-moth colour genetics. 32 independent pairs contribute to shade. All variation comes from existing copies; recombination may produce shades outside either parent's appearance. Selection can exhaust variation. No mutation or speciation is modelled. The 200-generation limit is for storage and presentation.",
+    note: "This is a fictional many-gene model, not peppered-moth colour genetics. 32 independent pairs contribute to shade. All variation comes from existing copies; recombination may produce shades outside either parent's appearance. Selection can exhaust variation. No mutation or speciation is modelled. The simulation continues indefinitely; the starting population and latest 256 generations remain available for inspection.",
   },
 ];
 
@@ -142,7 +145,7 @@ export function App() {
       .then((saved) => {
         if (!active) return;
         const next = settle(saved ?? initialSession());
-        setSession(goToChapter(next, hashChapter() ?? next.chapter, false));
+        setSession(goToChapter(next, hashChapter() ?? next.chapter));
       })
       .catch((error) => {
         if (active) {
@@ -202,7 +205,7 @@ export function App() {
     };
   }, []);
 
-  /** Performs navigation atomically, settling pending biology and only transferring parents on first entry. */
+  /** Performs navigation atomically, settling pending biology and applying newly selected parents. */
   function navigate(chapter: number) {
     setSession((current) => goToChapter(current, chapter));
     window.location.hash = `chapter=${chapter}`;
@@ -223,32 +226,18 @@ export function App() {
         const key = (
           ["search", "builder", "brood", "woodland", "deep"] as const
         )[current.chapter - 1];
-        return { ...current, [key]: defaults[key] };
+        return {
+          ...current,
+          [key]:
+            key === "builder"
+              ? { ...defaults.builder, dirty: true }
+              : defaults[key],
+        };
       });
     };
     if (session.chapter >= 3)
       confirm(
         "Reset this chapter to its starting scene? Its recorded offspring and history will be cleared. Other chapters stay as they are.",
-        action,
-      );
-    else action();
-  }
-  /** Copies selected construction parents into a new family without editing historical births. */
-  function useParents() {
-    const action = () => {
-      setSession((current) => ({
-        ...current,
-        brood: {
-          ...initialSession().brood,
-          parents: current.builder.parents.map((genes) => [...genes]),
-          visited: true,
-        },
-      }));
-      navigate(3);
-    };
-    if (session.brood.broods.length)
-      confirm(
-        "Use these parents and clear the existing family broods?",
         action,
       );
     else action();
@@ -263,7 +252,12 @@ export function App() {
       </main>
     );
   return (
-    <div className="app" data-motion={motion}>
+    <div
+      className="app"
+      data-motion={motion}
+      onPointerDown={unlockSound}
+      onKeyDown={unlockSound}
+    >
       <header className="site-header">
         <a
           className="brand"
@@ -280,6 +274,17 @@ export function App() {
           </span>
         </a>
         <div className="header-actions">
+          <button
+            aria-label={session.muted ? "Unmute sound" : "Mute sound"}
+            aria-pressed={session.muted}
+            onClick={() => {
+              muteSound(!session.muted);
+              setSession({ ...session, muted: !session.muted });
+            }}
+          >
+            {session.muted ? <VolumeX size={18} /> : <Volume2 size={18} />}{" "}
+            {session.muted ? "Sound off" : "Sound on"}
+          </button>
           <button
             aria-pressed={session.motion}
             onClick={() => setSession({ ...session, motion: !session.motion })}
@@ -370,10 +375,20 @@ export function App() {
           <Instructions
             state={session.builder}
             update={(builder) =>
-              setSession((current) => ({ ...current, builder }))
+              setSession((current) => ({
+                ...current,
+                builder: {
+                  ...builder,
+                  dirty:
+                    current.builder.dirty ||
+                    builder.parents.some(
+                      (pair, i) =>
+                        pair.join() !== current.builder.parents[i].join(),
+                    ),
+                },
+              }))
             }
             motion={motion}
-            useParents={useParents}
           />
         )}
         {session.chapter === 3 && (
@@ -404,6 +419,14 @@ export function App() {
                 },
               }))
             }
+            speed={session.speeds[0]}
+            setSpeed={(speed) =>
+              setSession((current) => ({
+                ...current,
+                speeds: [speed, current.speeds[1]],
+              }))
+            }
+            muted={session.muted}
             many={false}
             suspended={Boolean(confirmation)}
             comparing={session.woodland.comparing}
@@ -439,6 +462,14 @@ export function App() {
             update={(experiments) =>
               setSession((current) => ({ ...current, deep: experiments[0] }))
             }
+            speed={session.speeds[1]}
+            setSpeed={(speed) =>
+              setSession((current) => ({
+                ...current,
+                speeds: [current.speeds[0], speed],
+              }))
+            }
+            muted={session.muted}
             many
             suspended={Boolean(confirmation)}
             comparing={false}

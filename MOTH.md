@@ -60,9 +60,9 @@ Timings are instructor guidance, never countdowns. Each chapter has a compact ad
 - Previous/Next is always available, even during unfinished activities. Every chapter has a complete default state and short orientation for direct visits.
 - Navigating away pauses playback and saves the chapter. Returning restores its scene, paused.
 - During an animation, chapter navigation finishes the already computed event without further simulation, saves it, then navigates. Never save half-created offspring or count a generation twice.
-- On first sequential entry to chapter 3, carry over the parent copies selected in chapter 2. Existing chapter 3 work is preserved on subsequent visits; an explicit “Use these parents” action can replace it.
+- New parent choices in chapter 2 carry into chapter 3 on the next visit by any route. Clear prior broods when those parents differ; revisiting without new choices preserves work.
 - Chapters 4 and 5 start their own populations. Introduce them as new experiments; do not silently expand one family into unrelated moths or turn binary moths into many-gene moths.
-- “Reset chapter” restores its documented preset and controls. Confirm if it discards broods or population history. Ordinary navigation never clears work.
+- “Reset chapter” restores its documented preset while preserving playback speed and sound preference. Confirm if it discards broods or population history. Ordinary navigation preserves work except when applying changed chapter-2 parents.
 - Use hash-based links, for example `#chapter=4`, compatible with arbitrary static-server subpaths. Links select a chapter, not a remotely shared simulation.
 - Save a versioned local session at completed actions, including settings, seeds, individuals, parent links, event history and selected chapter. Nothing leaves the device.
 - Use IndexedDB for population records and history, with atomic saves at completed boundaries. Keep large histories out of synchronous localStorage; handle quota failures as storage unavailability.
@@ -92,8 +92,8 @@ Suggested experiment: find obvious moths, reduce daylight, reveal the remaining 
 Apply daylight to one composite scene containing the bark and complete moth bodies, including eyes and markings. Never tint only the background or only the moths. The control changes display illumination, not stored inherited appearance or bark type.
 
 - Maximum daylight retains normal scene colours.
-- Towards dim light, smoothly reduce brightness and saturation and introduce a restrained cool twilight tint. Use a shared luminance/colour treatment; do not simply fade moth opacity into the bark.
-- Initial visual tuning range: brightness 100% to approximately 35%; saturation 100% to approximately 55%. Tune on a physical iPad. These are display parameters, not biological measurements.
+- Towards dim light, smoothly reduce brightness, contrast and saturation and introduce a restrained cool twilight tint. Use a shared luminance/colour treatment; do not simply fade moth opacity into the bark.
+- Initial visual tuning range: brightness 100% to approximately 55%; contrast 100% to 12%; saturation 100% to approximately 30%. Tune on a physical iPad. These are display parameters, not biological measurements.
 - Keep the dim endpoint inspectable after reveal; do not include complete darkness.
 - Keep text, controls, focus indicators, found markers and reveal outlines outside the treatment at accessible contrast.
 - Slider changes must not regenerate texture, move moths, alter inherited appearance or consume simulation randomness.
@@ -111,17 +111,17 @@ Dawn/dusk supplies a recognisable setting, not a claim that these are the main p
 
 Show three large moth cards with the distinct combinations light/light, light/dark and dark/dark. The mixed pair may appear in either order, but is not a fourth biological combination. Each card has two gene-copy circles with parental-origin labels, a moth and an **Appearance** label.
 
-Start with copies hidden: two dark moths look similar despite carrying different combinations. **Look inside** reveals their circles. Introduce:
+Always show the gene-copy circles. Each phenotype begins as a large tappable question mark. Tapping it reveals that moth; editing either copy or swapping their order hides it again for a new prediction. Introduce:
 
 > “We are looking at one colour gene. Each moth has two copies, one from each parent.”
 >
 > “In these moths, one dark version is enough for dark wings. Light wings need two light versions.”
 
-The child can change either circle between Light and Dark, swap their order and hide/reveal copies. This is explicitly a **Build a moth** editor. Editing copies replaces the preview with a newly built specimen, rather than animating a living moth adapting to its surroundings.
+The child can change either circle between Light and Dark, swap their order and predict the resulting appearance. This is explicitly a **Build a moth** editor. Editing copies replaces the preview with a newly built specimen, rather than animating a living moth adapting to its surroundings.
 
 Use **gene**, **copy**, **version** and **appearance** in child copy. Keep allele, genotype, phenotype, dominant and recessive in optional adult notes. Never call the dark version stronger, better or more likely to be inherited.
 
-An optional prediction hides the built moth until **Show appearance**. Feedback explains its copies without scoring. Two parent slots prepare for chapter 3, defaulting to dark moths each carrying one light copy.
+Each card has stateful **Use for Mum** and **Use for Dad** controls, reflected in the parent preview. Two parent slots default to dark moths each carrying one light copy. New parent choices are applied on the next visit to chapter 3, whether via Next or a chapter jump; existing broods are cleared automatically. There is one navigation action, not a separate “Use these parents” workflow.
 
 ### Exit idea
 
@@ -146,9 +146,11 @@ Parents retain both copies throughout. Never imply a copy has been used up. Show
 
 **Try a combination** lets the child choose a copy from each parent by tapping or optional dragging. Label the result “A possible offspring”. This construction experiment does not enter the chance-brood tally.
 
-**Let chance choose** independently selects one of each parent's two copies with equal probability for every offspring. **Make one** advances one birth; **Finish brood** generates the remaining births. Results are never balanced across the brood and earlier selections do not affect later probabilities.
+**Make one, step by step** cycles deterministically through copy choices `(0,0)`, `(0,1)`, `(1,0)`, `(1,1)`, then repeats. A visible copy moves from each highlighted parental allele to its gamete and offspring position. Completed guided examples are displayed separately and never enter chance tallies.
 
-After four offspring, **Another brood** keeps the parents and generates four independent births. Show recent broods and cumulative light/dark counts for those parents. Keep up to 20 broods, then invite a fresh tally rather than silently dropping results. Groups of four are illustrative, not the real number of eggs a moth lays.
+**Make a brood** independently selects one of each parent's two copies with equal probability for each of four offspring. Results are never balanced across the brood and guided examples do not consume chance draws.
+
+After four offspring, **Make a brood** keeps the parents and generates four independent births. Show recent broods and cumulative light/dark counts for those parents. Keep up to 20 broods, then invite a fresh tally rather than silently dropping results. Groups of four are illustrative, not the real number of eggs a moth lays.
 
 Changing parent copies starts a new experiment and clears its tally after confirmation; it cannot rewrite offspring. Construction and chance modes have distinct visible labels and may be explored in either order.
 
@@ -176,11 +178,11 @@ At generation 0 these are the starting parents. Each new generation follows this
 
 1. **Parents:** randomly pair 48 parents into 24 distinct pairs.
 2. **Offspring:** each pair produces four independent offspring, making 96.
-3. **Growing up:** compress the life stages, then show young adults on bark. Previous parents retire to history.
-4. **Survival:** birds eat 48 offspring; camouflage biases survival, with chance still involved.
-5. **Next parents:** the 48 survivors become the next parents. Update the generation number and history.
+3. Within **Offspring**, expand the tree to fit 96 moths before growing them from tiny moths at their correct centre positions. There is no separate growing-up step.
+4. **Predation:** fade the visibility-aiding outlines to reveal actual camouflage, animate 48 birds to the 48 eaten moths, then restore inspection visibility.
+5. **Next parents:** animate the tree shrinking and survivors moving into their 48-parent positions. Update the generation number and history, and sound a short note reflecting mean shade.
 
-For the first generation, expand one family and pause at inheritance and survival. **Continue step** advances a phase; **Next generation** completes one cycle; **Play** repeats at a gentle pace. Pause is always available. **Skip animation** finishes the precomputed event without changing its outcome.
+For the first generation, expand one family and pause at inheritance and survival. **Continue step** advances a phase; **Next generation** completes one cycle; **Play** repeats at a gentle pace. Pause is always available. **Finish generation** finishes the precomputed event without changing its outcome. Slow / Medium / Fast scale animation timing; the selected speed survives chapter resets. Moths have visible outlines outside the camouflage interval. Graph labels place Light at the upper right and Dark near the horizontal axis below it.
 
 Population experiments assign reproductive roles to pairs without tracking sexes. Adult notes explain this abstraction; sex ratios do not introduce hidden survival rules.
 
@@ -215,17 +217,17 @@ Hide the many pairs in the main canvas and show a visually continuous range of s
 ### Actions and history
 
 - Start with 48 moths clustered around the middle shade, with differing inherited combinations and both versions present at every modelled locus.
-- A **Bark shade** slider runs Dark to Light, initially towards light (`0.8`). Keep the same 48 → 96 → 48 cycle and selection rule. As in chapter 4, environment changes take effect at the next cycle boundary.
-- The first two generations default to step-by-step presentation, but the instructor can change speed immediately.
-- Provide **Next generation**, **Play**, **Pause** and **Slow / Medium / Fast**. Speed affects presentation and generations processed per second, not inheritance or selection strength.
-- Fast mode shows snapshots and accumulating history instead of every birth and bird. Compute and retain every intervening generation and parent link.
+- A **Bark shade** slider runs Dark to Light, initially towards light (`0.8`). Keep the same 48 → 96 → 48 cycle, using camouflage-only selection without chapter 4's search-image heuristic. As in chapter 4, environment changes take effect at the next cycle boundary.
+- Play runs whole generations; the student can continuously change bark shade without pausing the simulation. Step-by-step inspection remains available separately.
+- Provide **Next generation**, **Play**, **Pause** and **Slow / Medium / Fast**. Slow / Medium / Fast request one complete generation every 100 / 50 / 25 ms respectively, subject to device performance. Speed affects presentation and generations processed per second, not inheritance or selection strength.
+- Fast mode shows snapshots and accumulating history instead of every birth and bird. Compute every intervening generation; retain the starting population and latest 256 full generations with parent links.
 - Show population distributions across generations. A mean line may be secondary but cannot replace the spread and overlap.
 - **Compare start and now** shows generation 0 and the live population at the same scale.
-- A history scrubber pauses playback and shows any completed generation. It is inspection, not simulation branching. **Back to latest** restores the live view; playing or changing bark while inspecting returns to latest with clear feedback first.
+- A history scrubber pauses playback and shows any retained completed generation. It is inspection, not simulation branching. **Back to latest** restores the live view; playing or changing bark while inspecting returns to latest with clear feedback first.
 - Select a moth and **Trace its family**: show both actual parents, shades and generation numbers. Follow either parent's ancestry one generation at a time, with breadcrumbs. Label a followed chain “One line of ancestors”, not the whole ancestry.
 - Use side-by-side specimens, never a moth morphing into its descendant. Retain non-surviving offspring in family records so siblings and survival can be inspected.
 - Mark bark changes in history. Reversing direction is allowed but does not guarantee reversal of the population shift.
-- Stop at 200 generations per experiment, preserving history and inviting inspection or reset. This is a storage/presentation limit, not a biological endpoint.
+- Do not stop after 200 generations. Keep running with a rolling 256-generation history plus the founders. Mark the gap explicitly on the graph, and explain when a parent lies outside retained history. Never substitute invented ancestry. Replay covers the retained records.
 
 ### Discovery and limits
 
@@ -263,9 +265,9 @@ Locus count and founder spread are prototype tuning values. Adjust before implem
 
 Chapter 4 maps light appearance to `p = 1`, dark to `p = 0`, and bark to `b = 1` or `b = 0`. Chapter 5 uses the continuous values. Mismatch is `d = abs(p - b)`.
 
-Initial survival weight: `w = 0.2 + 0.8 * (1 - d)^2`. Select exactly 48 of 96 offspring by weighted random sampling without replacement. A weight is not an individual survival probability. One precise algorithm draws independent `u` in `(0, 1)` per offspring, ranks by `-ln(u) / w`, and retains the 48 lowest keys, with stable-ID tie-breaking.
+Camouflage survival weight: `w = 0.2 + 0.8 * (1 - d)^2`. In chapter 4 only, divide this by `(0.1 + f)^2`, where `f` is the offspring fraction with that moth's visible appearance. This explicit search-image teaching heuristic favours uncommon appearances, making complete loss of variation uncommon while preserving chance and the camouflage advantage at a given frequency. It is not a claim about measured field rates, does not inspect hidden alleles, and never reintroduces missing copies. Chapter 5 keeps the camouflage-only weight. Select exactly 48 of 96 offspring by weighted random sampling without replacement. A weight is not an individual survival probability. One precise algorithm draws independent `u` in `(0, 1)` per offspring, ranks by `-ln(u) / w`, and retains the 48 lowest keys, with stable-ID tie-breaking.
 
-Every candidate has a chance; closer matching improves that chance. Fixed survivor counts deliberately keep population size out of this lesson. Adult notes state that real birds do not eat exactly half a generation and the formula is illustrative, not fitted to field data.
+Every candidate has a chance; at equal appearance frequency, closer matching improves that chance. Fixed survivor counts deliberately keep population size out of this lesson. Adult notes state that real birds do not eat exactly half a generation and the formula is illustrative, not fitted to field data.
 
 Selection strength can be tuned during prototyping. It must never depend on desired outcomes, predictions, cosmetic traits, playback speed or chapter 1 daylight. This version asserts no quantitative daylight/predation relationship.
 
@@ -277,7 +279,7 @@ Selection strength can be tuned during prototyping. It must never depend on desi
 - Identical inputs yield identical biology at every speed and motion setting.
 - Lost versions never reappear through reproduction. Reinitialisation is the only way to restore absent starting variation.
 - Trends emerge across runs; individual runs can be non-monotonic. Never silently reroll inconvenient outcomes.
-- Bound every population run at 200 generations, including chapter 4. Keep the current single run, two comparison runs and chapter 5 run; replacing an experiment explicitly discards its old history after confirmation.
+- Bound chapter 4 at 200 generations; chapter 5 continues with founders plus 256 recent full records. Keep the current single run, two comparison runs and chapter 5 run; replacing an experiment explicitly discards its old history after confirmation.
 
 ## Accessibility and motion
 
@@ -288,7 +290,7 @@ Selection strength can be tuned during prototyping. It must never depend on desi
 - Essential text and controls meet WCAG AA contrast independently of scene lighting. Markers and focus indicators remain readable at minimum daylight.
 - Honour reduced-motion preferences and provide a motion toggle. Use immediate states and event labels instead of movement, preserving information and outcomes.
 - Pause simulation and decoration when the page is hidden. Returning leaves playback paused.
-- Sound is outside first-version scope; no information depends on it.
+- Play a short locally synthesised tone whenever survivors become next-generation parents in chapters 4 and 5. Map mean shade monotonically from low (dark, 110 Hz) to high (light, 880 Hz). Start audio only after user interaction; provide a persistent header mute button that silences ongoing and future tones. No information depends on sound.
 
 ## Technical delivery
 
@@ -319,7 +321,7 @@ Selection strength can be tuned during prototyping. It must never depend on desi
 8. Absent versions cannot reappear. A fixed many-gene population cannot invent shades after a background change. New combinations trace to actual parental copies.
 9. Fast/slow play, replay, reload, reduced motion and skipped animation produce identical biology for identical inputs. Inspection cannot mutate history.
 10. Ancestry links resolve to real records, preserve both parents and do not substitute convenient-looking ancestors. Counts and distributions match survivors.
-11. Reset, comparison and new-chance actions behave as labelled. Comparison preserves the saved single run. History limits pause gracefully and leave inspection available.
+11. Reset, comparison and new-chance actions behave as labelled. Comparison preserves the saved single run. Chapter 4 pauses at its history limit; chapter 5 continues through rolling-history boundaries and leaves retained inspection available.
 12. Keyboard, touch and assistive routes work at iPad and narrow layouts. Storage failure does not prevent use.
 13. Production checks verify manifest, service worker and all JS/CSS precache entries. Verify offline reload and direct chapter links under a nested path, including after a PWA update.
 
@@ -370,3 +372,7 @@ The initial implementation retains the proposed 48-parent population, 32-locus m
 Replay plays the recorded generations, including their original environments, without discarding history or drawing new random outcomes. Repeat with fresh chance is the separate action that clears descendants and draws new outcomes from the same founders. This distinction avoids rewriting a run's environment changes during replay.
 
 Local progress uses atomic IndexedDB saves, throttled during playback. Chapter changes settle any already selected birth or computed generation. A physical-iPad daylight assessment and guided child evaluation remain human usability checks; automated model tests cannot establish pedagogical effectiveness.
+
+### October interaction revision
+
+The prediction canvas always shows gene copies; guided births demonstrate all four combinations separately from random broods. Chapter 4 combines growth with the offspring animation, shows 48 predators, and retains playback preferences. Chapter 5 runs continuously with live bark changes, bounded retained ancestry and generation tones. Across 100 seeds per bark colour, no chapter-4 run lost all variation by generation 100 with the revised heuristic. Saved first-release lessons are migrated without rewriting recorded outcomes.

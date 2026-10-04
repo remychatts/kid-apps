@@ -32,7 +32,7 @@ The displayed dates for the original six apps come from the most recent commit a
 
 ## Development
 
-[Moth](apps/moth/) provides five guided interaction canvases covering camouflage, inheritance and population change. Run `just dev moth`; its teaching specification is in [MOTH.md](MOTH.md). Moth Studio remains a separate rendering workshop.
+[Moth](apps/moth/) provides five guided interaction canvases covering camouflage, inheritance and population change. Run `just dev moth`; its teaching specification is in [MOTH.md](MOTH.md). Moth Studio remains a separate rendering workshop. Moth includes guided inheritance examples, animated predation, continuous many-gene playback and optional generation tones.
 
 Install the single shared dependency tree:
 

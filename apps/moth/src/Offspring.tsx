@@ -1,7 +1,8 @@
 /** Manual possible offspring and independent chance broods, with visible parental contributions. */
+import { useLayoutEffect, useRef } from "react";
 import { Dice5, ArrowDown, Sparkles } from "lucide-react";
-import { birth, type BroodState } from "./session";
-import { appearance, random, mix } from "./model";
+import { birth, demonstrate, type BroodState } from "./session";
+import { appearance } from "./model";
 import { Genes, Specimen, Thought } from "./ui";
 
 /** Presents parents, gametes and siblings without treating copies as a finite inventory. */
@@ -23,9 +24,39 @@ export function Offspring({
     (genes) => appearance(genes, "single") === 1,
   ).length;
   const manualGenes = state.parents.map((genes, i) => genes[state.chosen[i]]);
-  // Preview uses the identical per-birth stream as the committed brood record.
-  const draw = random(mix(state.seed, all.length));
-  const selectedCopies = [Number(draw() >= 0.5), Number(draw() >= 0.5)];
+  const lab = useRef<HTMLElement>(null);
+  const choice = state.demonstration % 4;
+  const selectedCopies = [Math.floor(choice / 2), choice % 2];
+  useLayoutEffect(() => {
+    if (!motion || !stage || state.manual || !lab.current) return;
+    const animations: Animation[] = [];
+    for (const parent of stage === 3 ? [0, 1] : [stage - 1]) {
+      const source = lab.current
+        .querySelectorAll(".parent")
+        [parent]?.querySelectorAll(".gene")[selectedCopies[parent]];
+      const target =
+        stage === 3
+          ? lab.current.querySelectorAll(".combined-copies .gene")[parent]
+          : lab.current.querySelector(
+              parent ? ".gamete.sperm .gene" : ".gamete.egg .gene",
+            );
+      if (!source || !target) continue;
+      const from = source.getBoundingClientRect();
+      const to = target.getBoundingClientRect();
+      animations.push(
+        target.animate(
+          [
+            {
+              transform: `translate(${from.x + from.width / 2 - to.x - to.width / 2}px, ${from.y + from.height / 2 - to.y - to.height / 2}px) scale(${from.width / to.width})`,
+            },
+            { transform: "translate(0, 0) scale(1)" },
+          ],
+          { duration: 850, easing: "cubic-bezier(.25,.8,.25,1)" },
+        ),
+      );
+    }
+    return () => animations.forEach((animation) => animation.cancel());
+  }, [stage, motion, state.manual, choice]);
   const pendingGenes = state.parents.map(
     (genes, i) => genes[selectedCopies[i]],
   );
@@ -42,6 +73,8 @@ export function Offspring({
         broods: [],
         stage: 0,
         revealed: false,
+        demonstration: 0,
+        demonstrated: [],
       });
     };
     if (all.length || stage)
@@ -55,12 +88,12 @@ export function Offspring({
   function nextBirth() {
     if (stage < 3) update({ ...state, stage: stage + 1 });
     else {
-      update(birth(state));
+      update(demonstrate(state));
     }
   }
   return (
     <div className="offspring-layout">
-      <section className="card family-lab">
+      <section ref={lab} className="card family-lab">
         <div className="card-heading">
           <span className="eyebrow">The parents keep both their copies</span>
           <span className="pill">One from each</span>
@@ -197,7 +230,7 @@ export function Offspring({
             <p aria-live="polite">
               {
                 [
-                  "Each offspring starts with an independent choice from each parent.",
+                  "Let’s walk through the four possible copy combinations, one at a time.",
                   "Mum contributes one copy in an egg. Her own two copies stay with her.",
                   "Dad contributes one copy in a sperm. The two copies come together.",
                   "Later… the offspring grows through caterpillar and pupa stages into a moth.",
@@ -205,14 +238,14 @@ export function Offspring({
               }
             </p>
             <div className="toolbar">
-              <button onClick={nextBirth} disabled={all.length >= 80}>
+              <button onClick={nextBirth}>
                 {stage ? "Continue birth" : "Make one, step by step"}
               </button>
               <button
                 className="primary"
                 disabled={all.length >= 80}
                 onClick={() => {
-                  update(birth(state, true));
+                  update(birth(stage ? demonstrate(state) : state, true));
                 }}
               >
                 <Dice5 size={18} />
@@ -239,13 +272,13 @@ export function Offspring({
             }}
           >
             <Dice5 size={17} />
-            Let chance choose
+            Guided steps
           </button>
           <button
             aria-pressed={state.manual}
             onClick={() => {
               update({
-                ...(stage ? birth(state) : state),
+                ...(stage ? demonstrate(state) : state),
                 manual: true,
                 stage: 0,
               });
@@ -253,6 +286,22 @@ export function Offspring({
           >
             Try a combination
           </button>
+        </div>
+        <div className="guided-examples">
+          <h3>Guided combinations · {choice + 1} of 4 next</h3>
+          <p className="caption">
+            These examples cycle in order. Only random broods enter the tally
+            below.
+          </p>
+          <div className="brood-grid">
+            {state.demonstrated.map((genes, i) => (
+              <div className="baby" key={i}>
+                <Genes genes={genes} origin={false} />
+                <Specimen genes={genes} motion={motion} />
+                <small>{appearance(genes, "single") ? "Light" : "Dark"}</small>
+              </div>
+            ))}
+          </div>
         </div>
         <h3>
           {state.broods.length

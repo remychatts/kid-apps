@@ -22,6 +22,7 @@ export type Experiment = {
   pending: Generation | null;
 };
 export const LIMIT = 200;
+export const HISTORY_WINDOW = 256;
 
 /** Mixes a seed and stream number without consuming another stream's draws. */
 export function mix(seed: number, stream: number): number {
@@ -135,13 +136,20 @@ export function select(
   offspring: Individual[],
   bark: number,
   draw: () => number,
+  model: Model = "many",
 ): string[] {
+  // A search-image teaching heuristic makes birds focus on the common appearance.
+  const lightFrequency =
+    offspring.filter((moth) => moth.shade === 1).length / offspring.length;
   return offspring
     .map((moth) => ({
       id: moth.id,
       key:
         -Math.log(draw()) /
-        (0.2 + 0.8 * (1 - Math.abs(moth.shade - bark)) ** 2),
+        ((0.2 + 0.8 * (1 - Math.abs(moth.shade - bark)) ** 2) /
+          (model === "single"
+            ? (0.1 + (moth.shade ? lightFrequency : 1 - lightFrequency)) ** 2
+            : 1)),
     }))
     .sort((a, b) => a.key - b.key || a.id.localeCompare(b.id))
     .slice(0, 48)
@@ -150,11 +158,11 @@ export function select(
 
 /** Computes one generation with separate pairing, inheritance and survival streams. */
 export function nextGeneration(run: Run, bark: number): Generation {
-  const number = run.history.length;
-  if (number > LIMIT)
+  const number = run.history.at(-1)!.number + 1;
+  if (run.model === "single" && number > LIMIT)
     throw new Error("This experiment has reached 200 generations.");
   const parents = shuffled(
-    living(run.history[number - 1]),
+    living(run.history.at(-1)!),
     random(mix(run.seed, number * 3)),
   );
   const draw = random(mix(run.seed, number * 3 + 1));
@@ -179,7 +187,12 @@ export function nextGeneration(run: Run, bark: number): Generation {
     number,
     bark,
     offspring,
-    survivors: select(offspring, bark, random(mix(run.seed, number * 3 + 2))),
+    survivors: select(
+      offspring,
+      bark,
+      random(mix(run.seed, number * 3 + 2)),
+      run.model,
+    ),
   };
 }
 
@@ -215,7 +228,15 @@ export function finish(experiment: Experiment): Experiment {
     pending: null,
     run: {
       ...experiment.run,
-      history: [...experiment.run.history, experiment.pending],
+      history:
+        experiment.run.model === "many" &&
+        experiment.run.history.length >= HISTORY_WINDOW + 1
+          ? [
+              experiment.run.history[0],
+              ...experiment.run.history.slice(-(HISTORY_WINDOW - 1)),
+              experiment.pending,
+            ]
+          : [...experiment.run.history, experiment.pending],
     },
   };
 }
@@ -223,11 +244,15 @@ export function finish(experiment: Experiment): Experiment {
 /** Advances a teaching phase, computing biology only at the first phase. */
 export function step(experiment: Experiment): Experiment {
   if (experiment.pending) {
-    return experiment.phase === 3
+    return experiment.phase === 2
       ? finish(experiment)
       : { ...experiment, phase: experiment.phase + 1 };
   }
-  if (experiment.run.history.length > LIMIT) return experiment;
+  if (
+    experiment.run.model === "single" &&
+    experiment.run.history.length > LIMIT
+  )
+    return experiment;
   return {
     ...experiment,
     phase: 1,
@@ -243,7 +268,9 @@ export function advance(experiment: Experiment): Experiment {
 /** Locates either a survivor or a non-surviving sibling for honest ancestry inspection. */
 export function findMoth(run: Run, id: string): Individual | undefined {
   const generation = Number(id.split("-")[0].slice(1));
-  return run.history[generation]?.offspring.find((moth) => moth.id === id);
+  return run.history
+    .find((entry) => entry.number === generation)
+    ?.offspring.find((moth) => moth.id === id);
 }
 
 /** Summarises the distribution of living shades in nine stable bins. */

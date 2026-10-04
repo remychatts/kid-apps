@@ -1,5 +1,5 @@
 /** Atomic IndexedDB session storage; failures leave the lesson usable in memory. */
-import { validSession, type Session } from "./session.ts";
+import { validSession, upgradeSession, type Session } from "./session.ts";
 let database: Promise<IDBDatabase> | null = null;
 
 /** Opens the private app database lazily and rejects blocked or unavailable storage. */
@@ -24,8 +24,9 @@ export async function loadSession(): Promise<Session | null> {
     const transaction = db.transaction("session", "readonly");
     const request = transaction.objectStore("session").get("current");
     request.onsuccess = () => {
-      if (request.result === undefined) resolve(null);
-      else if (validSession(request.result)) resolve(request.result);
+      const saved = upgradeSession(request.result);
+      if (saved === undefined) resolve(null);
+      else if (validSession(saved)) resolve(saved);
       else
         reject(
           new Error(

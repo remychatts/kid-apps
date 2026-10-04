@@ -1774,3 +1774,194 @@ details ul {
 .family-inspector h3:focus {
   outline: none;
 }
+
+/* Prediction is one action: copies stay visible while each phenotype is checked. */
+.phenotype-reveal {
+  width: 100%;
+  height: 190px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+.parent-actions button[aria-pressed="true"] {
+  background: #304c39;
+  color: #fff;
+  border-color: #304c39;
+}
+.dark-axis-label {
+  text-align: right;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: -12px;
+}
+.guided-examples {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+.gamete,
+.combined-copies {
+  animation: none;
+}
+.gamete-transfer {
+  overflow: visible;
+}
+.gamete .gene,
+.combined-copies .gene {
+  position: relative;
+  z-index: 3;
+}
+
+/* Expand the tree first, then introduce offspring; survivors move with the shrinking grid. */
+.population-grid {
+  --rows: 4;
+  --cell: 58px;
+  height: calc(var(--rows) * var(--cell) + 32px);
+  min-height: 0;
+  grid-auto-rows: var(--cell);
+  gap: 0 2px;
+  transition: height calc(550ms * var(--tempo)) ease-in-out;
+}
+.population-grid.offspring-grid {
+  --rows: 8;
+}
+.population-moth {
+  overflow: visible;
+}
+.population-moth > .silhouette {
+  filter: drop-shadow(1px 0 0 #f6f1d8) drop-shadow(-1px 0 0 #263a29);
+}
+.population-moth.eaten {
+  opacity: 1;
+  transition: none;
+}
+.population-moth.eaten > .silhouette,
+.population-moth.eaten .tiny-genes {
+  animation: moth-eaten calc(300ms * var(--tempo)) var(--bird-delay) both;
+  animation-delay: calc(var(--bird-delay) + 400ms * var(--tempo));
+}
+.population-moth.eaten::after {
+  opacity: 0;
+  animation: death-marker calc(300ms * var(--tempo)) both;
+  animation-delay: calc(var(--bird-delay) + 400ms * var(--tempo));
+}
+.phase-2 .population-moth > .silhouette {
+  filter: none;
+}
+.phase-2 .population-moth:not(.eaten) > .silhouette {
+  animation: camouflage-window calc(2400ms * var(--tempo)) both;
+}
+.phase-2 .tiny-genes {
+  visibility: hidden;
+}
+.bird-strike {
+  position: absolute;
+  z-index: 4;
+  color: #182a38;
+  fill: #84959b;
+  pointer-events: none;
+  animation: predator-flight calc(900ms * var(--tempo)) var(--bird-delay) both;
+}
+@keyframes camouflage-window {
+  0% {
+    filter: drop-shadow(1px 0 0 #f6f1d8) drop-shadow(-1px 0 0 #263a29);
+  }
+  22%,
+  80% {
+    filter: none;
+  }
+  100% {
+    filter: drop-shadow(1px 0 0 #f6f1d8) drop-shadow(-1px 0 0 #263a29);
+  }
+}
+@keyframes moth-eaten {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.12;
+  }
+}
+@keyframes death-marker {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes predator-flight {
+  0% {
+    transform: translate(100vw, -100px) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  48% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-100vw, -80px) scale(0.7);
+    opacity: 0;
+  }
+}
+.woodlands.two .population-grid {
+  --rows: 6;
+}
+.woodlands.two .population-grid.offspring-grid {
+  --rows: 12;
+}
+@media (max-width: 700px) {
+  .population-grid,
+  .woodlands.two .population-grid {
+    --rows: 8;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .population-grid.offspring-grid,
+  .woodlands.two .population-grid.offspring-grid {
+    --rows: 16;
+  }
+  .header-actions {
+    flex-wrap: wrap;
+  }
+}
+[data-motion="false"] .population-grid {
+  transition: none;
+}
+[data-motion="false"] .bird-strike {
+  display: none;
+}
+[data-motion="false"] .population-moth.eaten > .silhouette {
+  opacity: 0.12;
+}
+@media (prefers-reduced-motion: reduce) {
+  .population-grid {
+    transition: none;
+  }
+  .bird-strike {
+    display: none;
+  }
+}
+.phase-2 .population-moth.eaten > .silhouette {
+  animation:
+    camouflage-window calc(2400ms * var(--tempo)) both,
+    moth-eaten calc(300ms * var(--tempo))
+      calc(var(--bird-delay) + 400ms * var(--tempo)) both;
+}
+[data-motion="false"] .population-moth.eaten::after {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .population-moth.eaten > .silhouette {
+    opacity: 0.12;
+  }
+  .population-moth.eaten::after {
+    opacity: 1;
+  }
+}
+
+.phenotype-reveal .moth {
+  height: 160px;
+  margin: 0;
+}

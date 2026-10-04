@@ -1,5 +1,5 @@
 /** Population experiments with teaching phases, shared-scale history and recorded ancestry. */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   Play,
   Pause,
@@ -26,6 +26,7 @@ import {
   type Individual,
   type Run,
 } from "./model";
+import { generationTone } from "./sound";
 import {
   Bark,
   Silhouette,
@@ -72,11 +73,19 @@ function History({
   onSelect: (generation: number) => void;
 }) {
   const count = run.history.length;
+  const gap = (run.history[1]?.number ?? 1) > 1;
+  /** Separates the founder snapshot from the rolling, uniformly spaced recent history. */
+  const xAt = (index: number) =>
+    gap
+      ? index === 0
+        ? 12
+        : 42 + ((index - 1) / Math.max(1, count - 2)) * 546
+      : 12 + (index / Math.max(1, count - 1)) * 576;
   return (
     <div className="history">
       <div className="card-heading">
         <span className="eyebrow">A population through time</span>
-        <small>Dark ↓ · Light ↑</small>
+        <small>Light ↑</small>
       </div>
       <svg
         viewBox="0 0 600 110"
@@ -95,7 +104,7 @@ function History({
           />
         ))}
         {run.history.map((gen, i) => {
-          const x = 12 + (i / Math.max(1, count - 1)) * 576;
+          const x = xAt(i);
           const bins = distribution(gen);
           return (
             <g key={i}>
@@ -112,17 +121,22 @@ function History({
                     />
                   ),
               )}
-              {i > 0 && gen.bark !== run.history[i - 1].bark && (
-                <path d={`M${x} 2v96`} stroke="#be7524" strokeDasharray="2 3" />
-              )}
+              {i > 0 &&
+                gen.number === run.history[i - 1].number + 1 &&
+                gen.bark !== run.history[i - 1].bark && (
+                  <path
+                    d={`M${x} 2v96`}
+                    stroke="#be7524"
+                    strokeDasharray="2 3"
+                  />
+                )}
             </g>
           );
         })}
         <polyline
           points={run.history
-            .map(
-              (gen, i) =>
-                `${12 + (i / Math.max(1, count - 1)) * 576},${90 - mean(gen) * 80}`,
+            .map((gen, i) =>
+              gap && i === 0 ? "" : `${xAt(i)},${90 - mean(gen) * 80}`,
             )
             .join(" ")}
           fill="none"
@@ -130,22 +144,30 @@ function History({
           strokeWidth="1.5"
         />
         <line
-          x1={12 + (selected / Math.max(1, count - 1)) * 576}
-          x2={12 + (selected / Math.max(1, count - 1)) * 576}
+          x1={xAt(selected)}
+          x2={xAt(selected)}
           y1="1"
           y2="100"
           stroke="#b46826"
           strokeWidth="2"
         />
       </svg>
+      <div className="dark-axis-label">Dark ↓</div>
+      {gap && (
+        <p className="caption">
+          Start · gap · generations {run.history[1].number}–
+          {run.history.at(-1)!.number}
+        </p>
+      )}
       <label className="history-slider">
-        Inspect generation <strong>{selected}</strong>
+        Inspect generation <strong>{run.history[selected].number}</strong>
         <input
           aria-label="Inspect generation"
           type="range"
           min="0"
           max={count - 1}
           value={selected}
+          aria-valuetext={`Generation ${run.history[selected].number}`}
           onChange={(e) => onSelect(Number(e.target.value))}
         />
       </label>
@@ -154,8 +176,8 @@ function History({
         <div className="generation-list">
           {run.history.map((gen, i) => (
             <button key={i} onClick={() => onSelect(i)}>
-              Generation {i} · average shade {Math.round(mean(gen) * 100)}%
-              light
+              Generation {gen.number} · average shade{" "}
+              {Math.round(mean(gen) * 100)}% light
               {i > 0 && gen.bark !== run.history[i - 1].bark
                 ? " · bark changed"
                 : ""}
@@ -187,7 +209,7 @@ function Family({
   useEffect(() => {
     heading.current?.focus();
   }, [moth.id]);
-  const generation = run.history[moth.generation];
+  const generation = run.history.find((gen) => gen.number === moth.generation)!;
   const parents = moth.parents?.map((id) => findMoth(run, id)) ?? [];
   const siblings = generation.offspring.filter(
     (other) => other.parents?.join() === moth.parents?.join(),
@@ -227,6 +249,12 @@ function Family({
         ) : (
           <p>
             This is a founding moth. Its parents are outside this experiment.
+          </p>
+        )}
+        {moth.parents && parents.some((parent) => !parent) && (
+          <p>
+            These parents are older than the retained ancestry window. Their
+            identities are {moth.parents.join(" and ")}.
           </p>
         )}
         <div className="selected-descendant">
@@ -276,8 +304,12 @@ function WoodlandCanvas({
   view,
   inside,
   onSelect,
+  motion = false,
+  tempo = 1,
 }: {
   experiment: Experiment;
+  motion?: boolean;
+  tempo?: number;
   view: number | null;
   inside: boolean;
   onSelect: (id: string) => void;
@@ -287,6 +319,53 @@ function WoodlandCanvas({
     view === null ? (experiment.pending ?? last) : experiment.run.history[view];
   const phase = view === null ? experiment.phase : 0;
   const moths = phase ? generation.offspring : living(generation);
+  const grid = useRef<HTMLDivElement>(null);
+  const previous = useRef(new Map<string, { x: number; y: number }>());
+  useLayoutEffect(() => {
+    if (!grid.current) return;
+    const rectangles = new Map<string, { x: number; y: number }>();
+    const animations: Animation[] = [];
+    const origin = grid.current.getBoundingClientRect();
+    for (const button of grid.current.querySelectorAll<HTMLElement>(
+      ".population-moth",
+    )) {
+      const id = button.dataset.moth!;
+      const bounds = button.getBoundingClientRect();
+      const rect = { x: bounds.x - origin.x, y: bounds.y - origin.y };
+      rectangles.set(id, rect);
+      const before = previous.current.get(id);
+      if (!motion || view !== null) continue;
+      if (before && phase === 0)
+        animations.push(
+          button.animate(
+            [
+              {
+                transform: `translate(${before.x - rect.x}px, ${before.y - rect.y}px)`,
+              },
+              { transform: "translate(0, 0)" },
+            ],
+            { duration: 650 * tempo, easing: "ease-in-out" },
+          ),
+        );
+      else if (!before && phase === 1)
+        animations.push(
+          button.animate(
+            [
+              { transform: "scale(.02)", opacity: 0 },
+              { transform: "scale(1)", opacity: 1 },
+            ],
+            {
+              duration: 650 * tempo,
+              delay: 550 * tempo,
+              fill: "backwards",
+              easing: "ease-out",
+            },
+          ),
+        );
+    }
+    previous.current = rectangles;
+    return () => animations.forEach((animation) => animation.cancel());
+  }, [generation, phase, motion, tempo, view]);
   const surviving = new Set(generation.survivors);
   const counts = living(generation);
   const light = counts.filter((m) => m.shade === 1).length;
@@ -319,26 +398,34 @@ function WoodlandCanvas({
           {phase === 1
             ? "96 offspring · one family enlarged below"
             : phase === 2
-              ? "Growing up · egg → caterpillar → pupa → moth"
-              : phase === 3
-                ? "48 eaten · 48 survive"
-                : "48 parents"}
+              ? "48 eaten · 48 survive"
+              : "48 parents"}
         </span>
       </div>
       <div
         className={`population-scene phase-${phase}`}
-        style={cssVars({ "--bark": shadeColour(bark) })}
+        style={cssVars({ "--bark": shadeColour(bark), "--tempo": tempo })}
       >
         <Bark shade={bark} />
-        <div className={`population-grid ${phase ? "offspring-grid" : ""}`}>
-          {moths.map((moth) => (
+        <div
+          ref={grid}
+          className={`population-grid ${phase ? "offspring-grid" : ""}`}
+        >
+          {moths.map((moth, index) => (
             <button
               key={moth.id}
-              className={`population-moth ${phase === 3 && !surviving.has(moth.id) ? "eaten" : ""}`}
-              aria-label={`Moth ${moth.id}, ${experiment.run.model === "single" ? (moth.shade ? "light" : "dark") : `${Math.round(moth.shade * 100)}% light shade`}${phase === 3 && !surviving.has(moth.id) ? ", eaten" : ""}`}
+              data-moth={moth.id}
+              style={cssVars({
+                "--bird-delay": `${(650 + index * 4) * tempo}ms`,
+              })}
+              className={`population-moth ${phase === 2 && !surviving.has(moth.id) ? "eaten" : ""}`}
+              aria-label={`Moth ${moth.id}, ${experiment.run.model === "single" ? (moth.shade ? "light" : "dark") : `${Math.round(moth.shade * 100)}% light shade`}${phase === 2 && !surviving.has(moth.id) ? ", eaten" : ""}`}
               onClick={() => onSelect(moth.id)}
             >
               <Silhouette shade={moth.shade} seed={moth.cosmetic} />
+              {phase === 2 && !surviving.has(moth.id) && (
+                <Bird className="bird-strike" size={38} aria-hidden="true" />
+              )}
               {inside && experiment.run.model === "single" && (
                 <span className="tiny-genes">
                   {moth.genes.map((g, i) => (
@@ -351,9 +438,6 @@ function WoodlandCanvas({
             </button>
           ))}
         </div>
-        {phase === 3 && (
-          <Bird className="bird-swoop" size={48} aria-hidden="true" />
-        )}
       </div>
       {!phase && (
         <div className="population-summary">
@@ -410,7 +494,13 @@ export function Population({
   motion,
   confirm,
   suspended = false,
+  speed,
+  setSpeed,
+  muted,
 }: {
+  speed: string;
+  setSpeed: (speed: string) => void;
+  muted: boolean;
   experiments: Experiment[];
   update: (experiments: Experiment[]) => void;
   many: boolean;
@@ -422,7 +512,6 @@ export function Population({
 }) {
   const [playing, setPlaying] = useState(false);
   const [replaying, setReplaying] = useState(false);
-  const [speed, setSpeed] = useState("Slow");
   const [inside, setInside] = useState(false);
   const [view, setView] = useState<number | null>(null);
   const [selection, setSelection] = useState<{
@@ -433,7 +522,17 @@ export function Population({
   const [compareStart, setCompareStart] = useState(false);
   const first = experiments[0];
   const latest = first.run.history.length - 1;
-  const capped = latest >= LIMIT && !first.pending;
+  const capped = !many && latest >= LIMIT && !first.pending;
+  const tempo = speed === "Fast" ? 0.3 : speed === "Medium" ? 0.6 : 1;
+  const generationNumber = first.run.history.at(-1)!.number;
+  const sounded = useRef(generationNumber);
+  useEffect(() => {
+    if (generationNumber > sounded.current)
+      experiments.forEach((experiment) =>
+        generationTone(mean(experiment.run.history.at(-1)!), muted),
+      );
+    sounded.current = generationNumber;
+  }, [generationNumber, experiments, muted]);
   const selectedRun = selection ? experiments[selection.side]?.run : undefined;
   // A pending generation is already computed and can be inspected without changing its biology.
   const inspectionRun =
@@ -445,32 +544,53 @@ export function Population({
       ? findMoth(inspectionRun, selection.id)
       : undefined;
 
+  const playback = useRef({ experiments, update, muted });
+  playback.current = { experiments, update, muted };
   useEffect(() => {
     if (!playing || suspended) return;
     if (!replaying && capped) {
       setPlaying(false);
       return;
     }
-    const timer = window.setTimeout(
+    const schedule =
+      many && !replaying ? window.setInterval : window.setTimeout;
+    const timer = schedule(
       () => {
         if (replaying) {
           if ((view ?? 0) >= latest) {
             setPlaying(false);
             setReplaying(false);
             setView(null);
-          } else setView((view ?? 0) + 1);
+          } else {
+            const next = (view ?? 0) + 1;
+            setView(next);
+            playback.current.experiments.forEach((experiment) =>
+              generationTone(
+                mean(
+                  experiment.run.history[
+                    Math.min(next, experiment.run.history.length - 1)
+                  ],
+                ),
+                playback.current.muted,
+              ),
+            );
+          }
         } else
-          update(
-            experiments.map(speed === "Slow" && !comparing ? step : advance),
+          playback.current.update(
+            playback.current.experiments.map(many ? advance : step),
           );
       },
-      speed === "Fast" ? 100 : speed === "Medium" ? 600 : 1600,
+      many
+        ? speed === "Fast"
+          ? 25
+          : speed === "Medium"
+            ? 50
+            : 100
+        : (first.phase === 2 ? 2700 : first.phase === 1 ? 1500 : 800) * tempo,
     );
-    return () => window.clearTimeout(timer);
+    return () => window.clearInterval(timer);
   }, [
     playing,
-    experiments,
-    update,
     speed,
     comparing,
     capped,
@@ -478,6 +598,9 @@ export function Population({
     view,
     latest,
     suspended,
+    many,
+    first.phase,
+    tempo,
   ]);
   useEffect(() => {
     /** Hidden tabs stop playback without accumulating elapsed time. */
@@ -504,8 +627,13 @@ export function Population({
   }
   /** Preserves existing biology and queues the new background at the next cycle. */
   function bark(value: number, side: number) {
-    setPlaying(false);
-    live();
+    if (!many) live();
+    else {
+      setView(null);
+      setReplaying(false);
+      setSelection(null);
+      setCompareStart(false);
+    }
     update(
       experiments.map((exp, i) => (i === side ? { ...exp, bark: value } : exp)),
     );
@@ -532,7 +660,7 @@ export function Population({
       },
     );
   }
-  const phaseNames = ["Parents", "Offspring", "Growing up", "Survival"];
+  const phaseNames = ["Parents", "Offspring", "Predation"];
   return (
     <>
       {many && (
@@ -561,7 +689,7 @@ export function Population({
             </span>
             <h2>
               {view !== null
-                ? `Generation ${view}`
+                ? `Generation ${first.run.history[view].number}`
                 : many
                   ? "Give small changes time."
                   : "Who becomes a parent?"}
@@ -664,6 +792,12 @@ export function Population({
             experiment.
           </p>
         )}
+        {many && first.run.history[1]?.number > 1 && (
+          <p className="caption">
+            The simulation keeps running. The graph and family inspector retain
+            the starting moths and the latest 256 generations.
+          </p>
+        )}
         {view !== null && (
           <p className="caption">
             Looking back does not change the experiment. Playback and bark
@@ -722,6 +856,8 @@ export function Population({
                     ? Math.min(view, exp.run.history.length - 1)
                     : null
                 }
+                motion={motion}
+                tempo={tempo}
                 inside={inside}
                 onSelect={(id) => inspect(id, side)}
               />
@@ -740,7 +876,7 @@ export function Population({
                   <Silhouette shade={moth.shade} seed={moth.cosmetic} />
                   {!many && <Genes genes={moth.genes} origin={false} />}
                   <small>
-                    {first.phase === 3
+                    {first.phase === 2
                       ? first.pending!.survivors.includes(moth.id)
                         ? "Survived"
                         : "Eaten"
@@ -752,9 +888,7 @@ export function Population({
             <p className="caption">
               {first.phase === 1
                 ? "Each offspring inherited one copy per gene from each parent."
-                : first.phase === 2
-                  ? "Later… the offspring grow up. The previous parents retire into history."
-                  : "Camouflage helps, but chance matters too. Only survivors become the next parents."}
+                : "Camouflage helps, but chance matters too. Only survivors become the next parents."}
             </p>
           </div>
         )}
@@ -786,7 +920,7 @@ export function Population({
                 selection &&
                 experiments[selection.side].pending?.number ===
                   selected.generation &&
-                experiments[selection.side].phase < 3
+                experiments[selection.side].phase < 2
               )
             }
             onSelect={(id) => {

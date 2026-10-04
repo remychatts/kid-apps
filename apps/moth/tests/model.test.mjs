@@ -8,7 +8,6 @@ import {
   createRun,
   createExperiment,
   repeatExperiment,
-  nextGeneration,
   living,
   mean,
   finish,
@@ -16,6 +15,7 @@ import {
   advance,
   findMoth,
   LIMIT,
+  HISTORY_WINDOW,
 } from "../src/model.ts";
 import {
   initialSession,
@@ -23,6 +23,8 @@ import {
   birth,
   settle,
   goToChapter,
+  demonstrate,
+  upgradeSession,
 } from "../src/session.ts";
 
 /** Runs a bounded experiment to examine ensemble trends and history integrity. */
@@ -155,8 +157,8 @@ test("light woodland favours light moths across 100 fixed seeds, with chance exc
       (moth) => moth.shade === 0,
     ).length;
   }
-  assert.ok(lightTotal / 100 > 0.85);
-  assert.ok(darkTotal / 100 < 0.08);
+  assert.ok(lightTotal / 100 > 0.6);
+  assert.ok(darkTotal / 100 < 0.4);
   assert.ok(mismatchesSurvived > 0);
 });
 
@@ -175,7 +177,7 @@ test("stepwise, skipped and restored playback give identical biology", () => {
   for (let generation = 0; generation < 20; generation++) {
     const bark = generation < 10 ? 0.8 : 0.2;
     stepped = { ...stepped, bark };
-    for (let phase = 0; phase < 4; phase++)
+    for (let phase = 0; phase < 3; phase++)
       stepped = step(structuredClone(stepped));
     fast = advance({ ...fast, bark });
     assert.deepEqual(stepped, fast);
@@ -195,15 +197,67 @@ test("queued background changes never rewrite the current computed generation", 
   assert.deepEqual(next.run.history.at(-2), pending.pending);
 });
 
-test("a 200-generation history remains bounded, replayable and inspectable", () => {
-  const run = runFor("many", 51, 0.8, 200);
-  assert.equal(run.history.length, LIMIT + 1);
-  assert.ok(findMoth(run, "g200-95"));
-  assert.throws(() => nextGeneration(run, 0.8), /200/);
+test("many-gene playback continues past 200 with bounded recent ancestry and valid saved state", () => {
+  const run = runFor("many", 51, 0.8, 600);
+  assert.equal(run.history.length, HISTORY_WINDOW + 1);
+  assert.equal(run.history[0].number, 0);
+  assert.equal(run.history.at(-1).number, 600);
+  assert.ok(findMoth(run, "g600-95"));
+  assert.ok(!findMoth(run, "g200-95"));
   const exp = { run, bark: 0.8, phase: 0, pending: null };
-  assert.equal(advance(exp), exp);
-  const session = { ...initialSession(), deep: exp };
-  assert.ok(validSession(session));
+  const next = advance(exp);
+  assert.equal(next.run.history.at(-1).number, 601);
+  assert.ok(validSession({ ...initialSession(), deep: next }));
+  const single = runFor("single", 51, 1, LIMIT);
+  assert.equal(advance({ ...exp, run: single }).run.history.length, LIMIT + 1);
+});
+
+test("rare appearances usually persist for a long teaching run without injecting copies", () => {
+  for (const bark of [0, 1]) {
+    let fixed = 0;
+    for (let seed = 1; seed <= 100; seed++) {
+      const run = runFor("single", seed, bark, 100);
+      const alleles = new Set(
+        living(run.history.at(-1)).flatMap((moth) => moth.genes),
+      );
+      fixed += alleles.size === 1;
+    }
+    assert.ok(
+      fixed <= 5,
+      `${fixed} of 100 runs lost all variation on bark ${bark}`,
+    );
+  }
+});
+
+test("guided births cycle through all four choices without consuming chance outcomes", () => {
+  let state = initialSession().brood;
+  const randomBrood = birth(state, true).broods;
+  for (let i = 0; i < 4; i++) state = demonstrate(state);
+  assert.deepEqual(state.demonstrated, [
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1],
+  ]);
+  assert.deepEqual(state.broods, []);
+  assert.deepEqual(birth(state, true).broods, randomBrood);
+  assert.deepEqual(demonstrate(state).demonstrated.at(-1), [0, 0]);
+});
+
+test("first-release saved lessons upgrade without losing existing broods or generations", () => {
+  const old = initialSession();
+  delete old.builder.revealed;
+  delete old.builder.dirty;
+  delete old.brood.demonstration;
+  delete old.brood.demonstrated;
+  delete old.speeds;
+  delete old.muted;
+  old.brood = birth({ ...initialSession().brood, ...old.brood }, true);
+  old.deep = advance(old.deep);
+  const upgraded = upgradeSession(old);
+  assert.ok(validSession(upgraded));
+  assert.deepEqual(upgraded.brood.broods, old.brood.broods);
+  assert.deepEqual(upgraded.deep.run, old.deep.run);
 });
 
 test("saved sessions reject corrupt versions, missing ancestry and invalid gene copies", () => {
@@ -234,18 +288,29 @@ test("chapter navigation settles pending events but never runs an extra generati
   assert.ok(validSession(settled));
 });
 
-test("direct chapter entry cannot later change the parents of saved offspring", () => {
+test("new chapter-two parent choices clear old broods on any route to chapter three", () => {
   let session = goToChapter(initialSession(), 3, false);
   session.brood = birth(session.brood, true);
-  const originalBrood = structuredClone(session.brood);
   session = goToChapter(session, 2);
   session.builder.parents = [
     [1, 1],
     [1, 1],
   ];
+  session.builder.dirty = true;
+  session = goToChapter(session, 4);
   session = goToChapter(session, 3);
-  assert.deepEqual(session.brood, originalBrood);
+  assert.deepEqual(session.brood.broods, []);
+  assert.deepEqual(session.brood.parents, [
+    [1, 1],
+    [1, 1],
+  ]);
+  session.brood = birth(session.brood, true);
+  assert.deepEqual(
+    goToChapter(goToChapter(session, 2), 3).brood.broods,
+    session.brood.broods,
+  );
   const firstVisit = { ...initialSession(), chapter: 2 };
+  firstVisit.builder.dirty = true;
   firstVisit.builder.parents = [
     [1, 1],
     [1, 1],
@@ -259,7 +324,7 @@ test("direct chapter entry cannot later change the parents of saved offspring", 
 test("leaving a conception commits its already selected copies exactly once", () => {
   const session = initialSession();
   session.brood.stage = 2;
-  const expected = birth(session.brood);
+  const expected = demonstrate(session.brood);
   const next = goToChapter(session, 4);
   assert.deepEqual(next.brood, expected);
   assert.deepEqual(goToChapter(next, 5).brood, expected);

@@ -1,5 +1,5 @@
 /** Camouflage search and gene-copy construction canvases, with no biological mutation. */
-import { Eye, EyeOff, RefreshCw, Sun, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, RefreshCw, Sun } from "lucide-react";
 import type { Session } from "./session";
 import { random, appearance } from "./model";
 import { Bark, Silhouette, Slider, Thought, Specimen, Genes } from "./ui";
@@ -43,7 +43,7 @@ export function Discover({
           <div
             className="lit-scene"
             style={{
-              filter: `brightness(${0.35 + light * 0.65}) saturate(${0.55 + light * 0.45})`,
+              filter: `brightness(${0.55 + light * 0.45}) contrast(${0.12 + light * 0.88}) saturate(${0.3 + light * 0.7})`,
             }}
           >
             <Bark shade={state.bark} />
@@ -163,12 +163,10 @@ export function Instructions({
   state,
   update,
   motion,
-  useParents,
 }: {
   state: BuilderState;
   update: (state: BuilderState) => void;
   motion: boolean;
-  useParents: () => void;
 }) {
   /** Replaces the built preview when a copy is edited. */
   function change(card: number, copy: number) {
@@ -177,7 +175,11 @@ export function Instructions({
         ? pair.map((value, j) => (j === copy ? 1 - value : value))
         : pair,
     );
-    update({ ...state, genes });
+    update({
+      ...state,
+      genes,
+      revealed: state.revealed.map((value, i) => (i === card ? false : value)),
+    });
   }
   return (
     <>
@@ -185,21 +187,6 @@ export function Instructions({
         <p>
           One colour gene. <strong>Two copies.</strong> One from each parent.
         </p>
-        <div className="toolbar">
-          <button
-            className="primary"
-            onClick={() => update({ ...state, visible: !state.visible })}
-          >
-            <Eye size={18} />
-            {state.visible ? "Hide copies" : "Look inside"}
-          </button>
-          <button
-            aria-pressed={state.prediction}
-            onClick={() => update({ ...state, prediction: !state.prediction })}
-          >
-            {state.prediction ? "Show appearance" : "Predict appearance"}
-          </button>
-        </div>
       </div>
       <div className="moth-cards">
         {state.genes.map((genes, i) => (
@@ -207,52 +194,58 @@ export function Instructions({
             <div className="card-heading">
               <span className="eyebrow">Build a moth · {i + 1}</span>
               <span className="pill">
-                {state.prediction
+                {!state.revealed[i]
                   ? "What will it look like?"
                   : appearance(genes, "single")
                     ? "Light appearance"
                     : "Dark appearance"}
               </span>
             </div>
-            <Specimen
+            <button
+              className="phenotype-reveal"
+              aria-label={`Reveal moth ${i + 1} appearance`}
+              onClick={() =>
+                update({
+                  ...state,
+                  revealed: state.revealed.map((v, j) => (j === i ? true : v)),
+                })
+              }
+            >
+              <Specimen
+                genes={genes}
+                seed={42 + i * 13}
+                motion={motion}
+                hidden={!state.revealed[i]}
+              />
+            </button>
+            <Genes
               genes={genes}
-              seed={42 + i * 13}
-              motion={motion}
-              hidden={state.prediction}
+              onChange={(copy) => change(i, copy)}
+              prefix={`Moth ${i + 1}`}
             />
-            {state.visible ? (
-              <>
-                <Genes
-                  genes={genes}
-                  onChange={(copy) => change(i, copy)}
-                  prefix={`Moth ${i + 1}`}
-                />
-                <p className="caption">Tap a copy to build a new moth.</p>
-                <button
-                  className="text-button"
-                  onClick={() =>
-                    update({
-                      ...state,
-                      genes: state.genes.map((pair, j) =>
-                        i === j ? [...pair].reverse() : pair,
-                      ),
-                    })
-                  }
-                >
-                  Swap copy order
-                </button>
-              </>
-            ) : (
-              <div className="hidden-copies">
-                <span>?</span>
-                <span>?</span>
-                <p>What instructions are hidden inside?</p>
-              </div>
-            )}
+            <p className="caption">
+              Predict its wings, then tap the question mark. Tap a copy to build
+              a new moth.
+            </p>
+            <button
+              className="text-button"
+              onClick={() =>
+                update({
+                  ...state,
+                  genes: state.genes.map((pair, j) =>
+                    i === j ? [...pair].reverse() : pair,
+                  ),
+                  revealed: state.revealed.map((v, j) => (i === j ? false : v)),
+                })
+              }
+            >
+              Swap copy order
+            </button>
             <div className="parent-actions">
               {["Mum", "Dad"].map((name, parent) => (
                 <button
                   key={name}
+                  aria-pressed={state.parents[parent].join() === genes.join()}
                   onClick={() =>
                     update({
                       ...state,
@@ -282,9 +275,6 @@ export function Instructions({
               <Genes genes={genes} origin={false} />
             </div>
           ))}
-          <button className="primary" onClick={useParents}>
-            Use these parents <ArrowRight size={18} />
-          </button>
         </div>
       </div>
     </>
