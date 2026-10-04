@@ -526,8 +526,8 @@ export default function App() {
           You made it to <strong>{era.name}</strong>.
         </p>
         <img
-          src="./time-kitten.png"
-          alt="Captain Whiskers celebrates your ten-answer streak"
+          src="./captain-whiskers-streak.webp"
+          alt="Captain Whiskers leaps with a golden star trophy to celebrate your ten-answer streak"
         />
         <p>
           Captain Whiskers thinks you’re <strong>purr-fect!</strong>
