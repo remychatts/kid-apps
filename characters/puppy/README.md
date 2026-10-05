@@ -20,7 +20,7 @@ blender --background --factory-startup --threads 6 --python characters/puppy/cre
 
 The script overwrites the generated files beside itself. Blender may also create a `.blend1` backup, which is ignored here. Rendering uses CPU Cycles without a denoiser because the installed Blender build does not include OpenImageDenoise.
 
-The first mesh has approximately 19,600 triangles, 20 mesh objects and six simple opaque materials, with no image textures. The GLB is approximately 414 KiB. These are review-stage counts, not measured iPad performance or a final optimisation budget. Material batching and smaller facial meshes can be considered after design approval.
+The first mesh has approximately 19,600 triangles, 20 mesh objects and six simple opaque materials, with no image textures. The GLB is approximately 427 KiB. These are review-stage counts, not measured iPad performance or a final optimisation budget. Material batching and smaller facial meshes can be considered after design approval.
 
 Blender coordinates: forward is -Y, up is Z, the sole plane is Z=0. GLB export performs Blender's usual glTF axis conversion. All geometry is created by the script; no BlendSwap mesh or texture has been incorporated.
 
