@@ -5,6 +5,7 @@ Usage: blender --background --disable-autoexec characters/puppy/puppy.blend --py
 """
 import bpy
 import bmesh
+from itertools import product
 from mathutils import Vector
 
 
@@ -29,13 +30,29 @@ for side in (-1, 1):
             assert point.y < surface_y(body, point.x, point.z, rear=True)
             checked += 1
     brow = bpy.data.objects['Surface brow '+str(side)]
-    embedded = 0
-    for vertex in brow.data.vertices:
-        point = brow.matrix_world @ vertex.co
-        depth = point.y - surface_y(body, point.x, point.z)
-        assert -0.030 <= depth <= 0.028, f'Brow detached by {depth}'
-        embedded += depth >= 0
-    assert embedded >= len(brow.data.vertices) // 2
+    front_count = brow['front_vertices']
+    points = [brow.matrix_world @ v.co for v in brow.data.vertices]
+    front = points[:front_count]
+    back = points[front_count:]
+    for point, buried in zip(front, back):
+        forehead = surface_y(body, point.x, point.z)
+        outside = forehead-point.y
+        inside = buried.y-forehead
+        assert outside > 0.08 and inside > 0.29
+        assert inside/(outside+inside) > 0.74, 'Most brow depth must be buried'
+        assert buried.y < surface_y(body, buried.x, buried.z, rear=True)
+    # Face interiors caught intersections that checking vertices alone missed.
+    for face in list(brow.data.polygons)[:brow['front_faces']]:
+        corners = [points[i] for i in face.vertices]
+        for u, v in product((0.25,0.5,0.75), repeat=2):
+            front.append((1-u)*(1-v)*corners[0]+u*(1-v)*corners[1]+u*v*corners[2]+(1-u)*v*corners[3])
+    clearance = float('inf')
+    for dx, dy, dz in ((0,-0.01,0),(0,0,0),(0,0.01,0)):
+        for point in front:
+            gap = surface_y(body, point.x+dx, point.z+dz)-(point.y+dy)
+            clearance = min(clearance, gap)
+    print('Minimum brow clearance with +/-0.01 front-to-back travel:',side,clearance)
+    assert clearance > 0.002, 'Brow front intersects head in sampled depth range'
 
 tail = bpy.data.objects['Tapered tail']
 bm = bmesh.new()

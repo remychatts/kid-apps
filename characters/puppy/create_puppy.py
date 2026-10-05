@@ -120,7 +120,7 @@ def merge_surface(parts):
 
 
 def surface_brow(side, mat, surface):
-    """Build a tapered arched ribbon whose back is embedded in the forehead."""
+    """Build a solid arched brow with most of its depth embedded in the forehead."""
     bpy.context.view_layer.update()
     surface.data.update()
     inv = surface.matrix_world.inverted()
@@ -139,7 +139,7 @@ def surface_brow(side, mat, surface):
                 if not hit:
                     raise RuntimeError('Brow projection missed forehead')
                 forehead = surface.matrix_world @ location
-                y = forehead.y + (0.015 if layer else -0.025-0.004*(1-v*v))
+                y = forehead.y + (0.30 if layer else -0.09-0.005*(1-v*v))
                 vertices.append((x,y,z))
     for layer in range(2):
         offset = layer*layer_size
@@ -159,6 +159,9 @@ def surface_brow(side, mat, surface):
     mesh.update()
     obj=bpy.data.objects.new('Surface brow '+str(side),mesh)
     bpy.context.collection.objects.link(obj)
+    obj['front_vertices'] = layer_size
+    obj['front_faces'] = (along-1)*(across-1)
+    obj['depth_axis'] = 'Blender Y (front-to-back), not vertical Z'
     return put(obj,obj.name,mat)
 
 
