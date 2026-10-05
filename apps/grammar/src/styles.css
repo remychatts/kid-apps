@@ -885,38 +885,86 @@ progress {
 .celebration {
   position: relative;
   text-align: center;
-  padding: 10px 10px 22px;
+  padding: 25px 14px 35px;
   overflow: hidden;
+  isolation: isolate;
+}
+.celebration-dialog {
+  width: min(680px, calc(100% - 28px));
+  border: 4px solid #f9cf62;
+  background: radial-gradient(circle at 50% 28%, #376b91, #193b67 67%, #142945);
+  color: #fffdf2;
+  box-shadow:
+    0 0 0 9px #ffe2a04d,
+    0 28px 100px #102845a8;
+}
+.celebration-dialog::backdrop {
+  background: #0a1b37d9;
+}
+.celebration-dialog .modal-top {
+  position: relative;
+  z-index: 1;
+}
+.celebration-dialog .modal-top h2 {
+  color: #ffe49c;
+  font-size: clamp(25px, 4vw, 35px);
+  animation: title-arrive 700ms both;
+}
+.celebration-dialog .icon-button {
+  background: #ffffff20;
+  color: white;
+  border-color: #ffffff80;
 }
 .celebration > h3 {
-  font-size: 32px;
-  margin-top: 23px;
+  font-size: clamp(31px, 5vw, 43px);
+  margin-top: 26px;
   position: relative;
+  text-shadow: 0 3px 0 #102b50;
+  animation: title-arrive 800ms 200ms both;
 }
 .celebration > p {
-  margin: 10px 0 23px;
+  margin: 12px auto 28px;
   position: relative;
   line-height: 1.6;
+  font-size: 17px;
+  max-width: 460px;
+}
+.celebration .primary-button {
+  position: relative;
+  background: #ffda72;
+  color: #243047;
+  border-color: #e5ad33;
+  box-shadow: 0 5px 0 #b77c24;
+  font-size: 17px;
+  padding: 15px 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.celebration .primary-button:hover {
+  background: #ffe496;
 }
 .milestone-badge {
   position: relative;
   margin: 10px auto;
-  width: 190px;
-  height: 190px;
-  background: #ffde80;
-  border: 5px solid #edb63c;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle at 35% 25%, #fff5be, #ffcf5b 70%);
+  border: 7px solid #f2a82c;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   color: #574118;
-  box-shadow: 0 0 0 9px #fff0bb;
-  animation: badge-arrive 650ms cubic-bezier(0.2, 0.8, 0.3, 1);
+  box-shadow:
+    0 0 0 11px #fff0bb45,
+    0 0 55px #f9c75c;
+  animation: badge-arrive 850ms cubic-bezier(0.2, 0.8, 0.3, 1);
 }
 .milestone-badge strong {
   font-family: "Fredoka Variable", sans-serif;
-  font-size: 58px;
+  font-size: 72px;
   line-height: 1.1;
 }
 .milestone-badge span {
@@ -939,22 +987,21 @@ progress {
   background: var(--colour);
   border-radius: 2px;
   transform: rotate(var(--turn));
-  animation: confetti-fall 3.2s var(--delay) ease-in both;
+  animation: confetti-fall 4.5s var(--delay) ease-in both;
 }
-.fireworks .particles i {
+.particles.fireworks i {
   top: var(--y);
   border-radius: 50%;
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
+  box-shadow:
+    0 0 0 7px #ffffff44,
+    0 0 0 16px #ffffff20;
   animation: firework-bloom 1.6s var(--delay) ease-out both;
 }
-.ribbons .particles i {
-  width: 4px;
-  height: 65px;
-  border-radius: 5px;
-  animation: ribbon-fall 3.1s var(--delay) ease-in both;
-}
-.still .milestone-badge {
+.still .milestone-badge,
+.still > h3,
+.reduced-motion .celebration-dialog .modal-top h2 {
   animation: none;
 }
 @keyframes reward-pop {
@@ -971,6 +1018,16 @@ progress {
   }
   to {
     transform: scale(1) rotate(0);
+  }
+}
+@keyframes title-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 @keyframes confetti-fall {
@@ -993,14 +1050,6 @@ progress {
   to {
     transform: scale(1);
     opacity: 0;
-  }
-}
-@keyframes ribbon-fall {
-  from {
-    transform: translateY(0) rotate(var(--turn));
-  }
-  to {
-    transform: translateY(480px) rotate(calc(var(--turn) + 80deg));
   }
 }
 .reduced-motion *,
