@@ -60,20 +60,14 @@ def oval(name, centre, scale, mat, segments=24, rings=16):
     return put(obj, name, mat)
 
 
-def sculpted_form(name, centre, scale, mat, sockets=False):
-    """Shape a rounded rectangular form; optionally recess the eye surrounds."""
+def sculpted_form(name, centre, scale, mat):
+    """Shape a rounded rectangular form with soft corners."""
     obj = oval(name, centre, scale, mat, 48, 32)
     for vertex in obj.data.vertices:
         unit = [vertex.co[i] / scale[i] for i in range(3)]
         # Softer corners than a box, flatter cheek planes than a sphere.
         for i in range(3):
             vertex.co[i] = math.copysign(abs(unit[i]) ** 0.82, unit[i]) * scale[i]
-        if sockets and unit[1] < 0:
-            x = vertex.co.x
-            z = vertex.co.z + centre[2]
-            recess = sum(math.exp(-((x-side*0.255)/0.21)**2-((z-2.43)/0.31)**2)
-                         for side in (-1, 1))
-            vertex.co.y += 0.09 * recess * (-unit[1])**4
     return obj
 
 
@@ -125,6 +119,54 @@ def merge_surface(parts):
     return obj
 
 
+def surface_brow(side, mat, surface):
+    """Project the entire brow onto the actual forehead, with its back embedded."""
+    obj = oval('Surface brow '+str(side), (side*0.255,0,2.71), (0.135,0.020,0.030),mat,32,16)
+    bpy.context.view_layer.update()
+    surface.data.update()
+    inv = surface.matrix_world.inverted()
+    for vertex in obj.data.vertices:
+        world = obj.matrix_world @ vertex.co
+        hit, location, normal, face = surface.ray_cast(inv @ Vector((world.x,-5,world.z)), Vector((0,1,0)))
+        if not hit:
+            raise RuntimeError(f'Brow projection missed forehead at {tuple(world)}')
+        forehead = surface.matrix_world @ location
+        vertex.co.y += forehead.y + 0.007
+    return obj
+
+
+def tapered_tail(mat):
+    """Sweep a shrinking circular section along a curved centreline to one tip."""
+    points=[Vector(v) for v in [(0,1.08,1.20),(0,1.60,1.38),(0,1.78,1.80),(0,1.61,2.02)]]
+    vertices, faces = [], []
+    rings, around = 28, 16
+    for i in range(rings):
+        t=i/rings
+        centre=(1-t)**3*points[0]+3*(1-t)**2*t*points[1]+3*(1-t)*t*t*points[2]+t**3*points[3]
+        tangent=(3*(1-t)**2*(points[1]-points[0])+6*(1-t)*t*(points[2]-points[1])+3*t*t*(points[3]-points[2])).normalized()
+        across=Vector((1,0,0))
+        other=tangent.cross(across).normalized()
+        radius=0.16*(1-t)**0.8
+        for j in range(around):
+            angle=math.tau*j/around
+            vertices.append(centre+radius*(math.cos(angle)*across+math.sin(angle)*other))
+    for i in range(rings-1):
+        for j in range(around):
+            a=i*around+j; b=i*around+(j+1)%around
+            faces.append((a,b,b+around,a+around))
+    faces.append(tuple(reversed(range(around))))
+    tip=len(vertices)
+    vertices.append(points[-1])
+    for j in range(around):
+        faces.append(((rings-1)*around+j,(rings-1)*around+(j+1)%around,tip))
+    mesh=bpy.data.meshes.new('Continuous tapered tail')
+    mesh.from_pydata(vertices,[],faces)
+    mesh.update()
+    obj=bpy.data.objects.new('Tapered tail',mesh)
+    bpy.context.collection.objects.link(obj)
+    return put(obj,obj.name,mat)
+
+
 def ear(side, mat):
     """Build a floppy tapered ear with a rounded tip and an outward fold."""
     vertices, faces = [], []
@@ -165,7 +207,7 @@ white = material('Ivory eye whites', (0.98, 0.96, 0.88), 0.35)
 parts = [oval('Torso', (0,0.35,1.04), (0.57,0.96,0.60),tan),
          oval('Chest', (0,-0.32,1.19), (0.53,0.55,0.65),tan),
          oval('Neck', (0,-0.51,1.58), (0.43,0.43,0.56),tan),
-         sculpted_form('Sculpted head', (0,-0.72,2.20), (0.59,0.55,0.73),tan, sockets=True),
+         sculpted_form('Sculpted head', (0,-0.72,2.20), (0.59,0.55,0.73),tan),
          oval('Nose bridge', (0,-1.16,2.24), (0.20,0.22,0.32),tan),
          oval('Left cheek', (-0.30,-1.07,1.98), (0.31,0.32,0.30),tan),
          oval('Right cheek', (0.30,-1.07,1.98), (0.31,0.32,0.30),tan)]
@@ -173,6 +215,8 @@ for side in (-1,1):
     for label,y in [('Front',-0.40),('Hind',0.94)]:
         parts.append(oval(label+' leg', (side*0.40,y,0.57), (0.225,0.245,0.55),tan))
         parts.append(oval(label+' paw', (side*0.40,y-0.115,0.19), (0.28,0.35,0.19),tan))
+for side in (-1,1):
+    parts.append(oval('Integrated eye surround '+str(side), (side*0.255,-1.115,2.43), (0.27,0.275,0.385),tan,32,24))
 body=merge_surface(parts)
 # Set the common sole plane exactly at zero after smoothing.
 base=min((body.matrix_world@v.co).z for v in body.data.vertices)
@@ -181,17 +225,14 @@ for v in body.data.vertices:
 
 for side in (-1,1):
     ear(side,ear_mat)
-    oval('Inset eye white '+str(side), (side*0.255,-1.205,2.43), (0.184,0.135,0.285),white)
-    oval('Eye pupil '+str(side), (side*0.255,-1.323,2.415), (0.113,0.048,0.175),eye_mat)
-    oval('Eye catchlight '+str(side), (side*0.255-0.029,-1.368,2.477), (0.032,0.012,0.040),white,16,12)
-    # A continuous lid rim seats each eye into the surrounding face.
-    rim=[]
-    for i in range(12):
-        a=math.tau*i/12
-        rim.append((side*0.255+0.191*math.cos(a), -1.237, 2.43+0.294*math.sin(a)))
-    tube('Sculpted eyelid rim '+str(side), rim, 0.026, tan, resolution=4, closed=True)
-    brow=oval('Tapered brow '+str(side), (side*0.26,-1.20,2.762), (0.15,0.052,0.039),ear_mat)
-    brow.rotation_euler.y=side*0.12
+    oval('Embedded eye white '+str(side), (side*0.255,-1.245,2.43), (0.19,0.18,0.28),white,32,24)
+    pupil=oval('Eye pupil '+str(side), (side*0.255,0,2.415), (0.105,0.008,0.157),eye_mat,32,24)
+    for vertex in pupil.data.vertices:
+        world=pupil.matrix_world @ vertex.co
+        r=((world.x-side*0.255)/0.19)**2+((world.z-2.43)/0.28)**2
+        vertex.co.y += -1.245-0.18*math.sqrt(max(0,1-r))-0.002
+    oval('Eye catchlight '+str(side), (side*0.255-0.029,-1.431,2.477), (0.026,0.007,0.033),white,16,12)
+    surface_brow(side,ear_mat,body)
 
 sculpted_form('Broad cream muzzle', (0,-1.365,1.948), (0.47,0.415,0.255),cream)
 nose=oval('Soft triangular nose', (0,-1.748,2.105), (0.18,0.11,0.13),dark)
@@ -201,8 +242,7 @@ tube('Mouth centre', [(0,-1.809,2.018),(0,-1.794,1.914),(0,-1.77,1.857)],0.010,d
 tube('Relaxed curved mouth', [(-0.235,-1.712,1.878),(-0.13,-1.757,1.846),
                              (0,-1.77,1.84),(0.13,-1.757,1.846),(0.235,-1.712,1.878)],0.012,dark)
 # The tail is still geometry only: no controls, bones or animation.
-tail=tube('Gently lifted tail', [(0,1.11,1.22),(0,1.48,1.42),(0,1.67,1.76),(0,1.63,1.95)],0.13,tan)
-oval('Rounded tail tip',(0,1.63,1.95),(0.14,0.14,0.16),tan)
+tail=tapered_tail(tan)
 
 scene=bpy.context.scene
 scene['review_status']='Static design review only; not rigged or animated.'
