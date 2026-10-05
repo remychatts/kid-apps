@@ -13,7 +13,9 @@ User-supplied visual references:
 - Head: https://blendswap.com/blend/13461
 - Simple quadrupedal body: https://blendswap.com/blend/14275
 
-These are direction references, not instructions to import or redistribute their assets. Create original geometry. If reference assets are ever reused, verify their licences and record attribution first. The body page lists CC-BY; the head page could not be retrieved during initial research.
+These are direction references, not instructions to import or redistribute their assets. Create original geometry. If reference assets are ever reused, verify their licences and record attribution first. The body page lists CC-BY. The head page could not be retrieved during initial research, but the user subsequently supplied `DOG_MODEL_V2.1.blend`. It contains a complete older character, with an embedded creator credit to Joel Sullivan. It was opened with script auto-execution disabled and inspected as a shape reference; no geometry, rig or textures were copied into this puppy.
+
+The user specifically requested that the head geometry move closer to that reference while retaining the first puppy's materials. The current revision has a taller rounded rectangular skull, fuller cheeks and nose bridge, a longer broad muzzle, and inset eyes with shaped eyelid rims. Keep the established tan, cream, toffee and dark-eye materials. This is still awaiting static-design approval.
 
 ## Intended production path after approval
 
