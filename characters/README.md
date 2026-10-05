@@ -26,8 +26,11 @@ After the static design is approved, prepare deformation topology and a skeleton
 Desired later behaviours:
 
 - Quiet gameplay: breathing, blinking, looking around, occasional ear twitch or scratch.
-- Success: small happy reactions; tail chase or backflip for larger celebrations.
+- Minor success: happy tail wag, play bow or little happy jump.
+- Major success: tail chase, backflip or ears standing tall in happy surprise, supported by an excited face and body movement.
 - Failure: a brief sympathetic ear/head droop, then encouragement and recovery.
+
+A gentle smile is the default during quiet gameplay and success. Failure reactions briefly soften it before returning to a reassuring smile; a smile or small nod alone is not a success reaction.
 
 See [the animation proposals](ANIMATION-PROPOSALS.md) for short movements in each category, approximate timings, body-part motion and the rig capabilities to evaluate before implementation.
 
