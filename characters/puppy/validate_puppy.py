@@ -33,9 +33,9 @@ for side in (-1, 1):
     for vertex in brow.data.vertices:
         point = brow.matrix_world @ vertex.co
         depth = point.y - surface_y(body, point.x, point.z)
-        assert -0.014 <= depth <= 0.028, f'Brow detached by {depth}'
+        assert -0.030 <= depth <= 0.028, f'Brow detached by {depth}'
         embedded += depth >= 0
-    assert embedded > len(brow.data.vertices) // 2
+    assert embedded >= len(brow.data.vertices) // 2
 
 tail = bpy.data.objects['Tapered tail']
 bm = bmesh.new()

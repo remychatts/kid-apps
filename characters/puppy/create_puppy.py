@@ -120,19 +120,46 @@ def merge_surface(parts):
 
 
 def surface_brow(side, mat, surface):
-    """Project the entire brow onto the actual forehead, with its back embedded."""
-    obj = oval('Surface brow '+str(side), (side*0.255,0,2.71), (0.135,0.020,0.030),mat,32,16)
+    """Build a tapered arched ribbon whose back is embedded in the forehead."""
     bpy.context.view_layer.update()
     surface.data.update()
     inv = surface.matrix_world.inverted()
-    for vertex in obj.data.vertices:
-        world = obj.matrix_world @ vertex.co
-        hit, location, normal, face = surface.ray_cast(inv @ Vector((world.x,-5,world.z)), Vector((0,1,0)))
-        if not hit:
-            raise RuntimeError(f'Brow projection missed forehead at {tuple(world)}')
-        forehead = surface.matrix_world @ location
-        vertex.co.y += forehead.y + 0.007
-    return obj
+    vertices, faces = [], []
+    along, across = 49, 13
+    layer_size = along*across
+    for layer in range(2):
+        for i in range(along):
+            u = -1 + 2*i/(along-1)
+            x = side*0.245 + 0.135*u
+            width = 0.018*math.sqrt(max(0.001,1-u*u))
+            for j in range(across):
+                v = -1 + 2*j/(across-1)
+                z = 2.742 + 0.048*(1-u*u) + width*v
+                hit, location, _, _ = surface.ray_cast(inv @ Vector((x,-5,z)), Vector((0,1,0)))
+                if not hit:
+                    raise RuntimeError('Brow projection missed forehead')
+                forehead = surface.matrix_world @ location
+                y = forehead.y + (0.015 if layer else -0.025-0.004*(1-v*v))
+                vertices.append((x,y,z))
+    for layer in range(2):
+        offset = layer*layer_size
+        for i in range(along-1):
+            for j in range(across-1):
+                a=offset+i*across+j
+                face=(a,a+across,a+across+1,a+1)
+                faces.append(face if layer==0 else tuple(reversed(face)))
+    boundary=list(range(across))
+    boundary += [i*across+across-1 for i in range(1,along)]
+    boundary += [(along-1)*across+j for j in range(across-2,-1,-1)]
+    boundary += [i*across for i in range(along-2,0,-1)]
+    for a,b in zip(boundary,boundary[1:]+boundary[:1]):
+        faces.append((a,b,b+layer_size,a+layer_size))
+    mesh=bpy.data.meshes.new('Arched brow mesh')
+    mesh.from_pydata(vertices,[],faces)
+    mesh.update()
+    obj=bpy.data.objects.new('Surface brow '+str(side),mesh)
+    bpy.context.collection.objects.link(obj)
+    return put(obj,obj.name,mat)
 
 
 def tapered_tail(mat):
