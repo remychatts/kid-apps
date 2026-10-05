@@ -29,6 +29,8 @@ Desired later behaviours:
 - Success: small happy reactions; tail chase or backflip for larger celebrations.
 - Failure: a brief sympathetic ear/head droop, then encouragement and recovery.
 
+See [the animation proposals](ANIMATION-PROPOSALS.md) for short movements in each category, approximate timings, body-part motion and the rig capabilities to evaluate before implementation.
+
 Layer compatible movements; full-body actions need protected sections (for example, land a backflip before switching). Vary ambient timing and avoid distracting the student. Respect reduced motion and suspend unnecessary rendering when hidden.
 
 ## Validation and future decisions
