@@ -1,6 +1,6 @@
 # Puppy animation proposals
 
-Proposed movements for the puppy described in [the character direction](README.md), using [the current static model](puppy/README.md) as the visual basis. These are requirements to review before rigging, not implemented clips or a commitment to build every movement. The aim is a warm, attentive companion whose reactions support the learner without competing with the lesson.
+Proposed movements for the puppy described in [the character direction](README.md), using [the current static model](puppy/README.md) as the visual basis. These describe the target movements, not implemented clips or a commitment to build every movement. The subsequently authorised [rig prototype](puppy/rig/README.md) provides controls, diagnostic poses and a coverage/limitations table for these requirements. The aim is a warm, attentive companion whose reactions support the learner without competing with the lesson.
 
 ## Timing and movement conventions
 

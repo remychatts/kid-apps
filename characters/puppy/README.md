@@ -2,7 +2,7 @@
 
 An original tan-and-cream cartoon puppy with a smooth rounded body, large head, floppy toffee-coloured ears and four planted paws. The head follows the uploaded reference’s geometry more closely while retaining the original materials: a taller, less spherical skull, sculpted cheeks and nose bridge, a longer broad cream muzzle, and eyes embedded in integrated facial surrounds. The floating eyelid rings have been removed; brows form higher tapered arches with solid depth: 0.30 Blender units buried behind the forehead and 0.09–0.095 in front, rather than thin surface strips. Roughly 76–77% of that depth is embedded. The depth direction is Blender Y; Blender Z is vertical. The tail is a single closed mesh which tapers continuously to its tip, without an end sphere. Proportions and expression remain open for review.
 
-**Stop here for user review. No skeleton, skin weights, morph targets or animation have been created.** The continuous body is a simplified sculpt-style mesh; it will need deformation-aware topology before rigging. Facial pieces and ears remain separate editable meshes.
+**This directory preserves the static design reference. The subsequently requested [rig prototype](rig/README.md) adds a skeleton, skin weights, morph targets and diagnostic poses in `rig/`.** The continuous body is a simplified sculpt-style mesh; it will need deformation-aware topology before rigging. Facial pieces and ears remain separate editable meshes.
 
 ## Files
 
@@ -35,4 +35,4 @@ Validation: the GLB was imported into a fresh Blender scene successfully, with 1
 
 Geometry regression checks: all 786 rear-half eye vertices must lie between the front and rear head surfaces. Brows must have at least 74% of their local depth buried, with their backs still inside the head. Front-face interiors are sampled as well as vertices, both in neutral and with ±0.01 units of front-to-back travel. The tail must be closed and taper continuously. Run `blender --background --disable-autoexec characters/puppy/puppy.blend --python characters/puppy/validate_puppy.py`.
 
-Rigging note: the depth test is not a guarantee for arbitrary motion across the forehead. Small free X/Z translations can still meet the steeply curved head surface; brow motion across the face should follow the forehead, with the actual rig poses checked for intersections. There is still no rig or animation in this review asset.
+Rigging note: the depth test is not a guarantee for arbitrary motion across the forehead. Small free X/Z translations can still meet the steeply curved head surface; brow motion across the face should follow the forehead, with the actual rig poses checked for intersections. This static reference remains unrigged; see the separate [rig prototype](rig/README.md) for the surface-following brow controls and deformation checks.
