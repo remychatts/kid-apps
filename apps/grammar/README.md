@@ -26,9 +26,10 @@ does not change its reward.
 
 Independent first answers earn one point and increase the streak. Mistakes reset
 the streak immediately; a corrected or help-supported answer starts at one and
-earns a smaller reward without a point. Every multiple of ten brings a randomly
-chosen confetti, fireworks or ribbon celebration with applause. Celebrations are
-brief and skippable, and become still badges with reduced motion enabled.
+earns a smaller reward without a point. Incorrect guesses play a descending
+failure cue when sound is on. Every multiple of ten brings a large congratulations
+dialog with confetti, fireworks and cheering. The student can dismiss it when
+ready; it becomes a still badge with reduced motion enabled.
 
 Settings and per-level best streaks are saved under `word-detective:v1` in
 localStorage. Records are saved immediately; beating the previous record earns a
@@ -41,9 +42,10 @@ precaches them for offline use; the app makes no dynamic data requests.
 
 ## Audio
 
-The three MP3 applause recordings in `public/applause/` are copied unchanged from
-`apps/trumpet-practice/public/assets/applause_1/applause/`, as requested. They retain
-their existing Mixkit filenames. Small rewards use short synthesised chimes.
+The cheering clip in `public/cheering.mp3` is copied from
+`apps/times-traveller/public/cheering.mp3`. The three MP3 recordings in
+`public/applause/` remain from the practice app's asset pool. Regular rewards and
+incorrect guesses use short synthesised sounds.
 
 `noun-pool.json` preserves the ten original categories and their ten target nouns.
 `sentence-pool.json` contains the corresponding 100 sentence entries, with extra

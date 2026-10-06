@@ -35,7 +35,12 @@ import {
   STORAGE_KEY,
   useHelp,
 } from "./model.ts";
-import { playApplause, playChime, stopApplause } from "./audio.ts";
+import {
+  playCheering,
+  playChime,
+  playIncorrect,
+  stopCheering,
+} from "./audio.ts";
 import type { Entry, Game, Settings, Word, WordClass } from "./types.ts";
 
 const CLASS_LABELS: Record<WordClass, string> = {
@@ -81,11 +86,13 @@ function Modal({
   onClose,
   children,
   wide = false,
+  className = "",
 }: {
   title: string;
   onClose: () => void;
   children: ReactNode;
   wide?: boolean;
+  className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const headingId = useId();
@@ -121,7 +128,7 @@ function Modal({
   return (
     <dialog
       ref={ref}
-      className={`modal ${wide ? "modal-wide" : ""}`}
+      className={`modal ${wide ? "modal-wide" : ""} ${className}`}
       aria-labelledby={headingId}
       onKeyDown={wrapFocus}
       onCancel={(event) => {
@@ -263,7 +270,7 @@ function FieldGuide({ classes }: { classes: WordClass[] }) {
   );
 }
 
-/** Provides a short, skippable milestone with three non-flashing visual styles. */
+/** Gives every ten-answer streak a grand finale that stays until dismissed. */
 function Celebration({
   streak,
   reducedMotion,
@@ -273,19 +280,15 @@ function Celebration({
   reducedMotion: boolean;
   onClose: () => void;
 }) {
-  const style = useMemo(
-    () => ["confetti", "fireworks", "ribbons"][Math.floor(Math.random() * 3)],
-    [],
-  );
   const particles = useMemo(
     () =>
       Array.from(
-        { length: 42 },
+        { length: 80 },
         (_, index) =>
           ({
             "--x": `${(index * 37) % 100}%`,
-            "--y": `${(index * 23) % 90}%`,
-            "--delay": `${(index % 7) * 0.07}s`,
+            "--y": `${12 + ((index * 23) % 72)}%`,
+            "--delay": `${(index % 10) * 0.13}s`,
             "--turn": `${index * 47}deg`,
             "--colour": ["#f9c75c", "#5cc9b5", "#f48f9d", "#8aaceb", "#d1a2f1"][
               index % 5
@@ -294,32 +297,39 @@ function Celebration({
       ),
     [],
   );
-  useEffect(() => {
-    const timer = window.setTimeout(onClose, 4200);
-    return () => {
-      window.clearTimeout(timer);
-      stopApplause();
-    };
-  }, [onClose]);
   return (
-    <Modal title="Brilliant detective work!" onClose={onClose}>
-      <div className={`celebration ${style} ${reducedMotion ? "still" : ""}`}>
+    <Modal
+      title="Congratulations, Word Detective!"
+      onClose={onClose}
+      className="celebration-dialog"
+    >
+      <div className={`celebration ${reducedMotion ? "still" : ""}`}>
         {!reducedMotion && (
-          <div className="particles" aria-hidden="true">
-            {particles.map((particle, i) => (
-              <i key={i} style={particle} />
-            ))}
-          </div>
+          <>
+            <div className="particles confetti" aria-hidden="true">
+              {particles.map((particle, i) => (
+                <i key={i} style={particle} />
+              ))}
+            </div>
+            <div className="particles fireworks" aria-hidden="true">
+              {particles.slice(0, 28).map((particle, i) => (
+                <i key={i} style={particle} />
+              ))}
+            </div>
+          </>
         )}
         <div className="milestone-badge">
           <Trophy size={46} />
           <strong>{streak}</strong>
           <span>IN A ROW</span>
         </div>
-        <h3>Case-cracking streak!</h3>
-        <p>You’ve reached a streak of {streak}. What a sharp eye!</p>
+        <h3>Incredible detective work!</h3>
+        <p>
+          You cracked {streak} cases in a row. Take a bow — you’ve earned it!
+          You can finish here or keep investigating.
+        </p>
         <button className="primary-button" onClick={onClose}>
-          Keep investigating <ArrowRight size={18} />
+          Back to the game <ArrowRight size={18} />
         </button>
       </div>
     </Modal>
@@ -363,7 +373,7 @@ export default function App() {
     } catch {
       setSaved(false);
     }
-    if (!game.settings.sound) stopApplause();
+    if (!game.settings.sound) stopCheering();
   }, [game.settings, game.bests]);
   useEffect(() => {
     if (q.completed && !panel && !milestone) nextRef.current?.focus();
@@ -374,22 +384,22 @@ export default function App() {
     return () => window.clearTimeout(timer);
   }, [record, panel, milestone]);
   useEffect(() => {
-    /** Stops applause if the tab is hidden mid-celebration. */
+    /** Stops cheering if the tab is hidden mid-celebration. */
     const stopWhenHidden = () => {
-      if (document.hidden) stopApplause();
+      if (document.hidden) stopCheering();
     };
     document.addEventListener("visibilitychange", stopWhenHidden);
     return () => {
       document.removeEventListener("visibilitychange", stopWhenHidden);
-      stopApplause();
+      stopCheering();
     };
   }, []);
 
   /** Celebrates a completed personal best, including streaks ended by help or a level change. */
-  function celebrateRecord(result: Game) {
+  function celebrateRecord(result: Game, withSound = true) {
     if (!result.endedRecord) return;
     setRecord(result.endedRecord);
-    if (result.settings.sound) playChime();
+    if (withSound && result.settings.sound) playChime();
   }
 
   /** Applies one answer atomically; visual and audio rewards follow the same first-attempt rule. */
@@ -397,15 +407,14 @@ export default function App() {
     if (q.completed) return;
     const result = answerQuestion(game, answer);
     setGame(result);
-    celebrateRecord(result);
+    celebrateRecord(result, false);
     if (result.question.completed) {
       const first = !q.attempted && !q.usedHelp;
-      if (game.settings.sound) playChime(!first);
       if (first && result.streak % 10 === 0) {
         setMilestone(result.streak);
-        if (game.settings.sound) playApplause();
-      }
-    }
+        if (game.settings.sound) playCheering();
+      } else if (game.settings.sound) playChime(!first);
+    } else if (game.settings.sound) playIncorrect();
   }
 
   /** Inspects all word classes without changing the current sentence or question. */
@@ -437,7 +446,7 @@ export default function App() {
   /** Dismisses both the visual celebration and its long audio reward. */
   function dismissMilestone() {
     setMilestone(null);
-    stopApplause();
+    stopCheering();
   }
 
   return (
@@ -806,7 +815,7 @@ export default function App() {
           <label className="toggle-row">
             <span>
               <strong>Reward sounds</strong>
-              <small>Chimes and applause</small>
+              <small>Answer sounds and cheering</small>
             </span>
             <input
               type="checkbox"
