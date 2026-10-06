@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare Q1–Q4's fresh-imported GLB deformation with the editable Blender draft.
+"""Compare fresh-imported puppy GLB clips with their editable Blender drafts.
 
 Examples: ./characters/puppy/validate_quiet.py
   blender --background --factory-startup --threads 6 --python-exit-code 1
@@ -80,12 +80,17 @@ def main():
         type=Path,
         default=Path(__file__).resolve().parent / "animations",
     )
+    parser.add_argument(
+        "--asset-name",
+        default="puppy-quiet",
+        help="Asset stem; use puppy-library for the full library",
+    )
     args = parser.parse_args(
         sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
     )
     directory = args.animation_dir.resolve()
     clips = json.loads((directory / "clips.json").read_text())
-    document, binary = read_glb(directory / "puppy-quiet.glb")
+    document, binary = read_glb(directory / f"{args.asset_name}.glb")
     assert [animation["name"] for animation in document["animations"]] == [
         clip["id"] for clip in clips
     ]
@@ -97,7 +102,7 @@ def main():
         for node in document["nodes"]
         if "mesh" in node
     }
-    bpy.ops.wm.open_mainfile(filepath=str(directory / "puppy-quiet.blend"))
+    bpy.ops.wm.open_mainfile(filepath=str(directory / f"{args.asset_name}.blend"))
     scene = bpy.context.scene
     meshes = [
         obj
@@ -113,6 +118,8 @@ def main():
                 0,
                 0.4 if clip["id"] == "Q2" else clip["duration"] * 0.5,
                 clip["duration"] * 0.315,
+                clip.get("sample", clip["duration"] * 0.5),
+                1.307 if clip["id"] == "MAJ2" else clip["duration"] * 0.63,
                 clip["duration"],
             }
         )

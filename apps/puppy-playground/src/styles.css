@@ -92,7 +92,9 @@ header > p:last-child {
   flex-direction: column;
   border: 1px solid #dfd3bd;
   border-radius: 28px;
-  position: relative;
+  position: sticky;
+  top: 18px;
+  align-self: start;
   background: radial-gradient(ellipse at 45% 35%, #fffaf0, #ece2cf);
   overflow: hidden;
   min-width: 0;
@@ -373,5 +375,40 @@ footer {
   }
   h1 span {
     display: none;
+  }
+}
+
+/* Category selection keeps the complete library easy to scan on touch screens. */
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.categories button {
+  border: 1px solid #dfd5c3;
+  border-radius: 12px;
+  background: #fffcf5;
+  color: #625743;
+  padding: 8px 12px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+.categories button[aria-pressed="true"] {
+  background: #647e5d;
+  color: #fff;
+  border-color: #647e5d;
+}
+.queued {
+  display: block;
+  font-size: 0.75rem;
+  color: #6d7656;
+  max-width: 230px;
+  margin-top: 5px;
+}
+@media (max-width: 850px) {
+  .stage-panel {
+    position: relative;
+    top: auto;
   }
 }
