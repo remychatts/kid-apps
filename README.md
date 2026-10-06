@@ -2,7 +2,7 @@
 
 Everything here is vibe-coded.
 
-A monorepo for twenty playful, family-friendly web apps and the catalogue that links them together. Every app is independently runnable and installable, while one root build assembles the complete static GitHub Pages site.
+A monorepo for playful, family-friendly web apps and the catalogue that links them together. Every app is independently runnable and installable, while one root build assembles the complete static GitHub Pages site.
 
 ## Apps
 
@@ -20,6 +20,7 @@ A monorepo for twenty playful, family-friendly web apps and the catalogue that l
 | [Pet Chooser](apps/pet-chooser/)                           | Matches players with a companion from a cast of pets.                             | December 2025                        |
 | [Penguin Peak!](apps/penguin-slide/)                       | Slides a penguin down an obstacle-filled icy hill.                                | August 2026                          |
 | [Practice Stars](apps/trumpet-practice/)                   | Builds practice streaks and unlocks reward pictures.                              | August 2026                          |
+| [Puppy Playground](apps/puppy-playground/)                 | Previews the puppy’s four quiet-animation drafts from different viewpoints.       | October 2026                         |
 | [Probability Explorer](apps/probability-explorer/)         | Visualises repeated samples as live histograms.                                   | April 2025                           |
 | [Rounding Rally](apps/rounding-game/)                      | A visual estimation and rounding game.                                            | August 2026                          |
 | [Snake Species Visualiser](apps/snake-species-visualiser/) | Makes snake-species statistics tangible as a grid.                                | April 2026                           |

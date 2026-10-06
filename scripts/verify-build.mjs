@@ -44,7 +44,7 @@ for (const id of allBuildIds) {
     "utf8",
   );
   const bundles = scopedFiles.filter((file) =>
-    /^assets\/.*\.(?:css|js)$/.test(file),
+    /^assets\/.*\.(?:css|js|glb)$/.test(file),
   );
   if (
     !scopedFiles.includes("index.html") ||

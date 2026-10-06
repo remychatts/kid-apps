@@ -1,0 +1,58 @@
+{
+  "fps": 30,
+  "sole_samples": 186,
+  "maximum_planted_sole_drift": 2.7324439318317546e-7,
+  "clips": [
+    {
+      "id": "neutral",
+      "label": "Neutral stance",
+      "duration": 0.2,
+      "group": "Rest",
+      "startFrame": 1,
+      "endFrame": 7
+    },
+    {
+      "id": "Q1",
+      "label": "Soft breathing",
+      "duration": 4.0,
+      "group": "Quiet",
+      "loop": true,
+      "startFrame": 9,
+      "endFrame": 129
+    },
+    {
+      "id": "Q2",
+      "label": "Slow blink",
+      "duration": 1.2,
+      "group": "Quiet",
+      "startFrame": 131,
+      "endFrame": 167
+    },
+    {
+      "id": "Q3-left",
+      "label": "Curious tilt \u00b7 left",
+      "duration": 2.5,
+      "group": "Quiet",
+      "startFrame": 169,
+      "endFrame": 244
+    },
+    {
+      "id": "Q3-right",
+      "label": "Curious tilt \u00b7 right",
+      "duration": 2.5,
+      "group": "Quiet",
+      "startFrame": 246,
+      "endFrame": 321
+    },
+    {
+      "id": "Q4",
+      "label": "Look around, then attend",
+      "duration": 3.5,
+      "group": "Quiet",
+      "startFrame": 323,
+      "endFrame": 428
+    }
+  ],
+  "glb_bytes": 2792492,
+  "passed": true
+}

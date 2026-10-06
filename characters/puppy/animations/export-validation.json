@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "blender": "5.1.2",
+  "clips": {
+    "neutral": [0, 0.063, 0.1, 0.2],
+    "Q1": [0, 1.26, 2.0, 4.0],
+    "Q2": [0, 0.378, 0.4, 1.2],
+    "Q3-left": [0, 0.7875, 1.25, 2.5],
+    "Q3-right": [0, 0.7875, 1.25, 2.5],
+    "Q4": [0, 1.1025, 1.75, 3.5]
+  },
+  "maximum_round_trip_vertex_error": 0.0005799779901280999,
+  "comparison": "symmetric nearest vertex; fresh import per clip; endpoints and between-key samples"
+}

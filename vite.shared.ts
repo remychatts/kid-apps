@@ -142,7 +142,7 @@ export function createAppConfig({
           skipWaiting: true,
           maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
           globPatterns: [
-            "**/*.{html,js,css,json,svg,png,jpg,jpeg,webp,woff,woff2,mp3,webmanifest}",
+            "**/*.{html,js,css,json,svg,png,jpg,jpeg,webp,woff,woff2,mp3,webmanifest,glb}",
           ],
           navigateFallback: "index.html",
           navigateFallbackDenylist:

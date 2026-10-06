@@ -1,0 +1,377 @@
+/* Warm, responsive review controls with a generous puppy stage and touch targets. */
+@import "@fontsource-variable/nunito";
+@import "@fontsource-variable/fredoka";
+:root {
+  font-family: "Nunito Variable", sans-serif;
+  color: #403629;
+  background: #f6efe4;
+  font-synthesis: none;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+select,
+input {
+  font: inherit;
+}
+button,
+a,
+select,
+input {
+  touch-action: manipulation;
+}
+button {
+  cursor: pointer;
+  min-height: 46px;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.48;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid #456e51;
+  outline-offset: 4px;
+}
+main {
+  max-width: 1240px;
+  padding: 30px 32px 20px;
+  margin: auto;
+}
+header {
+  position: relative;
+  margin-bottom: 26px;
+}
+.back {
+  color: #665b4b;
+  font-size: 0.85rem;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 26px;
+}
+.eyebrow {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.72rem;
+  color: #6d7656;
+  margin: 0 0 8px;
+}
+h1,
+h2 {
+  font-family: "Fredoka Variable", sans-serif;
+  font-weight: 500;
+  margin: 0;
+}
+h1 {
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  letter-spacing: -0.035em;
+}
+h1 span {
+  font-size: 0.65em;
+  margin-left: 14px;
+}
+header > p:last-child {
+  font-size: 1.05rem;
+  color: #746a59;
+  margin: 10px 0 0;
+}
+.playground {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(340px, 1fr);
+  gap: 30px;
+}
+.stage-panel {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #dfd3bd;
+  border-radius: 28px;
+  position: relative;
+  background: radial-gradient(ellipse at 45% 35%, #fffaf0, #ece2cf);
+  overflow: hidden;
+  min-width: 0;
+}
+.badge {
+  position: absolute;
+  top: 20px;
+  left: 22px;
+  padding: 7px 12px;
+  background: #fffaf0c9;
+  border-radius: 20px;
+  color: #786b53;
+  font-size: 0.75rem;
+  font-weight: 800;
+  z-index: 1;
+}
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 440px;
+  height: 440px;
+  width: 100%;
+}
+.stage canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.stage-message {
+  position: absolute;
+  inset: 100px 24px auto;
+  text-align: center;
+  padding: 18px;
+  border-radius: 14px;
+  background: #fffaf0;
+  max-width: 420px;
+  margin: auto;
+}
+.stage-message button {
+  display: block;
+  margin: 12px auto 0;
+  border: 1px solid #d0c4af;
+  border-radius: 12px;
+  background: white;
+  padding: 8px 14px;
+}
+.stage-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 22px;
+}
+.stage-bottom p {
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+.loop {
+  font-weight: 500;
+  color: #776b5a;
+}
+.reset {
+  border: 1px solid #d2c5ae;
+  border-radius: 14px;
+  background: #fffaf0;
+  padding: 8px 13px;
+  white-space: nowrap;
+  color: #544934;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+.views {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-top: 1px solid #ddcfb8;
+  margin: 16px 22px 0;
+  padding: 14px 0 18px;
+}
+.views legend {
+  float: left;
+  font-size: 0.75rem;
+  color: #7b705e;
+  padding-top: 14px;
+  margin-right: 7px;
+}
+.views button {
+  border: 0;
+  background: transparent;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  color: #625743;
+}
+.views button[aria-pressed="true"] {
+  background: #fffaf0;
+  box-shadow: 0 1px 4px #6c563418;
+  color: #403629;
+  font-weight: 900;
+}
+.controls {
+  padding: 12px 0;
+}
+.controls h2 {
+  font-size: 1.9rem;
+}
+.hint {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #7c725f;
+  margin: 9px 0 20px;
+}
+.clip-list {
+  display: grid;
+  gap: 10px;
+}
+.clip {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  gap: 13px;
+  padding: 16px 14px;
+  border: 1px solid #dfd5c3;
+  border-radius: 17px;
+  color: #403629;
+  background: #fffcf5;
+}
+.clip:hover:enabled {
+  border-color: #788c6a;
+  background: #fffef9;
+}
+.clip[aria-pressed="true"] {
+  border-color: #647e5d;
+  background: #edf3e5;
+  box-shadow: 0 0 0 1px #647e5d;
+}
+.clip-id {
+  background: #ece4d4;
+  padding: 9px 7px;
+  border-radius: 11px;
+  font-weight: 900;
+  font-size: 0.75rem;
+  min-width: 35px;
+  text-align: center;
+}
+.clip strong {
+  font-size: 0.97rem;
+  display: block;
+  line-height: 1.25;
+}
+.clip small {
+  display: block;
+  margin-top: 5px;
+  line-height: 1.4;
+  font-size: 0.75rem;
+  color: #837765;
+}
+.duration {
+  margin-left: auto;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: #837765;
+}
+.options {
+  margin-top: 22px;
+  border-top: 1px solid #dfd5c3;
+  padding-top: 18px;
+}
+.options > label:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+select {
+  background: #fffcf5;
+  border: 1px solid #d7cbb5;
+  padding: 9px 12px;
+  border-radius: 11px;
+  max-width: 220px;
+  min-height: 44px;
+  color: #403629;
+}
+.motion {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.8rem;
+  margin-top: 14px;
+  min-height: 44px;
+}
+.motion input {
+  width: 20px;
+  height: 20px;
+  accent-color: #647e5d;
+}
+footer {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #968874;
+  margin: 24px 0 0;
+}
+@media (max-width: 850px) {
+  main {
+    padding: 22px 18px;
+  }
+  .playground {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .stage {
+    position: relative;
+    flex: 1;
+    min-height: 440px;
+    height: 400px;
+    min-height: 400px;
+  }
+  .controls {
+    padding: 0 4px;
+  }
+  .clip-list {
+    grid-template-columns: 1fr 1fr;
+  }
+  .clip {
+    padding: 14px 10px;
+    gap: 8px;
+  }
+  .clip small {
+    display: none;
+  }
+  header {
+    margin-bottom: 20px;
+  }
+  .back {
+    margin-bottom: 18px;
+  }
+}
+@media (max-width: 500px) {
+  .clip-list {
+    grid-template-columns: 1fr;
+  }
+  .clip small {
+    display: block;
+  }
+  .stage {
+    position: relative;
+    flex: 1;
+    min-height: 440px;
+    height: 340px;
+    min-height: 340px;
+  }
+  .stage-bottom {
+    padding: 0 14px;
+  }
+  .stage-bottom p {
+    font-size: 0.8rem;
+  }
+  .views {
+    margin-left: 14px;
+    margin-right: 14px;
+  }
+  .duration {
+    font-size: 0.72rem;
+  }
+  .badge {
+    font-size: 0.67rem;
+    top: 14px;
+    left: 14px;
+  }
+  .reset {
+    font-size: 0.75rem;
+    padding: 8px 10px;
+  }
+  h1 span {
+    display: none;
+  }
+}
