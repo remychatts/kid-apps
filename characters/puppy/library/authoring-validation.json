@@ -1,0 +1,169 @@
+{
+  "passed": true,
+  "fps": 60,
+  "clips": [
+    {
+      "id": "neutral",
+      "maximum_contact_drift": 0,
+      "maximum_ik_error": 3.746093836419742e-7,
+      "minimum_floor_clearance": 0.0018926907796412706,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 2.9183530807495117,
+      "maximum_radius": 1.7293133735656738
+    },
+    {
+      "id": "Q1",
+      "maximum_contact_drift": 2.7324439318317546e-7,
+      "maximum_ik_error": 4.969040155569632e-7,
+      "minimum_floor_clearance": 0.0018925567856058478,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 2.9263532161712646,
+      "maximum_radius": 1.7293133735656738
+    },
+    {
+      "id": "Q2",
+      "maximum_contact_drift": 0,
+      "maximum_ik_error": 3.746093836419742e-7,
+      "minimum_floor_clearance": 0.0018926907796412706,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 2.9183530807495117,
+      "maximum_radius": 1.7293133735656738
+    },
+    {
+      "id": "Q3-left",
+      "maximum_contact_drift": 0,
+      "maximum_ik_error": 3.746093836419742e-7,
+      "minimum_floor_clearance": 0.0018926907796412706,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 2.919128894805908,
+      "maximum_radius": 1.7293133735656738
+    },
+    {
+      "id": "Q3-right",
+      "maximum_contact_drift": 0,
+      "maximum_ik_error": 3.746093836419742e-7,
+      "minimum_floor_clearance": 0.0018926907796412706,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 2.9186978340148926,
+      "maximum_radius": 1.7293133735656738
+    },
+    {
+      "id": "Q4",
+      "maximum_contact_drift": 0,
+      "maximum_ik_error": 3.746093836419742e-7,
+      "minimum_floor_clearance": 0.0018926907796412706,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 2.932892322540283,
+      "maximum_radius": 1.7293133735656738
+    },
+    {
+      "id": "Q5-left",
+      "maximum_contact_drift": 0,
+      "maximum_ik_error": 3.746093836419742e-7,
+      "minimum_floor_clearance": 0.0018926907796412706,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 2.9183530807495117,
+      "maximum_radius": 1.7293133735656738
+    },
+    {
+      "id": "Q5-right",
+      "maximum_contact_drift": 0,
+      "maximum_ik_error": 3.746093836419742e-7,
+      "minimum_floor_clearance": 0.0018926907796412706,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 2.9183530807495117,
+      "maximum_radius": 1.7293133735656738
+    },
+    {
+      "id": "Q6",
+      "maximum_contact_drift": 7.633209817050033e-7,
+      "maximum_ik_error": 0.00011038902912966742,
+      "minimum_floor_clearance": 0.0018922570161521435,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 2.9183530807495117,
+      "maximum_radius": 1.7293133735656738
+    },
+    {
+      "id": "MIN1",
+      "maximum_contact_drift": 0,
+      "maximum_ik_error": 3.746093836419742e-7,
+      "minimum_floor_clearance": 0.0018926907796412706,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 2.9183530807495117,
+      "maximum_radius": 1.7293133735656738
+    },
+    {
+      "id": "MIN2",
+      "maximum_contact_drift": 1.1263013387741806e-6,
+      "maximum_ik_error": 1.1321941106683985e-6,
+      "minimum_floor_clearance": 0.0018918405985459685,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 2.9183530807495117,
+      "maximum_radius": 1.8404375694063537
+    },
+    {
+      "id": "MIN3",
+      "maximum_contact_drift": 4.824502638745927e-7,
+      "maximum_ik_error": 6.42653067494864e-7,
+      "minimum_floor_clearance": 0.0018925863550975919,
+      "minimum_airborne_clearance": 0.035746488720178604,
+      "maximum_height": 3.118149757385254,
+      "maximum_radius": 1.7649208307266235
+    },
+    {
+      "id": "MAJ1",
+      "maximum_contact_drift": 9.716154154945146e-7,
+      "maximum_ik_error": 1.0192056578485659e-6,
+      "minimum_floor_clearance": 0.0018923783209174871,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 2.9183530807495117,
+      "maximum_radius": 1.7759167167713266
+    },
+    {
+      "id": "MAJ2",
+      "maximum_contact_drift": 6.738554867860683e-7,
+      "maximum_ik_error": 4.13232601535196e-6,
+      "minimum_floor_clearance": 0.0018925401382148266,
+      "minimum_airborne_clearance": 0.07439637929201126,
+      "maximum_height": 4.150841236114502,
+      "maximum_radius": 2.0181383658970815
+    },
+    {
+      "id": "MAJ3",
+      "maximum_contact_drift": 5.94566134949223e-7,
+      "maximum_ik_error": 5.339525004377638e-7,
+      "minimum_floor_clearance": 0.0018925713375210762,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 3.723686695098877,
+      "maximum_radius": 1.8603478811139615
+    },
+    {
+      "id": "F1",
+      "maximum_contact_drift": 0,
+      "maximum_ik_error": 3.746093836419742e-7,
+      "minimum_floor_clearance": 0.0018926907796412706,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 2.9183530807495117,
+      "maximum_radius": 1.7293133804897647
+    },
+    {
+      "id": "F2",
+      "maximum_contact_drift": 0,
+      "maximum_ik_error": 3.746093836419742e-7,
+      "minimum_floor_clearance": 0.0018926907796412706,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 2.9191291332244873,
+      "maximum_radius": 1.7293133735656738
+    },
+    {
+      "id": "F3",
+      "maximum_contact_drift": 2.6226281822340047e-7,
+      "maximum_ik_error": 5.607273495860928e-7,
+      "minimum_floor_clearance": 0.0018926013726741076,
+      "minimum_airborne_clearance": null,
+      "maximum_height": 2.9183530807495117,
+      "maximum_radius": 1.7293133735656738
+    }
+  ],
+  "glb_bytes": 5909820
+}

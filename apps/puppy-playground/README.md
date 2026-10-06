@@ -1,8 +1,10 @@
 # Puppy Playground
 
-A small Vite, TypeScript and React test app for the [Q1–Q4 puppy drafts](../../characters/puppy/animations/README.md). It displays the neutral smiling puppy on load. Click to try breathing, slow blink, either curious head tilt or look-around-and-attend. Breathing loops; the other gestures return to neutral. The Neutral stance button stops a preview with a short blend.
+A Vite, TypeScript and React review app for the [complete puppy animation draft library](../../characters/puppy/library/README.md). It starts with the neutral smiling puppy. Choose Quiet moments, Small wins, Big celebrations or Try again to preview all proposed movements, including left/right tilt and ear-twitch variants. Breathing loops; other movements recover to neutral.
 
-Use the front, side and three-quarter views and half-speed playback to inspect the face, ears and grounded paws. The app follows the system reduced-motion preference; ticking Enable motion previews explicitly enables review. Rendering pauses while hidden, resumes in neutral, and sleeps once the puppy is resting. Loading and WebGL errors have accessible text fallbacks.
+Requests made during a scratch, jump, chase or flip wait until the protected support/landing section finishes. Only the latest click is retained and displayed as “Next”. The Neutral stance button follows the same rule. Three-quarter, front and side views, half-speed playback and automatic framing help inspect the face, ears, grounded paws and airborne movements.
+
+The app follows the system reduced-motion preference; ticking Enable motion previews explicitly enables review. Rendering pauses while hidden, resumes in neutral, and sleeps while resting. Loading and WebGL errors have accessible text fallbacks.
 
 ```sh
 npm run dev -- puppy-playground
@@ -10,6 +12,6 @@ just dev puppy-playground
 just ci
 ```
 
-The app uses the repository's shared dependency tree, registry and PWA configuration. Vite imports the GLB directly from the character animation directory as a content-hashed local asset. Workbox precaches it with the complete shell, so the puppy remains available offline. No remote assets or dynamic-data caches are used. URLs remain relative for GitHub Pages subdirectories.
+Shared dependencies, registry metadata and PWA behaviour remain at repository level. The content-hashed local GLB is precached with the complete application shell for offline use beneath any static-server path. No remote assets or dynamic-data caches are used.
 
-`tests/animations.test.mjs` loads the real exported file through Three.js and tests clip timing, restored neutral poses, planted paws, full blink closure and the two tilt variants. The Blender authoring source and fresh-import validation are documented with the animation assets. Oldest-iPad performance and final visual approval remain future review work.
+The tests load actual GLBs through Three.js: the original Q1–Q4 regression suite plus all 18 library clips, neutral recovery, planted contacts, airborne clearance, chase stance stability and encouraging expressions. Playback policy tests cover safe interruption and latest-request queuing. Blender source, render previews and fresh-import validation accompany the assets. Final visual approval and oldest-iPad performance remain review work.

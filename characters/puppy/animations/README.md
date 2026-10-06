@@ -1,6 +1,6 @@
 # Quiet animation drafts: Q1–Q4
 
-The existing puppy rig now has the first four quiet gestures from the [proposals](../../ANIMATION-PROPOSALS.md), with a smiling neutral entry and recovery. These are drafts for review, not the larger success/failure library.
+The existing puppy rig now has the first four quiet gestures from the [proposals](../../ANIMATION-PROPOSALS.md), with a smiling neutral entry and recovery. These original review samples are preserved. The [full draft library](../library/README.md) now extends them with the remaining proposed movements and is the asset used by the web app.
 
 | Clip                   | Timing        | Draft behaviour                                                                                                                     |
 | ---------------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
@@ -16,7 +16,7 @@ Left/right mean the puppy's own side. The torso and paws stay facing forward. Ea
 
 - `puppy-quiet.blend`: editable IK rig and central facial sliders; one named timeline with clip-start markers, opened at neutral frame 1.
 - `puppy-quiet.glb`: one shared mesh/skin with six named bone-and-morph clips, including neutral and both Q3 variants. No cameras, lights, images or runtime Blender constraints.
-- `clips.json`: names, timings and authoring frame ranges used by the test app.
+- `clips.json`: names, timings and authoring frame ranges for these original samples.
 - `authoring-validation.json`: every authored frame checked for finite body geometry, floor penetration and planted sole drift (186 sole vertices, maximum drift below 0.000001 units).
 - `export-validation.json`: fresh GLB import for each clip, checked against the editable source at endpoints, extremes and between-frame samples. Maximum surface-vertex discrepancy is approximately 0.00058 units.
 - `*-hero.png`, `*-front.png`, `*-side.png`: baked review poses from three viewpoints.

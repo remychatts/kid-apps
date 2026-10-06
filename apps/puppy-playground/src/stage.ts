@@ -1,7 +1,10 @@
 /** Renders the baked puppy clips, with demand rendering and a neutral rest pose. */
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import puppyUrl from "../../../characters/puppy/animations/puppy-quiet.glb?url";
+import puppyUrl from "../../../characters/puppy/library/puppy-library.glb?url";
+
+import library from "../../../characters/puppy/library/clips.json";
+import { createPlaybackQueue } from "./playback";
 
 export type View = "hero" | "front" | "side";
 export type Stage = {
@@ -16,7 +19,7 @@ export type Stage = {
 export function createStage(
   host: HTMLDivElement,
   onReady: (names: string[]) => void,
-  onChange: (name: string) => void,
+  onChange: (name: string, pending: string | null) => void,
   onError: (message: string) => void,
 ): Stage {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -58,6 +61,8 @@ export function createStage(
   let action: THREE.AnimationAction | undefined;
   const clips = new Map<string, THREE.AnimationClip>();
   let active = "neutral";
+  let view: View = "hero";
+  const queue = createPlaybackQueue(library);
   let motionAllowed = true;
   let disposed = false;
   let request = 0;
@@ -74,13 +79,16 @@ export function createStage(
     previous = now;
     if (mixer) {
       mixer.update(delta * speed);
+      const next = queue.take(active, action?.time ?? 0);
+      if (next) start(next);
       if (outgoing && mixer.time >= fadingUntil) {
         outgoing.stop();
         outgoing = undefined;
+        setView(view);
       }
     }
     renderer.render(scene, camera);
-    if (active !== "neutral" || outgoing) request = requestAnimationFrame(draw);
+    if (active !== "neutral" || outgoing) invalidate();
     else previous = 0;
   }
 
@@ -90,8 +98,17 @@ export function createStage(
       request = requestAnimationFrame(draw);
   }
 
-  /** Blends quiet gestures from their neutral entry and returns completed clips to rest. */
+  /** Defers requests until a full-body clip has support, retaining only the latest click. */
   function play(name: string) {
+    if (!mixer || !clips.has(name) || (!motionAllowed && name !== "neutral"))
+      return;
+    const next = queue.request(name, active, action?.time ?? 0);
+    if (next) start(next);
+    else onChange(active, queue.pending);
+  }
+
+  /** Blends a safe new action from its neutral entry and updates the review framing. */
+  function start(name: string) {
     if (!mixer || !clips.has(name) || (!motionAllowed && name !== "neutral"))
       return;
     if (outgoing) outgoing.stop();
@@ -112,19 +129,46 @@ export function createStage(
     }
     action = next;
     active = name;
-    onChange(name);
+    onChange(name, queue.pending);
+    setView(view);
     invalidate();
   }
 
   /** Frames the complete puppy from one of the three review viewpoints. */
-  function setView(view: View) {
+  function setView(nextView: View) {
+    view = nextView;
     const positions: Record<View, [number, number, number]> = {
       hero: [4.6, 3.3, 6.9],
       front: [0, 3.0, 8.3],
       side: [8.3, 2.9, 0],
     };
-    camera.position.set(...positions[view]);
-    camera.lookAt(0, 1.5, 0);
+    const bounds = library.find((clip) => clip.id === active)!;
+    // Keep taller outgoing poses inside the stage throughout the return blend.
+    const fadingBounds = library.find(
+      (clip) => clip.id === outgoing?.getClip().name,
+    );
+    const stageHeight = Math.max(
+      bounds.stageHeight,
+      fadingBounds?.stageHeight ?? 0,
+    );
+    const stageRadius = Math.max(
+      bounds.stageRadius,
+      fadingBounds?.stageRadius ?? 0,
+    );
+    const height = stageHeight + 0.35;
+    const width = stageRadius * 2 + 0.3;
+    const distance =
+      (0.65 * Math.max(height, width / Math.max(0.6, camera.aspect))) /
+      Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    const target = new THREE.Vector3(0, stageHeight / 2, 0);
+    camera.position.copy(
+      new THREE.Vector3(...positions[view])
+        .sub(new THREE.Vector3(0, 1.5, 0))
+        .normalize()
+        .multiplyScalar(distance)
+        .add(target),
+    );
+    camera.lookAt(target);
     invalidate();
   }
 
@@ -134,7 +178,7 @@ export function createStage(
     renderer.setSize(width, height);
     camera.aspect = width / Math.max(1, height);
     camera.updateProjectionMatrix();
-    invalidate();
+    setView(view);
   }
 
   /** Stops hidden rendering and resumes at a stable neutral pose. */
@@ -144,6 +188,7 @@ export function createStage(
     previous = 0;
     if (mixer) {
       mixer.stopAllAction();
+      queue.clear();
       action = undefined;
       outgoing = undefined;
       play("neutral");
@@ -178,7 +223,8 @@ export function createStage(
       for (const clip of gltf.animations) clips.set(clip.name, clip);
       mixer = new THREE.AnimationMixer(model);
       mixer.addEventListener("finished", (event) => {
-        if (event.action === action && active !== "neutral") play("neutral");
+        if (event.action === action && active !== "neutral")
+          start(queue.take(active, action.time, true) ?? "neutral");
       });
       onReady([...clips.keys()]);
       play("neutral");
@@ -221,6 +267,7 @@ export function createStage(
     dispose() {
       disposed = true;
       cancelAnimationFrame(request);
+      queue.clear();
       observer.disconnect();
       document.removeEventListener("visibilitychange", visibilityChanged);
       mixer?.stopAllAction();

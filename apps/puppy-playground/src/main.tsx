@@ -1,17 +1,16 @@
-/** A small review app for the puppy's Q1–Q4 quiet-animation drafts. */
+/** A small review app for the puppy's complete animation drafts. */
 import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import clipLibrary from "../../../characters/puppy/animations/clips.json";
+import clipLibrary from "../../../characters/puppy/library/clips.json";
 import { createStage, type Stage, type View } from "./stage";
 import "./styles.css";
 
-const descriptions: Record<string, string> = {
-  Q1: "A gentle four-second breathing loop.",
-  Q2: "Close, pause, then softly open both eyes.",
-  "Q3-left": "A curious glance, tilting towards the left shoulder.",
-  "Q3-right": "The same curious gesture towards the other side.",
-  Q4: "Glance aside, look around, then attend to you.",
-};
+const groups = [
+  { id: "Quiet", label: "Quiet moments" },
+  { id: "Minor success", label: "Small wins" },
+  { id: "Major success", label: "Big celebrations" },
+  { id: "Encouragement", label: "Try again" },
+];
 
 /** Mounts the puppy stage and provides labelled animation and review controls. */
 function App() {
@@ -19,6 +18,8 @@ function App() {
   const stage = useRef<Stage | null>(null);
   const [available, setAvailable] = useState<string[]>([]);
   const [active, setActive] = useState("neutral");
+  const [queued, setQueued] = useState<string | null>(null);
+  const [group, setGroup] = useState("Quiet");
   const [error, setError] = useState("");
   const [view, setView] = useState<View>("hero");
   const [speed, setSpeed] = useState(1);
@@ -31,7 +32,10 @@ function App() {
       stage.current = createStage(
         host.current!,
         setAvailable,
-        setActive,
+        (name, pending) => {
+          setActive(name);
+          setQueued(pending);
+        },
         setError,
       );
     } catch {
@@ -76,7 +80,7 @@ function App() {
       </header>
       <div className="playground">
         <section className="stage-panel" aria-label="Puppy preview">
-          <div className="badge">Q1–Q4 · animation drafts</div>
+          <div className="badge">Full animation library · drafts</div>
           <div ref={host} className="stage" />
           {error ? (
             <div className="stage-message" role="alert">
@@ -94,6 +98,11 @@ function App() {
             <p role="status" aria-live="polite">
               {available.length ? current?.label : "Getting ready…"}
               {active === "Q1" && <span className="loop"> · looping</span>}
+              {queued && (
+                <small className="queued">
+                  Next: {clipLibrary.find((clip) => clip.id === queued)?.label}
+                </small>
+              )}
             </p>
             <button
               className="reset"
@@ -123,15 +132,32 @@ function App() {
           </fieldset>
         </section>
         <section className="controls" aria-labelledby="movements">
-          <p className="eyebrow">Quiet moments</p>
+          <p className="eyebrow">
+            {groups.find((category) => category.id === group)?.label}
+          </p>
           <h2 id="movements">Try a movement</h2>
           <p className="hint">
-            Each gesture returns to a relaxed stance. Breathing loops until you
-            choose another.
+            Each reaction returns to neutral. Breathing loops; bigger movements
+            finish their protected section before switching.
           </p>
+          <div
+            className="categories"
+            role="group"
+            aria-label="Animation category"
+          >
+            {groups.map((category) => (
+              <button
+                key={category.id}
+                aria-pressed={group === category.id}
+                onClick={() => setGroup(category.id)}
+              >
+                {category.label}
+              </button>
+            ))}
+          </div>
           <div className="clip-list">
             {clipLibrary
-              .filter((clip) => clip.id !== "neutral")
+              .filter((clip) => clip.group === group)
               .map((clip) => (
                 <button
                   className="clip"
@@ -143,7 +169,7 @@ function App() {
                   <span className="clip-id">{clip.id.split("-")[0]}</span>
                   <span>
                     <strong>{clip.label}</strong>
-                    <small>{descriptions[clip.id]}</small>
+                    <small>{clip.description}</small>
                   </span>
                   <span className="duration">{clip.duration} s</span>
                 </button>
@@ -179,8 +205,8 @@ function App() {
         </section>
       </div>
       <footer>
-        Draft movements for review · a warm tan puppy, a gentle smile, four
-        grounded paws.
+        Draft movements for review · gentle idle moments, clear celebrations and
+        a kind recovery.
       </footer>
     </main>
   );

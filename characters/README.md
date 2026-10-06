@@ -6,7 +6,7 @@ Create a reusable, cute companion for the educational web apps, optimised for iP
 
 The user has chosen a smooth cartoon puppy with a simple quadrupedal body. Low polygon counts are acceptable; visible faceting and fur are not the goal. Use rounded forms, a large expressive head, floppy ears, clear eyes, chunky paws and a readable tail. Start with a warm tan/cream palette; colours and proportions remain reviewable.
 
-**Current authorised milestone: draft Q1–Q4 quiet animations and a basic web test app.** The editable [rig prototype](puppy/rig/README.md) now supports [baked quiet-animation drafts](puppy/animations/README.md) and the [Puppy Playground](../apps/puppy-playground/). The full success/failure library and integration into learning apps remain later milestones. All four paws should rest on the ground, the face should be relaxed and the silhouette should read at small sizes. Do not treat this first sculpt as final deformation topology.
+**Current authorised milestone: the complete proposed animation draft library and a web test app.** The editable [rig prototype](puppy/rig/README.md) supports the preserved [Q1–Q4 samples](puppy/animations/README.md), the [full animation library](puppy/library/README.md) and the [Puppy Playground](../apps/puppy-playground/). All proposed quiet, success and encouragement movements now have authored drafts. Integration into learning apps and oldest-iPad performance review remain later milestones. All four paws should rest on the ground in neutral, the face should be relaxed and the silhouette should read at small sizes. Final deformation polish remains reviewable.
 
 User-supplied visual references:
 
@@ -21,7 +21,7 @@ The user specifically requested that the head geometry move closer to that refer
 
 Author the model and animations in Blender; retain an editable `.blend` and reproducible Python source. Export glTF/GLB for live rendering, initially considering Three.js. Use simple export-compatible materials and smooth shading, without dense hair, expensive transparency or complex live simulation. Keep preview lighting and scenery separate from the exported character.
 
-The rig prototype now provides resampled deformation topology, a skeleton for body, legs, head, ears and tail, facial morph controls and an exporter that bakes Blender-specific controls into portable curves. The next step is a reviewed clip library and a small event-driven controller with blending, priorities, safe interruption points and returns to idle.
+The rig prototype now provides resampled deformation topology, a skeleton for body, legs, head, ears and tail, facial morph controls and an exporter that bakes Blender-specific controls into portable curves. The full draft library is baked into named GLB clips. The review app blends between gestures, retains the latest requested movement through protected support/landing sections, and returns to neutral. A gameplay controller with ambient scheduling, channel masking and event priorities remains separate work.
 
 Desired later behaviours:
 
@@ -40,6 +40,6 @@ Layer compatible movements; full-body actions need protected sections (for examp
 
 Compare actual appearance and sustained performance at the intended display size on the oldest supported iPad; those device and size requirements are still unspecified. A small polygon count alone is not a performance guarantee: pixel resolution, materials, draw calls, shadows and texture memory also matter.
 
-Keep the same Blender source usable for pre-rendered exports if required, but live 3D is the chosen first path. See [the trade-off analysis](TRADEOFFS.md). Review the rig probes before building the full animation library.
+Keep the same Blender source usable for pre-rendered exports if required, but live 3D is the chosen first path. See [the trade-off analysis](TRADEOFFS.md). Review the full library at the intended stage size before integrating it into gameplay.
 
-Blender 4.3.2 was verified in this cloud environment with background Python execution and the glTF exporter available. No interactive desktop is needed for scripted authoring and preview rendering.
+Blender 5.1.2 was used locally for the rig and animation library, with background Python execution and the glTF exporter available. No interactive desktop is needed for scripted authoring and preview rendering.
