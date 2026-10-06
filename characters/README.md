@@ -6,7 +6,7 @@ Create a reusable, cute companion for the educational web apps, optimised for iP
 
 The user has chosen a smooth cartoon puppy with a simple quadrupedal body. Low polygon counts are acceptable; visible faceting and fur are not the goal. Use rounded forms, a large expressive head, floppy ears, clear eyes, chunky paws and a readable tail. Start with a warm tan/cream palette; colours and proportions remain reviewable.
 
-**Current authorised milestone: rig the existing puppy for the animation proposals.** An editable [rig prototype, baked GLB and diagnostic poses](puppy/rig/README.md) are now available. The full clip library and app integration remain later milestones. All four paws should rest on the ground, the face should be relaxed and the silhouette should read at small sizes. Do not treat this first sculpt as final deformation topology.
+**Current authorised milestone: draft Q1–Q4 quiet animations and a basic web test app.** The editable [rig prototype](puppy/rig/README.md) now supports [baked quiet-animation drafts](puppy/animations/README.md) and the [Puppy Playground](../apps/puppy-playground/). The full success/failure library and integration into learning apps remain later milestones. All four paws should rest on the ground, the face should be relaxed and the silhouette should read at small sizes. Do not treat this first sculpt as final deformation topology.
 
 User-supplied visual references:
 

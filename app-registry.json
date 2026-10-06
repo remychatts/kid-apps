@@ -423,5 +423,25 @@
         "purpose": "any maskable"
       }
     ]
+  },
+  {
+    "id": "puppy-playground",
+    "title": "Puppy Playground",
+    "shortName": "Puppy",
+    "description": "Meet our puppy and preview four gentle quiet-animation drafts.",
+    "date": "October 2026",
+    "updatedAt": "2026-10-06T19:00:00Z",
+    "emoji": "🐶",
+    "themeColour": "#f6efe4",
+    "backgroundColour": "#f6efe4",
+    "orientation": "any",
+    "icons": [
+      {
+        "src": "icon.svg",
+        "sizes": "any",
+        "type": "image/svg+xml",
+        "purpose": "any maskable"
+      }
+    ]
   }
 ]

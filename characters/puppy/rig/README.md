@@ -2,7 +2,7 @@
 
 An editable Blender rig and a baked GLB for the capabilities in [the animation proposals](../../ANIMATION-PROPOSALS.md). The reviewed tan/cream puppy remains the visual basis. The original static files one directory above are preserved.
 
-This is a **rig and pose-validation milestone**. `RIG_DIAGNOSTICS` is a sequence of capability probes with neutral poses between them, not a set of finished gameplay clips. App integration, animation choreography and iPad performance testing are still separate work.
+This is a **rig and pose-validation milestone**. `RIG_DIAGNOSTICS` is a sequence of capability probes with neutral poses between them, not a set of finished gameplay clips. The subsequent [Q1–Q4 draft library and test app](../animations/README.md) provide quiet-animation choreography and playback; iPad performance testing remains separate work.
 
 ## Deliverables
 
