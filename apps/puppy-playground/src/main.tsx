@@ -22,6 +22,7 @@ function App() {
   const [group, setGroup] = useState("Quiet");
   const [error, setError] = useState("");
   const [view, setView] = useState<View>("hero");
+  const [rotate, setRotate] = useState(false);
   const [speed, setSpeed] = useState(1);
   const [motionAllowed, setMotionAllowed] = useState(
     () => !matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -55,6 +56,9 @@ function App() {
   useEffect(() => {
     stage.current?.setSpeed(speed);
   }, [speed]);
+  useEffect(() => {
+    stage.current?.setRotate(rotate);
+  }, [rotate]);
   useEffect(() => {
     const preference = matchMedia("(prefers-reduced-motion: reduce)");
     /** Follows changes to the system's reduced-motion preference. */
@@ -187,6 +191,17 @@ function App() {
                 <option value="1.5">One and a half speed</option>
               </select>
             </label>
+            <label className="motion">
+              <input
+                type="checkbox"
+                checked={rotate}
+                onChange={(event) => setRotate(event.target.checked)}
+              />
+              Rotate
+            </label>
+            <p className="hint">
+              One camera orbit per animation, starting with your next selection.
+            </p>
             <label className="motion">
               <input
                 type="checkbox"

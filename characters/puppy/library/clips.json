@@ -19,7 +19,7 @@
     "description": "A gentle four-second breathing loop.",
     "startFrame": 15,
     "endFrame": 255,
-    "stageHeight": 2.9263532161712646,
+    "stageHeight": 2.9433531761169434,
     "stageRadius": 1.7293133735656738
   },
   {
@@ -126,7 +126,7 @@
     "startFrame": 1425,
     "endFrame": 1605,
     "stageHeight": 2.9183530807495117,
-    "stageRadius": 1.8404375694063537
+    "stageRadius": 1.8637430592915092
   },
   {
     "id": "MIN3",

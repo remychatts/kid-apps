@@ -256,3 +256,38 @@ test("new gestures change the pose, and encouragement restores the smile promptl
     );
   assert.ok(high > 3.5, "Happy surprise must unfold ears above the head");
 });
+
+test("breathing visibly expands the chest and the play bow points the nose down", () => {
+  pose("neutral", 0);
+  const rest = Array.from(
+    { length: body.geometry.attributes.position.count },
+    (_, index) => vertex(index),
+  );
+  const head = gltf.scene.getObjectByName("head");
+  const direction = new THREE.Vector3(0, 0, 1).applyQuaternion(
+    head.getWorldQuaternion(new THREE.Quaternion()),
+  );
+  pose("Q1", 2);
+  const expansion = Math.max(
+    ...rest.map((point, index) => vertex(index).distanceTo(point)),
+  );
+  assert.ok(
+    expansion > 0.04,
+    `Chest expansion should be visible: ${expansion}`,
+  );
+  pose("MIN2", 1);
+  const bowed = new THREE.Vector3(0, 0, 1).applyQuaternion(
+    head.getWorldQuaternion(new THREE.Quaternion()),
+  );
+  assert.ok(
+    bowed.y < direction.y - 0.2,
+    "Bow must angle the muzzle towards the floor",
+  );
+});
+
+test("every small win and big celebration deepens the smile", () => {
+  for (const name of ["MIN1", "MIN2", "MIN3", "MAJ1", "MAJ2", "MAJ3"]) {
+    pose(name, 1);
+    assert.ok(weight("SmileBroad") >= 0.84, `${name} needs a pronounced smile`);
+  }
+});

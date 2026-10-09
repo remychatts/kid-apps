@@ -20,7 +20,7 @@ A monorepo for playful, family-friendly web apps and the catalogue that links th
 | [Pet Chooser](apps/pet-chooser/)                           | Matches players with a companion from a cast of pets.                             | December 2025                        |
 | [Penguin Peak!](apps/penguin-slide/)                       | Slides a penguin down an obstacle-filled icy hill.                                | August 2026                          |
 | [Practice Stars](apps/trumpet-practice/)                   | Builds practice streaks and unlocks reward pictures.                              | August 2026                          |
-| [Puppy Playground](apps/puppy-playground/)                 | Previews puppy reactions, celebrations and gravity-driven jumps.                  | October 2026                         |
+| [Puppy Playground](apps/puppy-playground/)                 | Previews expressive puppy reactions, gravity-driven jumps and camera orbits.      | October 2026                         |
 | [Probability Explorer](apps/probability-explorer/)         | Visualises repeated samples as live histograms.                                   | April 2025                           |
 | [Rounding Rally](apps/rounding-game/)                      | A visual estimation and rounding game.                                            | August 2026                          |
 | [Snake Species Visualiser](apps/snake-species-visualiser/) | Makes snake-species statistics tangible as a grid.                                | April 2026                           |

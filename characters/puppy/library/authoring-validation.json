@@ -13,11 +13,11 @@
     },
     {
       "id": "Q1",
-      "maximum_contact_drift": 2.7324439318317546e-7,
-      "maximum_ik_error": 4.969040155569632e-7,
-      "minimum_floor_clearance": 0.0018925567856058478,
+      "maximum_contact_drift": 3.601078181543892e-7,
+      "maximum_ik_error": 4.814712530792806e-7,
+      "minimum_floor_clearance": 0.0018925565527752042,
       "minimum_airborne_clearance": null,
-      "maximum_height": 2.9263532161712646,
+      "maximum_height": 2.9433531761169434,
       "maximum_radius": 1.7293133735656738
     },
     {
@@ -99,7 +99,7 @@
       "minimum_floor_clearance": 0.0018918405985459685,
       "minimum_airborne_clearance": null,
       "maximum_height": 2.9183530807495117,
-      "maximum_radius": 1.8404375694063537
+      "maximum_radius": 1.8637430592915092
     },
     {
       "id": "MIN3",
@@ -165,5 +165,5 @@
       "maximum_radius": 1.7293133735656738
     }
   ],
-  "glb_bytes": 5909820
+  "glb_bytes": 5910476
 }
