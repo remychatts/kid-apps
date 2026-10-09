@@ -45,6 +45,8 @@ just ci
 
 The executable scripts find Blender on PATH or in its standard macOS location; the user's open Blender session is untouched. Use `--output-dir /tmp/puppy-library` on the author and the matching `--animation-dir` on the validator for a separate build. Generated assets are overwritten; preserve manual edits elsewhere before rebuilding.
 
+The little jump and backflip use parabolic flight with approximately 14 rig units/s² of downward acceleration, maintaining gravity through touchdown. Airtime is 0.4 s and 0.85 s respectively; the tuck and flip follow that flight timing, with smooth limb extension and grounded landing compression.
+
 ## Playback and remaining review
 
 The app retains only the latest pending request while scratching (0.8–3.6 s), jumping (0.5–1.6 s), chasing (0.9–4 s) or flipping (0.6–2.2 s). It fades over 0.25 s once support returns, and frames taller animations to include the ears and airborne arc. These windows are in clip time and follow the selected review speed. Hidden pages discard pending actions and resume in neutral. Reduced motion starts with motion previews disabled; users can explicitly enable them for review.

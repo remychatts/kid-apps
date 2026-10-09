@@ -96,7 +96,7 @@ CLIPS = [dict(clip) for clip in QUIET_CLIPS] + [
         "label": "Little happy jump",
         "duration": 2.5,
         "group": "Minor success",
-        "sample": 0.97,
+        "sample": 0.95,
         "protectedFrom": 0.5,
         "protectedUntil": 1.6,
     },
@@ -114,7 +114,7 @@ CLIPS = [dict(clip) for clip in QUIET_CLIPS] + [
         "label": "Celebratory backflip",
         "duration": 3.5,
         "group": "Major success",
-        "sample": 1.3,
+        "sample": 1.275,
         "protectedFrom": 0.6,
         "protectedUntil": 2.2,
     },
@@ -288,17 +288,20 @@ def pose(rig, controls, clip, time, ear_rotations):
     elif clip in ("MIN3", "MAJ2"):
         flip = clip == "MAJ2"
         launch, land, crouch_end, stable, duration = (
-            (0.85, 1.75, 0.6, 2.2, 3.5) if flip else (0.75, 1.2, 0.5, 1.6, 2.5)
+            (0.85, 1.7, 0.6, 2.2, 3.5) if flip else (0.75, 1.15, 0.5, 1.6, 2.5)
         )
         u = max(0, min(1, (time - launch) / (land - launch)))
-        flight = math.sin(math.pi * u)
+        # A ballistic arc keeps downward acceleration constant through touchdown.
+        # Both heights use roughly 14 rig units/s²; poses share the shorter flight.
+        flight = 4 * u * (1 - u)
         compression = (0.24 if flip else 0.2) * envelope(
             time, 0, crouch_end, crouch_end, launch
         )
         compression += (0.2 if flip else 0.14) * envelope(
             time, land, land + 0.2, stable, duration
         )
-        tuck = flight**2
+        # Ease the tuck independently so limbs extend smoothly before landing.
+        tuck = math.sin(math.pi * u) ** 2
         move(rig, "pelvis", (0, 0, -compression - (0.18 if flip else 0.08) * tuck))
         for name in LEGS:
             move(rig, "IK." + name, (0, 0, (0.26 if flip else 0.10) * tuck))
@@ -410,7 +413,7 @@ def pose(rig, controls, clip, time, ear_rotations):
 
 def contacts(rig, clip, time):
     """Identify intended grounded paws, independently of solved IK reach."""
-    if clip == "MIN3" and 0.75 < time < 1.2 or clip == "MAJ2" and 0.85 < time < 1.75:
+    if clip == "MIN3" and 0.75 < time < 1.15 or clip == "MAJ2" and 0.85 < time < 1.7:
         return []
     if clip == "Q6" and 0.8 < time < 3.5:
         return [name for name in LEGS if name != "hind.L"]
