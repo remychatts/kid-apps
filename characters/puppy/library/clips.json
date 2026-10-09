@@ -133,14 +133,14 @@
     "label": "Little happy jump",
     "duration": 2.5,
     "group": "Minor success",
-    "sample": 0.97,
+    "sample": 0.95,
     "protectedFrom": 0.5,
     "protectedUntil": 1.6,
     "description": "Crouch, hop, land softly and settle.",
     "startFrame": 1607,
     "endFrame": 1757,
-    "stageHeight": 3.118149757385254,
-    "stageRadius": 1.7649208307266235
+    "stageHeight": 3.1183531284332275,
+    "stageRadius": 1.7650296688079834
   },
   {
     "id": "MAJ1",
@@ -161,14 +161,14 @@
     "label": "Celebratory backflip",
     "duration": 3.5,
     "group": "Major success",
-    "sample": 1.3,
+    "sample": 1.275,
     "protectedFrom": 0.6,
     "protectedUntil": 2.2,
     "description": "A generous airborne flip with a soft four-paw landing.",
     "startFrame": 2031,
     "endFrame": 2241,
-    "stageHeight": 4.150841236114502,
-    "stageRadius": 2.0181383658970815
+    "stageHeight": 4.2014546394348145,
+    "stageRadius": 2.0216824509921083
   },
   {
     "id": "MAJ3",

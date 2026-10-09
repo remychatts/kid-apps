@@ -106,9 +106,9 @@
       "maximum_contact_drift": 4.824502638745927e-7,
       "maximum_ik_error": 6.42653067494864e-7,
       "minimum_floor_clearance": 0.0018925863550975919,
-      "minimum_airborne_clearance": 0.035746488720178604,
-      "maximum_height": 3.118149757385254,
-      "maximum_radius": 1.7649208307266235
+      "minimum_airborne_clearance": 0.048318568617105484,
+      "maximum_height": 3.1183531284332275,
+      "maximum_radius": 1.7650296688079834
     },
     {
       "id": "MAJ1",
@@ -122,11 +122,11 @@
     {
       "id": "MAJ2",
       "maximum_contact_drift": 6.738554867860683e-7,
-      "maximum_ik_error": 4.13232601535196e-6,
+      "maximum_ik_error": 4.402883394819233e-6,
       "minimum_floor_clearance": 0.0018925401382148266,
-      "minimum_airborne_clearance": 0.07439637929201126,
-      "maximum_height": 4.150841236114502,
-      "maximum_radius": 2.0181383658970815
+      "minimum_airborne_clearance": 0.09833218902349472,
+      "maximum_height": 4.2014546394348145,
+      "maximum_radius": 2.0216824509921083
     },
     {
       "id": "MAJ3",

@@ -139,8 +139,8 @@ test("quiet gestures, bow, tall ears and reassurance keep four paws planted; scr
 
 test("jump and backflip clear the ground during flight and restore grounded landings", () => {
   for (const [name, launch, land] of [
-    ["MIN3", 0.75, 1.2],
-    ["MAJ2", 0.85, 1.75],
+    ["MIN3", 0.75, 1.15],
+    ["MAJ2", 0.85, 1.7],
   ]) {
     let peak = 0;
     for (let step = Math.floor(launch * 120) + 1; step < land * 120; step++) {
@@ -162,6 +162,43 @@ test("jump and backflip clear the ground during flight and restore grounded land
     pose(name, clips.get(name).duration);
     for (const sole of soles)
       assert.ok(vertex(sole.index).distanceTo(sole.point) < 0.003);
+  }
+});
+
+test("airborne motion keeps accelerating downwards right through the approach to landing", () => {
+  const root = gltf.scene.getObjectByName("root");
+  assert.ok(root);
+  for (const [name, launch, land] of [
+    ["MIN3", 0.75, 1.15],
+    ["MAJ2", 0.85, 1.7],
+  ]) {
+    // Track the flip's body-centred pivot, not the rotating root origin or paws.
+    const pivot =
+      name === "MAJ2" ? new THREE.Vector3(0, 1.3, -0.1) : new THREE.Vector3();
+    const heights = [];
+    for (
+      let frame = Math.round(launch * 60);
+      frame <= Math.round(land * 60);
+      frame++
+    ) {
+      pose(name, frame / 60);
+      heights.push(root.localToWorld(pivot.clone()).y);
+    }
+    for (let frame = 1; frame < heights.length - 1; frame++) {
+      const acceleration =
+        (heights[frame + 1] - 2 * heights[frame] + heights[frame - 1]) *
+        60 ** 2;
+      assert.ok(
+        acceleration < -10 && acceleration > -18,
+        `${name} flight frame ${frame}: downward acceleration ${acceleration}`,
+      );
+    }
+    pose(name, land);
+    for (const sole of soles)
+      assert.ok(
+        vertex(sole.index).distanceTo(sole.point) < 0.003,
+        `${name} lands on all four paws`,
+      );
   }
 });
 
