@@ -4,6 +4,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import puppyUrl from "../../../characters/puppy/library/puppy-library.glb?url";
 
 import library from "../../../characters/puppy/library/clips.json";
+import { sampleCamera, type CameraPose } from "./camera";
 import { createPlaybackQueue } from "./playback";
 
 export type View = "hero" | "front" | "side";
@@ -11,6 +12,7 @@ export type Stage = {
   play: (name: string) => void;
   setView: (view: View) => void;
   setSpeed: (speed: number) => void;
+  setRotate: (rotate: boolean) => void;
   setMotionAllowed: (allowed: boolean) => void;
   dispose: () => void;
 };
@@ -70,6 +72,12 @@ export function createStage(
   let fadingUntil = 0;
   let speed = 1;
   let outgoing: THREE.AnimationAction | undefined;
+  const neutralBounds = library.find((clip) => clip.id === "neutral")!;
+  let cameraPose: CameraPose = { ...neutralBounds, angle: 0 };
+  let cameraInitial = { ...cameraPose };
+  let cameraTime = 0;
+  let rotate = false;
+  let orbitActive = false;
 
   /** Draws once, then schedules frames only while a clip or transition is active. */
   function draw(now: number) {
@@ -78,6 +86,7 @@ export function createStage(
     const delta = previous ? Math.min((now - previous) / 1000, 0.05) : 0;
     previous = now;
     if (mixer) {
+      cameraTime += delta * speed;
       mixer.update(delta * speed);
       const next = queue.take(active, action?.time ?? 0);
       if (next) start(next);
@@ -87,8 +96,10 @@ export function createStage(
         setView(view);
       }
     }
+    updateCamera();
     renderer.render(scene, camera);
-    if (active !== "neutral" || outgoing) invalidate();
+    if (active !== "neutral" || outgoing || (mixer && cameraTime < 0.5))
+      invalidate();
     else previous = 0;
   }
 
@@ -127,6 +138,10 @@ export function createStage(
         fadingUntil = mixer.time + 0.25;
       }
     }
+    updateCamera();
+    cameraInitial = { ...cameraPose };
+    cameraTime = 0;
+    orbitActive = rotate && name !== "neutral";
     action = next;
     active = name;
     onChange(name, queue.pending);
@@ -137,24 +152,32 @@ export function createStage(
   /** Frames the complete puppy from one of the three review viewpoints. */
   function setView(nextView: View) {
     view = nextView;
+    updateCamera();
+    invalidate();
+  }
+
+  /** Updates orbit, distance and look-at height together without changing focal length. */
+  function updateCamera() {
     const positions: Record<View, [number, number, number]> = {
       hero: [4.6, 3.3, 6.9],
       front: [0, 3.0, 8.3],
       side: [8.3, 2.9, 0],
     };
     const bounds = library.find((clip) => clip.id === active)!;
-    // Keep taller outgoing poses inside the stage throughout the return blend.
-    const fadingBounds = library.find(
-      (clip) => clip.id === outgoing?.getClip().name,
+    const duration = active === "neutral" ? 1 : bounds.duration;
+    const time = active === "Q1" ? cameraTime % duration : cameraTime;
+    const sampled = sampleCamera(
+      neutralBounds,
+      bounds,
+      active === "Q1" && cameraTime >= duration
+        ? { ...neutralBounds, angle: cameraInitial.angle }
+        : cameraInitial,
+      time,
+      duration,
+      orbitActive,
     );
-    const stageHeight = Math.max(
-      bounds.stageHeight,
-      fadingBounds?.stageHeight ?? 0,
-    );
-    const stageRadius = Math.max(
-      bounds.stageRadius,
-      fadingBounds?.stageRadius ?? 0,
-    );
+    cameraPose = sampled;
+    const { stageHeight, stageRadius } = cameraPose;
     const height = stageHeight + 0.35;
     const width = stageRadius * 2 + 0.3;
     const distance =
@@ -165,11 +188,11 @@ export function createStage(
       new THREE.Vector3(...positions[view])
         .sub(new THREE.Vector3(0, 1.5, 0))
         .normalize()
+        .applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraPose.angle)
         .multiplyScalar(distance)
         .add(target),
     );
     camera.lookAt(target);
-    invalidate();
   }
 
   /** Fits the canvas to its container while preserving the selected camera. */
@@ -254,6 +277,10 @@ export function createStage(
   return {
     play,
     setView,
+    /** Applies the orbit option to the next clip, keeping the current shot continuous. */
+    setRotate(value) {
+      rotate = value;
+    },
     /** Adjusts the review speed without changing the authored clip. */
     setSpeed(value) {
       speed = value;

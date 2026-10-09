@@ -247,6 +247,8 @@ def chase_paw(rig, name, time):
 def pose(rig, controls, clip, time, ear_rotations):
     """Choreograph every proposed reaction while retaining neutral entry and recovery."""
     quiet_pose(rig, controls, clip, time)
+    if clip == "Q1":
+        move(rig, "chest", (0, 0, 0.025 * math.sin(math.pi * time / 4) ** 2))
     if clip.startswith("Q5"):
         suffix, sign = ("L", 1) if clip.endswith("left") else ("R", -1)
         lift = envelope(time, 0, 0.2, 0.4, 1.3)
@@ -282,7 +284,7 @@ def pose(rig, controls, clip, time, ear_rotations):
         bow = envelope(time, 0, 0.7, 1.6, 2.6)
         move(rig, "chest", (0, -0.05 * bow, -0.24 * bow))
         rotate(rig, "spine", (12 * bow, 0, 0))
-        rotate(rig, "neck", (-14 * bow, 0, 0))
+        rotate(rig, "neck", (18 * bow, 0, 0))
         wag(rig, time - 0.7, 0.6 * envelope(time, 0.5, 0.7, 1.5, 1.8))
         rig.pose.bones["tail.0"].rotation_euler.x = math.radians(-12 * bow)
     elif clip in ("MIN3", "MAJ2"):
@@ -407,6 +409,11 @@ def pose(rig, controls, clip, time, ear_rotations):
             for suffix in ("L", "R"):
                 rig["Blink." + suffix] = envelope(time, 0.55, 0.8, 0.95, 1.2)
             wag(rig, time - 2.0, 0.5 * envelope(time, 2.0, 2.1, 2.6, 2.7), 1 / 0.7)
+    if clip.startswith(("MIN", "MAJ")):
+        duration = next(item["duration"] for item in CLIPS if item["id"] == clip)
+        rig["SmileBroad"] = max(
+            rig["SmileBroad"], 0.85 * envelope(time, 0, 0.4, duration - 0.6, duration)
+        )
     rig.update_tag()
     bpy.context.view_layer.update()
 
@@ -438,6 +445,16 @@ def main():
         bpy.data.objects["Puppy rig"],
         bpy.data.objects["Puppy body"],
     )
+    # Strengthen only the library's breath and smile shapes; preserve original rig assets.
+    for obj in scene.objects:
+        keys = getattr(obj.data, "shape_keys", None)
+        if not keys:
+            continue
+        for name, strength in (("Breath", 3.5), ("SmileBroad", 1.8)):
+            shape = keys.key_blocks.get(name)
+            if shape:
+                for basis, point in zip(keys.key_blocks[0].data, shape.data):
+                    point.co = basis.co + (point.co - basis.co) * strength
     rig.animation_data_clear()
     scene.timeline_markers.clear()
     controls = [key for key, value in rig.items() if isinstance(value, float)]

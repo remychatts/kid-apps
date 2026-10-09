@@ -21,7 +21,7 @@ All movements in the [proposals](../../ANIMATION-PROPOSALS.md) now have editable
 | F2                 | 3 s          | Sympathetic tilt, brighten and nod                       |
 | F3                 | 3.5 s        | Exhale, blink, lift and encouraging wag                  |
 
-Left/right refer to the puppy. Every clip includes the complete bone/morph pose and returns to the same smiling anchor and facing. Play one clip at a time; additive channel masking remains future gameplay work. The bow is deliberately modest to respect the prototype leg reach. Complex scratch, chase and flip remain drafts for appeal and deformation review.
+Left/right refer to the puppy. Every clip includes the complete bone/morph pose and returns to the same smiling anchor and facing. Play one clip at a time; additive channel masking remains future gameplay work. The bow keeps a modest chest dip to respect the prototype leg reach, with neck flexion pointing the nose down. Library breathing expands the chest more visibly, and all success clips ease into a deeper smile curve. Complex scratch, chase and flip remain drafts for appeal and deformation review.
 
 ## Assets and reproduction
 
@@ -49,6 +49,6 @@ The little jump and backflip use parabolic flight with approximately 14 rig unit
 
 ## Playback and remaining review
 
-The app retains only the latest pending request while scratching (0.8–3.6 s), jumping (0.5–1.6 s), chasing (0.9–4 s) or flipping (0.6–2.2 s). It fades over 0.25 s once support returns, and frames taller animations to include the ears and airborne arc. These windows are in clip time and follow the selected review speed. Hidden pages discard pending actions and resume in neutral. Reduced motion starts with motion previews disabled; users can explicitly enable them for review.
+The app retains only the latest pending request while scratching (0.8–3.6 s), jumping (0.5–1.6 s), chasing (0.9–4 s) or flipping (0.6–2.2 s). It fades over 0.25 s once support returns, and smoothly frames taller animations to include the ears and airborne arc. The optional Rotate control adds one complete orbit per clip (or breathing loop), preserving continuous framing through transitions. These windows are in clip time and follow the selected review speed. Hidden pages discard pending actions and resume in neutral. Reduced motion starts with motion previews disabled; users can explicitly enable them for review.
 
 Three.js tests measure the real exported clips: neutral endpoints, planted contacts, jump/flip clearance, chase stance stability, expressive motion and smile recovery. Playback policy tests cover deferred/latest requests. Workbox precaches the hashed GLB and application shell. Final appeal, sustained performance on the oldest supported iPad, gameplay scheduling and expression-only reduced-motion feedback remain future work.
