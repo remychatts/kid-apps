@@ -1,0 +1,53 @@
+{
+  "source_meshes": 44,
+  "closed_parts": {
+    "Ear -1 | rounded shell": {
+      "non_manifold_edges": 0,
+      "signed_volume": 0.13572179985844351
+    },
+    "Ear 1 | rounded shell": {
+      "non_manifold_edges": 0,
+      "signed_volume": 0.1357217985977039
+    },
+    "Tail | curled with cream tip": {
+      "non_manifold_edges": 0,
+      "signed_volume": 0.12580628149854065
+    }
+  },
+  "paw_min_z": {
+    "Forepaw -1": 0.0,
+    "Hind paw -1": 0.0,
+    "Forepaw 1": 0.0,
+    "Hind paw 1": 0.0
+  },
+  "eye_normals": {
+    "Eye ivory -1": -0.9236979366743984,
+    "Pupil -1": -0.9249153068998855,
+    "Eye ivory 1": -0.9237178796599528,
+    "Pupil 1": -0.9248931344370848
+  },
+  "eye_integration": {
+    "perimeter_vertices": 128,
+    "maximum_edge_gap": 0.0030074715614318848,
+    "maximum_eye_bulge": 0.078000009059906
+  },
+  "tail_attachment": {
+    "root_centre": [
+      -6.208817349140361e-10, 0.3799999952316284, 0.619999885559082
+    ],
+    "root_vertices_inside_torso": 24,
+    "centred_on_x": true
+  },
+  "coat": {
+    "packed_maps": 2,
+    "resolution": [2048, 2048],
+    "source": "Original procedural ginger fur, baked to PNG colour and normal maps"
+  },
+  "glb_round_trip": {
+    "meshes": 44,
+    "armatures": 0,
+    "actions": 0,
+    "studio_objects": 0,
+    "min_z": 0.0
+  }
+}

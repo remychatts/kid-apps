@@ -1,5 +1,13 @@
 # Character direction
 
+## Kitten companion: neutral design draft
+
+The [kitten](kitten/README.md) is a separate original Blender character based on
+the user-supplied ginger kitten image: seated proportions, a large rounded head,
+upright ears, blue eyes, cream markings and a curled tail. Its current milestone
+is a neutral base-model review. A similar animation set to the puppy is intended
+later; the kitten does not yet have a rig or animation clips.
+
 ## Goal and current review gate
 
 Create a reusable, cute companion for the educational web apps, optimised for iPad. This is a more expressive successor to the idea of Captain Whiskers in Times Traveller.
