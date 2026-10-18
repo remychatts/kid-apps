@@ -7,6 +7,8 @@ Preserves kitten.blend and textures; writes library/kitten-library.blend and GLB
 import json
 import math
 import sys
+import subprocess
+import tempfile
 from pathlib import Path
 import bpy
 from mathutils import Vector
@@ -20,7 +22,17 @@ from quiet_glb import split_clips
 
 OUT = HERE / 'library'
 OUT.mkdir(exist_ok=True)
-bpy.ops.wm.open_mainfile(filepath=str(HERE / 'kitten.blend'))
+# Author an animation-only variant from the same sculpt recipe. Re-bake its
+# coat atlas so newly exposed inner forelegs have continuous fur and markings.
+# The reviewed static model and its 2K textures are never overwritten.
+with tempfile.TemporaryDirectory(prefix='kitten-rig-source-') as source_dir:
+    subprocess.run([
+        bpy.app.binary_path, '--background', '--factory-startup', '--threads', '6',
+        '--python-exit-code', '1', '--python', str(HERE / 'create_kitten.py'), '--',
+        '--articulated-forelegs', '--no-render', '--texture-size', '768',
+        '--output-dir', source_dir,
+    ], check=True)
+    bpy.ops.wm.open_mainfile(filepath=str(Path(source_dir) / 'kitten.blend'))
 scene = bpy.context.scene
 meshes = [o for o in scene.objects if o.type == 'MESH' and not o.name.startswith('Studio')]
 # The source's character collection is the only collection containing the head.
@@ -34,7 +46,7 @@ for obj in meshes:
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
     # Reduce the dense static sculpt for mobile skinning; retain UVs/materials.
     # The tail keeps its authored rings for deterministic chain weights.
-    if len(obj.data.vertices)>1000 and not obj.name.startswith('Tail'):
+    if len(obj.data.vertices)>1000 and not obj.name.startswith(('Tail', 'Foreleg')):
         simplify=obj.modifiers.new('Web deformation mesh','DECIMATE')
         simplify.ratio=.45
         bpy.ops.object.modifier_apply(modifier=simplify.name)
@@ -71,8 +83,9 @@ for sign, suffix in ((1,'L'),(-1,'R')):
         front = label == 'front'
         name = label+'.'+suffix
         ankle = (sign*(.365 if front else .70), -.43 if front else .02, .155)
-        knee = (sign*(.34 if front else .62), .05 if front else .40, .65 if front else .38)
-        hip = (sign*(.30 if front else .40), -.05 if front else .25, 1.15 if front else .72)
+        # Keep a small rest bend so breathing can lift the chest with paws planted.
+        knee = (sign*(.34 if front else .62), -.10 if front else .40, .65 if front else .38)
+        hip = (sign*(.30 if front else .40), -.20 if front else .25, 1.15 if front else .72)
         toe = (ankle[0],ankle[1]-.2,ankle[2])
         bone('upper.'+name,hip,knee,'chest' if front else 'pelvis')
         bone('lower.'+name,knee,ankle,'upper.'+name)
@@ -117,14 +130,26 @@ def body_weights(v):
     chest=smooth(.55,1.25,z)
     weights={'pelvis':1-chest,'chest':chest}
     limb=(1-smooth(.70,1.2,z))*smooth(.16,.32,abs(x))
-    front=1-smooth(-.20,.12,y)
+    # The closed torso follows only the hind legs; front legs have their own
+    # closed surfaces so raising one cannot stretch a web out of the belly.
+    name='hind.'+('L' if x>=0 else 'R')
     weights={k:w*(1-limb) for k,w in weights.items()}
-    for label,fraction in (('front',front),('hind',1-front)):
-        name=label+('.L' if x>=0 else '.R')
-        paw=1-smooth(.21,.37,z)
-        upper=smooth(.4,.76 if label=='front' else .53,z)*(1-paw)
-        weights.update({'paw.'+name:paw*limb*fraction,'upper.'+name:upper*limb*fraction,'lower.'+name:(1-paw-upper)*limb*fraction})
+    paw=1-smooth(.21,.37,z)
+    upper=smooth(.4,.53,z)*(1-paw)
+    weights.update({'paw.'+name:paw*limb,'upper.'+name:upper*limb,'lower.'+name:(1-paw-upper)*limb})
     return weights
+
+
+def foreleg_weights(v, suffix):
+    """Bend each foreleg along its own chain, with a soft shoulder attachment."""
+    z=v.co.z
+    shoulder=smooth(1.02,1.30,z)
+    paw=1-smooth(.21,.37,z)
+    upper=smooth(.48,.82,z)*(1-paw)
+    limb=1-shoulder
+    return {'chest':shoulder, 'paw.front.'+suffix:paw*limb,
+            'upper.front.'+suffix:upper*limb,
+            'lower.front.'+suffix:(1-paw-upper)*limb}
 
 
 def bind(obj,weights):
@@ -148,6 +173,8 @@ for obj in meshes:
     elif name.startswith('Ear '):
         suffix='R' if '-1' in name else 'L'
         bind(obj,lambda v,s=suffix:chain((v.co.z-2.93)/.57,[f'ear.{i}.{s}' for i in range(3)]))
+    elif name.startswith('Foreleg'):
+        bind(obj,lambda v,s='R' if '-1' in name else 'L':foreleg_weights(v,s))
     elif name.startswith('Body'):
         bind(obj,body_weights)
     elif name.startswith(('Forepaw','Hind paw','Soft toe')):
