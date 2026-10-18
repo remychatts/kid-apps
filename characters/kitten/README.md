@@ -12,9 +12,10 @@ spheres. The smile follows the muzzle surface with more visibly lifted corners.
 The orange surfaces now have a darker ginger palette, soft directional grain and
 restrained tabby variation.
 
-This milestone is a **static base-model review**. There is no armature or
-animation yet. The seated neutral is taken from the kitten reference; the
-puppy's animation library remains the direction for subsequent motion work.
+The preserved base model is a **static design draft**. The [rigged animation
+library](library/README.md) adds an editable skeleton and the puppy’s complete
+set of 18 named clips, adapted to the kitten’s seated proportions. Both are
+selectable in Puppy Playground.
 
 - `kitten.blend`: editable geometry, packed coat textures, named facial pieces
   and a separate studio collection.

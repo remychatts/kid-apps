@@ -1,12 +1,13 @@
 # Character direction
 
-## Kitten companion: neutral design draft
+## Kitten companion: rigged animation drafts
 
 The [kitten](kitten/README.md) is a separate original Blender character based on
 the user-supplied ginger kitten image: seated proportions, a large rounded head,
-upright ears, blue eyes, cream markings and a curled tail. Its current milestone
-is a neutral base-model review. A similar animation set to the puppy is intended
-later; the kitten does not yet have a rig or animation clips.
+upright ears, blue eyes, cream markings and a curled tail. Its
+[rigged library](kitten/library/README.md) maps all 18 puppy clips onto a seated
+skeleton with adapted ear, tail and scratch poses. Puppy Playground now offers
+both characters; the original static design files are preserved.
 
 ## Goal and current review gate
 

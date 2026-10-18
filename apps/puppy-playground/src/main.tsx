@@ -1,8 +1,9 @@
-/** A small review app for the puppy's complete animation drafts. */
+/** A review app for the puppy and kitten animation drafts. */
 import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import clipLibrary from "../../../characters/puppy/library/clips.json";
-import { createStage, type Stage, type View } from "./stage";
+import puppyLibrary from "../../../characters/puppy/library/clips.json";
+import kittenLibrary from "../../../characters/kitten/library/clips.json";
+import { createStage, type Stage, type View, type Character } from "./stage";
 import "./styles.css";
 
 const groups = [
@@ -12,10 +13,11 @@ const groups = [
   { id: "Encouragement", label: "Try again" },
 ];
 
-/** Mounts the puppy stage and provides labelled animation and review controls. */
+/** Mounts the selected character stage and provides labelled animation and review controls. */
 function App() {
   const host = useRef<HTMLDivElement>(null);
   const stage = useRef<Stage | null>(null);
+  const [character, setCharacter] = useState<Character>("puppy");
   const [available, setAvailable] = useState<string[]>([]);
   const [active, setActive] = useState("neutral");
   const [queued, setQueued] = useState<string | null>(null);
@@ -29,6 +31,10 @@ function App() {
   );
 
   useEffect(() => {
+    setAvailable([]);
+    setError("");
+    setActive("neutral");
+    setQueued(null);
     try {
       stage.current = createStage(
         host.current!,
@@ -38,6 +44,7 @@ function App() {
           setQueued(pending);
         },
         setError,
+        character,
       );
     } catch {
       setError(
@@ -45,20 +52,20 @@ function App() {
       );
     }
     return () => stage.current?.dispose();
-  }, []);
+  }, [character]);
 
   useEffect(() => {
     stage.current?.setMotionAllowed(motionAllowed);
-  }, [motionAllowed]);
+  }, [motionAllowed, character]);
   useEffect(() => {
     stage.current?.setView(view);
-  }, [view]);
+  }, [view, character]);
   useEffect(() => {
     stage.current?.setSpeed(speed);
-  }, [speed]);
+  }, [speed, character]);
   useEffect(() => {
     stage.current?.setRotate(rotate);
-  }, [rotate]);
+  }, [rotate, character]);
   useEffect(() => {
     const preference = matchMedia("(prefers-reduced-motion: reduce)");
     /** Follows changes to the system's reduced-motion preference. */
@@ -69,6 +76,7 @@ function App() {
     return () => preference.removeEventListener("change", updateMotion);
   }, []);
 
+  const clipLibrary = character === "kitten" ? kittenLibrary : puppyLibrary;
   const current = clipLibrary.find((clip) => clip.id === active);
   return (
     <main>
@@ -80,10 +88,25 @@ function App() {
         <h1>
           Puppy Playground<span>🐾</span>
         </h1>
-        <p>Meet our puppy. Pick a gentle movement and see what it says.</p>
+        <p>Meet our puppy and kitten. Pick a companion, then try a movement.</p>
+        <fieldset className="views">
+          <legend>Character</legend>
+          {(["puppy", "kitten"] as const).map((id) => (
+            <button
+              key={id}
+              aria-pressed={character === id}
+              onClick={() => setCharacter(id)}
+            >
+              {id === "puppy" ? "Puppy" : "Kitten"}
+            </button>
+          ))}
+        </fieldset>
       </header>
       <div className="playground">
-        <section className="stage-panel" aria-label="Puppy preview">
+        <section
+          className="stage-panel"
+          aria-label={`${character === "puppy" ? "Puppy" : "Kitten"} preview`}
+        >
           <div className="badge">Full animation library · drafts</div>
           <div ref={host} className="stage" />
           {error ? (
@@ -95,7 +118,7 @@ function App() {
             </div>
           ) : available.length === 0 ? (
             <div className="stage-message" role="status">
-              Loading the puppy…
+              Loading the {character}…
             </div>
           ) : null}
           <div className="stage-bottom">

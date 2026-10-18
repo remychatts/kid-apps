@@ -1,0 +1,92 @@
+[
+  {
+    "id": "neutral",
+    "minimum_height": -1.1104580153187271e-6,
+    "maximum_ik_error": 1.999200562387517e-7
+  },
+  {
+    "id": "Q1",
+    "minimum_height": -1.18496359391429e-6,
+    "maximum_ik_error": 2.580956827951785e-7
+  },
+  {
+    "id": "Q2",
+    "minimum_height": -1.1104580153187271e-6,
+    "maximum_ik_error": 1.999200562387517e-7
+  },
+  {
+    "id": "Q3-left",
+    "minimum_height": -1.1104580153187271e-6,
+    "maximum_ik_error": 1.999200562387517e-7
+  },
+  {
+    "id": "Q3-right",
+    "minimum_height": -1.1104580153187271e-6,
+    "maximum_ik_error": 1.999200562387517e-7
+  },
+  {
+    "id": "Q4",
+    "minimum_height": -1.1104580153187271e-6,
+    "maximum_ik_error": 1.999200562387517e-7
+  },
+  {
+    "id": "Q5-left",
+    "minimum_height": -1.1104580153187271e-6,
+    "maximum_ik_error": 1.999200562387517e-7
+  },
+  {
+    "id": "Q5-right",
+    "minimum_height": -1.1104580153187271e-6,
+    "maximum_ik_error": 1.999200562387517e-7
+  },
+  {
+    "id": "Q6",
+    "minimum_height": -1.3190738172852434e-6,
+    "maximum_ik_error": 0.00012166109612373633
+  },
+  {
+    "id": "MIN1",
+    "minimum_height": -1.1104580153187271e-6,
+    "maximum_ik_error": 1.999200562387517e-7
+  },
+  {
+    "id": "MIN2",
+    "minimum_height": -1.5574934195683454e-6,
+    "maximum_ik_error": 4.5588787021572457e-7
+  },
+  {
+    "id": "MIN3",
+    "minimum_height": -1.3041728834650712e-6,
+    "maximum_ik_error": 3.1680303253932744e-7
+  },
+  {
+    "id": "MAJ1",
+    "minimum_height": -1.8121127141057514e-6,
+    "maximum_ik_error": 1.7821689114244048e-6
+  },
+  {
+    "id": "MAJ2",
+    "minimum_height": -1.274370561077376e-6,
+    "maximum_ik_error": 4.6671807060735897e-7
+  },
+  {
+    "id": "MAJ3",
+    "minimum_height": -1.2147659163019853e-6,
+    "maximum_ik_error": 3.0827761986221675e-7
+  },
+  {
+    "id": "F1",
+    "minimum_height": -1.1104580153187271e-6,
+    "maximum_ik_error": 1.999200562387517e-7
+  },
+  {
+    "id": "F2",
+    "minimum_height": -1.1104580153187271e-6,
+    "maximum_ik_error": 1.999200562387517e-7
+  },
+  {
+    "id": "F3",
+    "minimum_height": -1.3637775282404618e-6,
+    "maximum_ik_error": 4.020553101072324e-7
+  }
+]
