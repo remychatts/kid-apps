@@ -33,8 +33,13 @@ def export_rig(output, collection, rig):
             obj.data.shape_keys.animation_data_clear()
     for frame, matrices, values in baked:
         for p in rig.pose.bones:  # Bone insertion order is parent-before-child.
-            p.matrix = matrices[p.name]
-            bpy.context.view_layer.update()
+            # Convert the sampled armature-space matrix directly to local pose
+            # space. Re-evaluating every skinned mesh once per bone is unnecessary.
+            parent = p.parent
+            options = ({'parent_matrix': matrices[parent.name],
+                        'parent_matrix_local': parent.bone.matrix_local} if parent else {})
+            p.matrix_basis = p.bone.convert_local_to_pose(
+                matrices[p.name], p.bone.matrix_local, invert=True, **options)
             for channel in ('location', 'rotation_euler', 'scale'):
                 p.keyframe_insert(channel, frame=frame, group=p.name)
         for name, keys in values.items():

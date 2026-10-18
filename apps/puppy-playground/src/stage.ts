@@ -1,12 +1,15 @@
-/** Renders the baked puppy clips, with demand rendering and a neutral rest pose. */
+/** Renders either companion’s baked clips, with demand rendering and a neutral rest pose. */
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import puppyUrl from "../../../characters/puppy/library/puppy-library.glb?url";
 
-import library from "../../../characters/puppy/library/clips.json";
+import kittenUrl from "../../../characters/kitten/library/kitten-library.glb?url";
+import kittenLibrary from "../../../characters/kitten/library/clips.json";
+import puppyLibrary from "../../../characters/puppy/library/clips.json";
 import { sampleCamera, type CameraPose } from "./camera";
 import { createPlaybackQueue } from "./playback";
 
+export type Character = "puppy" | "kitten";
 export type View = "hero" | "front" | "side";
 export type Stage = {
   play: (name: string) => void;
@@ -23,7 +26,9 @@ export function createStage(
   onReady: (names: string[]) => void,
   onChange: (name: string, pending: string | null) => void,
   onError: (message: string) => void,
+  character: Character = "puppy",
 ): Stage {
+  const library = character === "kitten" ? kittenLibrary : puppyLibrary;
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   renderer.shadowMap.enabled = true;
@@ -34,7 +39,9 @@ export function createStage(
   renderer.domElement.setAttribute("role", "img");
   renderer.domElement.setAttribute(
     "aria-label",
-    "A tan and cream cartoon puppy standing on four paws",
+    character === "kitten"
+      ? "A ginger and cream cartoon kitten sitting with four grounded paws"
+      : "A tan and cream cartoon puppy standing on four paws",
   );
   host.append(renderer.domElement);
 
@@ -149,7 +156,7 @@ export function createStage(
     invalidate();
   }
 
-  /** Frames the complete puppy from one of the three review viewpoints. */
+  /** Frames the complete character from one of the three review viewpoints. */
   function setView(nextView: View) {
     view = nextView;
     updateCamera();
@@ -227,7 +234,7 @@ export function createStage(
   resize();
 
   void new GLTFLoader()
-    .loadAsync(puppyUrl)
+    .loadAsync(character === "kitten" ? kittenUrl : puppyUrl)
     .then((gltf) => {
       if (disposed) {
         release(gltf.scene);
@@ -257,21 +264,32 @@ export function createStage(
     .catch(() => {
       if (!disposed)
         onError(
-          "The puppy could not load. Please reload the playground to try again.",
+          `The ${character} could not load. Please reload the playground to try again.`,
         );
     });
 
   /** Releases geometry and materials when a loaded scene is discarded. */
   function release(root: THREE.Object3D) {
+    const textures = new Set<THREE.Texture>();
     root.traverse((object) => {
       if (object instanceof THREE.Mesh) {
         object.geometry.dispose();
         for (const material of Array.isArray(object.material)
           ? object.material
-          : [object.material])
+          : [object.material]) {
+          for (const value of Object.values(material)) {
+            if (value instanceof THREE.Texture) textures.add(value);
+          }
           material.dispose();
+        }
       }
     });
+    for (const texture of textures) {
+      const source = texture.source.data;
+      if (typeof ImageBitmap !== "undefined" && source instanceof ImageBitmap)
+        source.close();
+      texture.dispose();
+    }
   }
 
   return {

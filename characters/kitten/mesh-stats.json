@@ -1,0 +1,17 @@
+{
+  "vertices": 79006,
+  "triangles": 156500,
+  "mesh_objects": 44,
+  "materials": 11,
+  "textures": {
+    "resolution": 2048,
+    "maps": [
+      "textures/ginger-coat-basecolor.png",
+      "textures/ginger-coat-normal.png"
+    ],
+    "textured_meshes": 7
+  },
+  "rigged": false,
+  "animations": 0,
+  "stage": "neutral design draft; retopology and rigging deferred"
+}

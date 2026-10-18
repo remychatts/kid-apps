@@ -81,6 +81,9 @@ def split_clips(source, destination, clips, fps):
             for attributes in [primitive["attributes"], *primitive.get("targets", [])]:
                 for name, index in attributes.items():
                     attributes[name] = retain_accessor(index)
+    for image in document.get("images", []):
+        if "bufferView" in image:
+            image["bufferView"] = retain_view(image["bufferView"])
     for skin in document["skins"]:
         skin["inverseBindMatrices"] = retain_accessor(skin["inverseBindMatrices"])
 

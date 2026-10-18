@@ -1,5 +1,14 @@
 # Character direction
 
+## Kitten companion: rigged animation drafts
+
+The [kitten](kitten/README.md) is a separate original Blender character based on
+the user-supplied ginger kitten image: seated proportions, a large rounded head,
+upright ears, blue eyes, cream markings and a curled tail. Its
+[rigged library](kitten/library/README.md) maps all 18 puppy clips onto a seated
+skeleton with adapted ear, tail and scratch poses. Puppy Playground now offers
+both characters; the original static design files are preserved.
+
 ## Goal and current review gate
 
 Create a reusable, cute companion for the educational web apps, optimised for iPad. This is a more expressive successor to the idea of Captain Whiskers in Times Traveller.

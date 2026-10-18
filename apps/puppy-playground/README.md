@@ -1,6 +1,10 @@
 # Puppy Playground
 
-A Vite, TypeScript and React review app for the [complete puppy animation draft library](../../characters/puppy/library/README.md). It starts with the neutral smiling puppy. Choose Quiet moments, Small wins, Big celebrations or Try again to preview all proposed movements, including left/right tilt and ear-twitch variants. Breathing loops; other movements recover to neutral.
+A Vite, TypeScript and React review app for the [complete puppy animation draft library](../../characters/puppy/library/README.md). It starts with the neutral smiling puppy. The Character buttons switch between
+the puppy and the textured, seated [kitten](../../characters/kitten/library/README.md).
+Switching resets playback and pending requests, preserves review controls, and
+releases the previous model and its textures. Each character has its own framing
+metadata and the same named animation set. Choose Quiet moments, Small wins, Big celebrations or Try again to preview all proposed movements, including left/right tilt and ear-twitch variants. Breathing loops; other movements recover to neutral.
 
 Requests made during a scratch, jump, chase or flip wait until the protected support/landing section finishes. Only the latest click is retained and displayed as “Next”. The Neutral stance button follows the same rule. Three-quarter, front and side views, half-speed playback and smoothly animated framing help inspect the face, ears, grounded paws and airborne movements. Tick Rotate before choosing a movement for one complete camera orbit over its duration (one per breathing loop). The camera eases out for taller poses and back to neutral in the same continuous shot; interruptions keep the current angle and framing. Breathing has a clear chest expansion, play bow tips the nose towards the floor, and all wins and celebrations deepen the smile.
 
