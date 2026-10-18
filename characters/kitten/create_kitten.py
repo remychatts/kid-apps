@@ -20,6 +20,7 @@ parser.add_argument('--resolution', type=int, default=1000)
 parser.add_argument('--samples', type=int, default=96)
 parser.add_argument('--no-texture', action='store_true', help='Skip baking for geometry previews')
 parser.add_argument('--texture-size', type=int, default=2048)
+parser.add_argument('--articulated-forelegs', action='store_true', help='Keep closed forelegs separate for the animation rig')
 parser.add_argument('--no-render', action='store_true', help='Build and save without rendering')
 parser.add_argument('--output-dir', type=Path, default=Path(__file__).resolve().parent)
 args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
@@ -227,11 +228,16 @@ paint(head, head_colour)
 # Planted forelegs, plump haunches and little cream socks.
 parts = [oval('Torso', (0, 0.20, 0.86), (0.55, 0.48, 0.77), coat),
          oval('Neck', (0, 0.03, 1.37), (0.39, 0.36, 0.43), coat)]
+forelegs = []
 for side in (-1, 1):
     parts.append(oval('Seated haunch', (side*0.49, 0.22, 0.45), (0.38, 0.43, 0.44), coat))
     arm = oval('Foreleg', (side*0.33, -0.29, 0.69), (0.215, 0.24, 0.64), coat)
     arm.rotation_euler.y = -side*0.115
-    parts.append(arm)
+    if args.articulated_forelegs:
+        arm.name = f'Foreleg {side}'
+        forelegs.append(arm)
+    else:
+        parts.append(arm)
 body = fuse(parts, 'Body | seated torso and limbs')
 bpy.context.view_layer.update()
 
@@ -248,6 +254,8 @@ def body_colour(p):
 
 
 paint(body, body_colour)
+for arm in forelegs:
+    paint(arm, body_colour)
 for side in (-1, 1):
     for is_front in (True, False):
         cx, cy = (side*0.365, -0.43) if is_front else (side*0.70, 0.02)

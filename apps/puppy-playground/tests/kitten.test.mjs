@@ -154,3 +154,58 @@ test("retargeted kitten geometry stays finite and above the floor", () => {
     }
   }
 });
+
+/** A lifted forepaw must not pull a sheet of belly or haunch up to the cheek. */
+test("cheek scratch keeps the seated belly below its resting height", () => {
+  const torso = meshes.find((mesh) => mesh.name.startsWith("Body"));
+  assert.ok(torso, "seated torso is exported");
+  pose("neutral", 0);
+  const belly = [];
+  for (let i = 0; i < torso.geometry.attributes.position.count; i++) {
+    const p = torso.localToWorld(
+      torso.getVertexPosition(i, new THREE.Vector3()),
+    );
+    // glTF is Y-up: Z < .12 selects belly/haunch behind the forelegs.
+    if (p.y < 0.85 && p.z < 0.12 && Math.abs(p.x) > 0.15) {
+      belly.push({ index: i, height: p.y });
+    }
+  }
+  assert.ok(belly.length > 100, "sample belly and haunch surfaces");
+  for (let step = 0; step <= 45; step++) {
+    const time = step / 10;
+    pose("Q6", time);
+    for (const { index, height } of belly) {
+      const p = torso.localToWorld(
+        torso.getVertexPosition(index, new THREE.Vector3()),
+      );
+      assert.ok(
+        p.y < height + 0.05,
+        `belly vertex ${index} rises ${p.y - height} at ${time}s`,
+      );
+    }
+  }
+});
+
+/** The foreleg rest bend must leave enough reach for a rising chest. */
+test("kitten breathing keeps all four paws planted", () => {
+  pose("neutral", 0);
+  const paws = meshes
+    .filter((mesh) => /^(Forepaw|Hind_paw)/.test(mesh.name))
+    .map((mesh) => ({
+      mesh,
+      rest: mesh.localToWorld(mesh.getVertexPosition(0, new THREE.Vector3())),
+    }));
+  assert.equal(paws.length, 4);
+  for (let step = 0; step <= 40; step++) {
+    pose("Q1", step / 10);
+    for (const { mesh, rest } of paws) {
+      const current = mesh.localToWorld(
+        mesh.getVertexPosition(0, new THREE.Vector3()),
+      );
+      assert.ok(
+        current.distanceTo(rest) < 0.003,
+        `${mesh.name} at ${step / 10}s`,
+      );
+    }
+  }
+});

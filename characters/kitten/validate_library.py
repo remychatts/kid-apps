@@ -6,6 +6,7 @@ blender --background --disable-autoexec --threads 6 --python-exit-code 1 --pytho
 import json
 from pathlib import Path
 import bpy
+import bmesh
 from mathutils import Vector
 
 HERE=Path(__file__).resolve().parent/'library'
@@ -14,6 +15,15 @@ scene=bpy.context.scene
 rig=bpy.data.objects['Kitten rig']
 meshes=[o for o in rig.users_collection[0].objects if o.type=='MESH']
 clips=json.loads((HERE/'clips.json').read_text())
+# Every independently moving limb and the newly exposed torso must be closed.
+for obj in meshes:
+    if not obj.name.startswith(('Body', 'Foreleg')):
+        continue
+    mesh=bmesh.new()
+    mesh.from_mesh(obj.data)
+    assert all(edge.is_manifold for edge in mesh.edges), (obj.name, 'Open surface')
+    assert mesh.calc_volume(signed=True)>0, (obj.name, 'Inverted surface')
+    mesh.free()
 report=[]
 for clip in clips:
     low=100; ik_error=0

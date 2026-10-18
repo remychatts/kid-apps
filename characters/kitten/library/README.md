@@ -14,9 +14,14 @@ scratch with the same protected playback interval. All clips recover to seated
 neutral. These remain animation drafts, with final visual polish and oldest-iPad
 performance review outstanding.
 
-The original static model and 2K textures are preserved. The animated web export
-uses a simplified deformation mesh and embedded 768px versions of both coat maps,
-retaining UVs and materials. No external assets are fetched at runtime. The shared clip splitter
+The original static model and 2K textures are preserved. The rig rebuilds an
+animation-only variant from the same sculpt recipe, with closed forelegs that
+overlap the shoulder instead of being fused to the belly and haunches. Each
+foreleg follows its own joint chain; the torso carries no foreleg weights. This
+prevents the cheek scratch from stretching the belly into a folded sheet.
+Regular foreleg rings are retained for bending, and the elbow and shoulder sit
+inside the foreleg volumes. The animated web export uses a simplified torso and
+freshly baked 768px coat maps, including the newly exposed inner forelegs. No external assets are fetched at runtime. The shared clip splitter
 preserves image buffer views as well as geometry and animation data.
 
 Rebuild from the repository root:
@@ -27,7 +32,9 @@ blender --background --disable-autoexec --threads 6 --python-exit-code 1 --pytho
 node --test apps/puppy-playground/tests/kitten.test.mjs
 ```
 
-The validation script measures the authoring scene and renders review frames.
+The validation script checks that the torso and forelegs are closed, measures the
+authoring scene and renders review frames. A regression test samples the exported
+cheek scratch and rejects upward stretching of the seated belly.
 The Node tests use the real Three.js skin, morph and animation parsers, substituting
 only browser image decoding; embedded image signatures and buffer ranges are
 checked separately. They verify clip parity, neutral recovery, facial controls,
