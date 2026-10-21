@@ -209,3 +209,43 @@ test("kitten breathing keeps all four paws planted", () => {
     }
   }
 });
+
+/** Gaze layers must stay ahead of the stationary white, including between keys. */
+test("kitten gaze keeps iris and pupil clear of the eye whites", () => {
+  pose("neutral", 0);
+  const raycaster = new THREE.Raycaster();
+  raycaster.ray.direction.set(0, 0, -1);
+  for (const side of ["L", "R"]) {
+    const ending = side === "L" ? "1" : "-1";
+    const white = meshes.find((mesh) => mesh.name === `Eye_ivory_${ending}`);
+    assert.ok(white, `eye white ${side}`);
+    const layers = ["Iris_outer_ring", "Blue_iris", "Pupil"].map((prefix) => {
+      const mesh = meshes.find((mesh) => mesh.name === `${prefix}_${ending}`);
+      assert.ok(mesh, `${prefix} ${side}`);
+      return mesh;
+    });
+    for (const direction of ["GazeLeft", "GazeRight", "GazeUp", "GazeDown"]) {
+      for (const weight of [0, 0.25, 0.5, 0.75, 1]) {
+        for (const mesh of layers) {
+          const index = mesh.morphTargetDictionary[`${direction}.${side}`];
+          assert.notEqual(index, undefined);
+          mesh.morphTargetInfluences[index] = weight;
+          // Sample the full radial range and perimeter on the exported mesh.
+          for (let i = 0; i < mesh.geometry.attributes.position.count; i += 4) {
+            const p = mesh.localToWorld(
+              mesh.getVertexPosition(i, new THREE.Vector3()),
+            );
+            raycaster.ray.origin.set(p.x, p.y, 4);
+            const [hit] = raycaster.intersectObject(white, false);
+            assert.ok(hit, `${mesh.name}: gaze stays within white`);
+            assert.ok(
+              p.z - hit.point.z > 0.0001,
+              `${mesh.name} ${direction} at ${weight}: buried vertex ${i}`,
+            );
+          }
+          mesh.morphTargetInfluences[index] = 0;
+        }
+      }
+    }
+  }
+});

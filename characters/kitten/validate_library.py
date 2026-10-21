@@ -45,7 +45,7 @@ scene.cycles.samples=16
 scene.cycles.use_denoising=False
 scene.render.resolution_x=scene.render.resolution_y=480
 scene.render.resolution_percentage=100
-for id,time in [('neutral',0),('Q2',.4),('Q6',2.1),('MIN2',1),('MAJ2',1.275),('MAJ3',1.1)]:
+for id,time in [('neutral',0),('Q2',.4),('Q3-left',1),('Q3-right',1),('Q6',2.1),('MIN2',1),('MAJ2',1.275),('MAJ3',1.1)]:
     clip=next(c for c in clips if c['id']==id)
     scene.frame_set(clip['startFrame']+round(time*30))
     target=Vector((0,0,clip['stageHeight']/2))
