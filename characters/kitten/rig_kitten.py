@@ -234,11 +234,17 @@ for obj in meshes:
             return p
         morph(obj,'Blink.'+suffix,blink)
         if not name.startswith('Eye ivory'):
+            eye=bpy.data.objects['Eye ivory '+('-1' if suffix=='R' else '1')]
+            def eye_surface(x,z):
+                """Sample the stationary eye dome, including its actual mesh facets."""
+                hit,p,_,_=eye.ray_cast(Vector((x,-4,z)),Vector((0,1,0)))
+                if not hit: raise RuntimeError('Gaze projection missed eye white')
+                return p.y
             for control,dx,dz in [('GazeLeft',.025,0),('GazeRight',-.025,0),('GazeUp',0,.025),('GazeDown',0,-.025)]:
                 def gaze(p,dx=dx,dz=dz):
-                    """Keep pupil layers on the head surface while glancing."""
-                    depth=p.y-surface(p.x,p.z)
-                    p.x+=dx; p.z+=dz; p.y=surface(p.x,p.z)+depth
+                    """Slide each coloured layer over the fixed eye white without burying its edge."""
+                    depth=p.y-eye_surface(p.x,p.z)
+                    p.x+=dx; p.z+=dz; p.y=eye_surface(p.x,p.z)+depth
                     return p
                 morph(obj,control+'.'+suffix,gaze)
 # A curved, dark lid crease emerges only when the eyes close.

@@ -19,6 +19,9 @@ animation-only variant from the same sculpt recipe, with closed forelegs that
 overlap the shoulder instead of being fused to the belly and haunches. Each
 foreleg follows its own joint chain; the torso carries no foreleg weights. This
 prevents the cheek scratch from stretching the belly into a folded sheet.
+Gaze controls project the iris, pupil and catchlights onto the stationary eye
+white rather than the head. This keeps the trailing edge clear of the raised
+eye dome during sideways and vertical glances, including between shape keys.
 Regular foreleg rings are retained for bending, and the elbow and shoulder sit
 inside the foreleg volumes. The animated web export uses a simplified torso and
 freshly baked 768px coat maps, including the newly exposed inner forelegs. No external assets are fetched at runtime. The shared clip splitter
@@ -38,4 +41,8 @@ cheek scratch and rejects upward stretching of the seated belly.
 The Node tests use the real Three.js skin, morph and animation parsers, substituting
 only browser image decoding; embedded image signatures and buffer ranges are
 checked separately. They verify clip parity, neutral recovery, facial controls,
-skinned meshes and the offline asset size limit.
+skinned meshes and the offline asset size limit. Gaze regression checks raycast
+the exported iris and pupil against both eye whites in all four directions at
+neutral, quarter, half, three-quarter and full strength.
+
+`Q3-left-hero.png` and `Q3-right-hero.png` show both sideways glances.
