@@ -443,5 +443,30 @@
         "purpose": "any maskable"
       }
     ]
+  },
+  {
+    "id": "daily-stars",
+    "title": "Daily Stars",
+    "shortName": "Daily Stars",
+    "description": "Little adventures. Big achievements. Turn daily goals into colourful mosaic medals.",
+    "date": "November 2026",
+    "updatedAt": "2026-11-08T12:00:00Z",
+    "emoji": "🌟",
+    "themeColour": "#28215b",
+    "backgroundColour": "#f7f4ff",
+    "orientation": "any",
+    "icons": [
+      {
+        "src": "icon.svg",
+        "sizes": "any",
+        "type": "image/svg+xml",
+        "purpose": "any maskable"
+      },
+      {
+        "src": "apple-touch-icon.png",
+        "sizes": "180x180",
+        "type": "image/png"
+      }
+    ]
   }
 ]
