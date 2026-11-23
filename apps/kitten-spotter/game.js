@@ -1,19 +1,18 @@
 /** Runs the offline six-round kitten quiz. */
+import { looks } from "./kittens.js";
+
 const $ = (id) => document.getElementById(id);
-const cats = {
-  Ginger: "Look for a warm orange coat, like marmalade.",
-  Calico: "Look for three distinct patches of white, orange, and black.",
-  Tabby: "Look for the dark stripes and an M-shaped marking on the forehead.",
-  Siamese: "Its ears, face, and paws are darker than its pale body.",
-  Tuxedo: "Its black coat and white bib look like formal clothes.",
-  Tortoiseshell: "Black and orange fur mingle in tiny speckles.",
-};
-const names = Object.keys(cats),
-  shuffle = (a) =>
-    a
-      .map((x) => [Math.random(), x])
-      .sort((a, b) => a[0] - b[0])
-      .map((v) => v[1]);
+const roundCount = 6;
+
+/** Return a shuffled copy without altering the portrait catalogue. */
+function shuffle(items) {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
 let deck,
   index,
   score,
@@ -99,8 +98,14 @@ function best() {
   $("best").textContent = "★  Daily best: " + read(day());
 }
 /** Prepare a fresh six-kitten deck. */
-function start(first) {
-  deck = first ? ["Ginger", ...shuffle(names.slice(1))] : shuffle(names);
+function start() {
+  deck = shuffle(looks)
+    .slice(0, roundCount)
+    .map((look) => ({
+      ...look,
+      photo: look.photos[Math.floor(Math.random() * look.photos.length)],
+    }));
+  for (const { photo } of deck.slice(1)) new Image().src = photo;
   score = index = 0;
   show();
 }
@@ -108,13 +113,13 @@ function start(first) {
 function show() {
   best();
   hinted = answered = false;
-  let cat = deck[index];
-  $("pic").src = cat.toLowerCase() + ".jpg";
+  const { name, photo, clue, distractors } = deck[index];
+  $("pic").src = photo;
   $("pic").classList.remove("pop");
   void $("pic").offsetWidth;
   $("pic").classList.add("pop");
   $("tag").textContent = "🐾  KITTEN " + String(index + 1).padStart(2, "0");
-  $("round").textContent = "ROUND " + (index + 1) + " OF 6";
+  $("round").textContent = "ROUND " + (index + 1) + " OF " + roundCount;
   $("pts").textContent = "✦  " + score + " pts";
   $("trail").innerHTML = deck
     .map((_, i) => '<i class="' + (i <= index ? "on" : "") + '"></i>')
@@ -127,39 +132,35 @@ function show() {
   $("clue").onclick = () => {
     hinted = true;
     tones([420, 540]);
-    $("feedback").textContent = cats[cat] + " A correct guess earns 1 point.";
+    $("feedback").textContent = clue + " A correct guess earns 1 point.";
     $("clue").hidden = true;
   };
-  let choices = shuffle([
-    cat,
-    ...shuffle(
-      names.filter((x) => x !== cat && !(cat === "Ginger" && x === "Tabby")),
-    ).slice(0, 3),
-  ]);
+  const choices = shuffle([name, ...shuffle(distractors).slice(0, 3)]);
   choices.forEach((x, i) => {
     let b = document.createElement("button");
     b.innerHTML = "<label>" + String.fromCharCode(65 + i) + "</label>" + x;
     b.onclick = () => {
       if (answered) return;
       answered = true;
-      let ok = x === cat,
+      let ok = x === name,
         p = ok ? (hinted ? 1 : 2) : 0;
       score += p;
       for (const c of $("choices").children) {
         c.disabled = true;
-        if (c.textContent.slice(1) === cat) c.classList.add("correct");
+        if (c.textContent.slice(1) === name) c.classList.add("correct");
       }
       if (ok) burst(b);
       else b.classList.add("wrong");
       tones(ok ? [523, 659, 784] : [392, 330]);
       $("feedback").textContent = ok
         ? "You spotted it! +" + p + (p === 1 ? " point" : " points")
-        : "This kitten is " + cat + ". " + cats[cat];
+        : "This kitten is " + name + ". " + clue;
       $("pts").textContent = "✦  " + score + " pts";
       $("clue").hidden = false;
-      $("clue").textContent = index === 5 ? "See my score" : "Next kitten";
+      $("clue").textContent =
+        index === roundCount - 1 ? "See my score" : "Next kitten";
       $("clue").onclick = () => {
-        if (++index < 6) show();
+        if (++index < roundCount) show();
         else finish();
       };
       $("clue").focus();
@@ -180,12 +181,9 @@ function finish() {
       ? "A new daily best!"
       : "Your daily best is " + Math.max(score, prev) + ".";
   $("clue").textContent = "Play again";
-  $("clue").onclick = () => start(false);
+  $("clue").onclick = start;
   tones([523, 659, 784, 1046]);
   burst($("question"));
 }
-names.forEach((x) => {
-  new Image().src = x.toLowerCase() + ".jpg";
-});
 soundUI();
-start(true);
+start();
