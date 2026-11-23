@@ -468,5 +468,25 @@
         "type": "image/png"
       }
     ]
+  },
+  {
+    "id": "kitten-spotter",
+    "title": "Kitten Spotter",
+    "shortName": "Kitten Spotter",
+    "description": "Spot six adorable kittens and beat your daily high score.",
+    "date": "November 2026",
+    "updatedAt": "2026-11-23T00:00:00Z",
+    "emoji": "🐱",
+    "themeColour": "#59804b",
+    "backgroundColour": "#faf8f1",
+    "orientation": "any",
+    "icons": [
+      {
+        "src": "icon-512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+      }
+    ]
   }
 ]

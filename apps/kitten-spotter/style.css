@@ -1,0 +1,369 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background-color: #faf8f1;
+  background-image: radial-gradient(#dcd6c880 0.85px, transparent 0.85px);
+  background-size: 15px 15px;
+  color: #243e34;
+  font:
+    16px "Trebuchet MS",
+    system-ui,
+    sans-serif;
+}
+header {
+  height: 76px;
+  background: #fffdf7;
+  border-bottom: 1px solid #d8dccf;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 max(5vw, calc((100vw - 1130px) / 2));
+  gap: 10px;
+}
+header strong {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 23px;
+  letter-spacing: -1px;
+}
+i {
+  font-style: normal;
+  background: #dbead0;
+  border-radius: 13px;
+  padding: 7px;
+  font-size: 23px;
+}
+header span,
+.status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+button {
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  font-weight: 750;
+}
+header b,
+.status b {
+  font-size: 14px;
+  background: #fff0bd;
+  border: 1px solid #e8cf83;
+  padding: 8px 14px;
+  border-radius: 30px;
+}
+#sound {
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #b5c1b2;
+  background: #fffdf7;
+  font-size: 22px;
+}
+main {
+  max-width: 1090px;
+  margin: auto;
+  padding: 34px 24px;
+}
+.intro {
+  text-align: center;
+}
+.eyebrow,
+small,
+.tag {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1.6px;
+}
+.eyebrow {
+  color: #597153;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+em {
+  width: 26px;
+  height: 2px;
+  background: #95aa82;
+}
+h1,
+h2 {
+  font-family: Georgia, serif;
+  letter-spacing: -0.055em;
+}
+h1 {
+  font-size: clamp(48px, 6vw, 80px);
+  line-height: 1.05;
+  margin: 10px 0;
+}
+mark {
+  background: none;
+  color: #59804b;
+  font-style: italic;
+}
+.intro p {
+  margin: 0 0 26px;
+  color: #58655c;
+}
+article {
+  padding: 16px;
+  background: #fffdf8;
+  border: 1px solid #cdd5c5;
+  border-radius: 26px;
+  box-shadow: 0 6px 0 #e4e5d8;
+  display: grid;
+  grid-template-columns: 1.08fr 1fr;
+  gap: 28px;
+}
+.photo {
+  position: relative;
+  min-height: 405px;
+  overflow: hidden;
+  border-radius: 17px;
+  background: #d4e0bd;
+}
+.photo img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.tag {
+  position: absolute;
+  left: 17px;
+  bottom: 17px;
+  background: #fffbed;
+  color: #304338;
+  border-radius: 7px;
+  padding: 9px 13px;
+  transform: rotate(-3deg);
+  letter-spacing: 1px;
+}
+.game {
+  padding: 18px 15px 18px 0;
+  align-self: center;
+}
+.status {
+  justify-content: space-between;
+}
+small {
+  color: #5d725a;
+}
+.status b {
+  background: #e8f2de;
+  border-color: #cedec4;
+}
+#trail {
+  display: flex;
+  gap: 7px;
+  margin: 13px 0 25px;
+}
+#trail i {
+  background: #e4e7dc;
+  width: 100%;
+  height: 7px;
+  padding: 0;
+}
+#trail i.on {
+  background: #739b5c;
+}
+h2 {
+  font-size: clamp(31px, 3.2vw, 47px);
+  line-height: 1.02;
+  margin: 0 0 22px;
+}
+#choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 11px;
+}
+#choices button,
+#clue {
+  border-radius: 12px;
+  border: 1.5px solid #cbd4c1;
+  background: #fcfcf5;
+  min-height: 52px;
+  text-align: left;
+  padding: 10px;
+  box-shadow: 0 3px 0 #dfe4d7;
+  transition:
+    transform 0.15s,
+    background 0.15s;
+}
+#choices button:hover {
+  transform: translateY(-2px);
+  background: #eff4e7;
+}
+#choices label {
+  pointer-events: none;
+  display: inline-grid;
+  place-items: center;
+  background: #e9eddf;
+  border-radius: 7px;
+  width: 26px;
+  height: 27px;
+  font-size: 13px;
+  margin-right: 8px;
+}
+#choices .correct {
+  background: #d8ecc8;
+}
+#choices .wrong {
+  background: #f9d9c9;
+}
+#clue {
+  margin-top: 17px;
+  width: 100%;
+  color: #6b5420;
+  background: #fff2c6;
+  border-color: #e8d18a;
+  text-align: center;
+  box-shadow: 0 3px 0 #ecdeb1;
+}
+#feedback:not(:empty) {
+  margin-top: 14px;
+  font-size: 15px;
+}
+footer {
+  text-align: center;
+  color: #657061;
+  font-size: 14px;
+  padding: 22px 0;
+}
+footer span {
+  margin: 0 12px;
+}
+button:focus-visible {
+  outline: 3px solid #4465ab;
+}
+.pop {
+  animation: pop 0.45s ease-out;
+}
+@keyframes pop {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.94);
+  }
+  70% {
+    transform: scale(1.015);
+  }
+}
+.spark {
+  position: fixed;
+  pointer-events: none;
+  animation: fly 1.1s ease-out forwards;
+  z-index: 5;
+}
+@keyframes fly {
+  to {
+    transform: translate(var(--x), var(--y)) rotate(110deg);
+    opacity: 0;
+  }
+}
+@media (max-width: 680px) {
+  header {
+    height: 62px;
+    padding: 0 14px;
+  }
+  header strong {
+    font-size: 19px;
+  }
+  header b {
+    font-size: 12px;
+    padding: 6px 9px;
+  }
+  header span {
+    gap: 6px;
+  }
+  main {
+    padding: 19px 12px;
+  }
+  .intro p {
+    margin-bottom: 15px;
+    font-size: 15px;
+  }
+  article {
+    display: block;
+    padding: 10px;
+    border-radius: 21px;
+  }
+  .photo {
+    min-height: 0;
+    height: clamp(190px, 27svh, 290px);
+  }
+  .game {
+    padding: 13px 6px 7px;
+  }
+  #trail {
+    margin: 10px 0 14px;
+  }
+  h2 {
+    margin-bottom: 14px;
+  }
+  #clue {
+    margin-top: 12px;
+  }
+  footer {
+    font-size: 12px;
+  }
+  h1 {
+    margin: 4px 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .spark {
+    display: none;
+  }
+}
+@media (orientation: landscape) and (max-height: 540px) {
+  header {
+    height: 48px;
+  }
+  main {
+    padding: 8px max(16px, env(safe-area-inset-left));
+  }
+  .intro {
+    display: none;
+  }
+  article {
+    padding: 9px;
+    gap: 18px;
+  }
+  .photo {
+    min-height: 250px;
+  }
+  .game {
+    padding: 4px 6px 4px 0;
+  }
+  #trail {
+    margin: 6px 0;
+  }
+  h2 {
+    font-size: 28px;
+    margin: 8px 0;
+  }
+  #choices {
+    gap: 7px;
+  }
+  #choices button,
+  #clue {
+    min-height: 44px;
+    padding: 6px;
+  }
+  #clue {
+    margin-top: 9px;
+  }
+  footer {
+    padding: 8px;
+  }
+}

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  /><title>Kitten Spotter</title
+  ><link rel="stylesheet" href="style.css" />
+  <body>
+    <header>
+      <strong><i>🐾</i> Kitten Spotter</strong
+      ><span
+        ><b id="best"></b
+        ><button id="sound" aria-label="Mute sounds">♫</button></span
+      >
+    </header>
+    <main>
+      <section class="intro">
+        <div class="eyebrow"><em></em> THE KITTEN QUIZ <em></em></div>
+        <h1>Spot the <mark>kitten!</mark></h1>
+        <p>Six little kittens. Can you name them all?</p>
+      </section>
+      <article>
+        <div class="photo">
+          <img id="pic" src="ginger.jpg" alt="Kitten to identify" />
+          <div class="tag" id="tag"></div>
+        </div>
+        <section class="game">
+          <div class="status"><small id="round"></small><b id="pts"></b></div>
+          <div id="trail"></div>
+          <h2 id="question">What kind of kitten is this?</h2>
+          <div id="choices"></div>
+          <div id="feedback" aria-live="polite"></div>
+          <button id="clue"></button>
+        </section>
+      </article>
+      <footer>
+        ✧ &nbsp; Picture guess <b>+2 points</b><span>•</span>With a clue
+        <b>+1 point</b>
+      </footer>
+    </main>
+    <script type="module" src="./game.js"></script>
+  </body>
+</html>
